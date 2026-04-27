@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GRIND">
+<meta name="theme-color" content="#060805">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3C%21--%20Dark%20tactical%20background%20--%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20fill%3D%22%23060805%22/%3E%0A%20%20%3C%21--%20Subtle%20corner%20marks%20in%20gold%20--%3E%0A%20%20%3Cpath%20d%3D%22M20%2C20%20L50%2C20%20M20%2C20%20L20%2C50%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20opacity%3D%220.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M492%2C20%20L462%2C20%20M492%2C20%20L492%2C50%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20opacity%3D%220.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M20%2C492%20L50%2C492%20M20%2C492%20L20%2C462%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20opacity%3D%220.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M492%2C492%20L462%2C492%20M492%2C492%20L492%2C462%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%226%22%20fill%3D%22none%22%20opacity%3D%220.7%22/%3E%0A%20%20%3C%21--%20Dog%20tag%20shape%20%28larger%2C%20background%29%20--%3E%0A%20%20%3Crect%20x%3D%22156%22%20y%3D%2280%22%20width%3D%22200%22%20height%3D%22260%22%20rx%3D%2228%22%20ry%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%2210%22%20opacity%3D%220.3%22/%3E%0A%20%20%3C%21--%20Dog%20tag%20shape%20%28main%29%20--%3E%0A%20%20%3Crect%20x%3D%22170%22%20y%3D%2294%22%20width%3D%22172%22%20height%3D%22232%22%20rx%3D%2222%22%20ry%3D%2222%22%20fill%3D%22%2314190e%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%226%22/%3E%0A%20%20%3C%21--%20Dog%20tag%20notch%20at%20bottom%20--%3E%0A%20%20%3Crect%20x%3D%22244%22%20y%3D%22308%22%20width%3D%2224%22%20height%3D%2218%22%20rx%3D%224%22%20fill%3D%22%2314190e%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%225%22/%3E%0A%20%20%3C%21--%20Chain%20dots%20--%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22342%22%20r%3D%225%22%20fill%3D%22%23d4a820%22%20opacity%3D%220.6%22/%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22362%22%20r%3D%225%22%20fill%3D%22%23d4a820%22%20opacity%3D%220.6%22/%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22382%22%20r%3D%225%22%20fill%3D%22%23d4a820%22%20opacity%3D%220.6%22/%3E%0A%20%20%3C%21--%20Barbell%20across%20the%20dog%20tag%20--%3E%0A%20%20%3C%21--%20Bar%20--%3E%0A%20%20%3Crect%20x%3D%22118%22%20y%3D%22194%22%20width%3D%22276%22%20height%3D%2222%22%20rx%3D%225%22%20fill%3D%22%238aaa30%22/%3E%0A%20%20%3C%21--%20Left%20plate%20outer%20--%3E%0A%20%20%3Crect%20x%3D%22104%22%20y%3D%22168%22%20width%3D%2236%22%20height%3D%2274%22%20rx%3D%228%22%20fill%3D%22%238aaa30%22/%3E%0A%20%20%3C%21--%20Left%20plate%20inner%20shadow%20--%3E%0A%20%20%3Crect%20x%3D%22112%22%20y%3D%22176%22%20width%3D%2220%22%20height%3D%2258%22%20rx%3D%224%22%20fill%3D%22%236a8a22%22/%3E%0A%20%20%3C%21--%20Right%20plate%20outer%20--%3E%0A%20%20%3Crect%20x%3D%22372%22%20y%3D%22168%22%20width%3D%2236%22%20height%3D%2274%22%20rx%3D%228%22%20fill%3D%22%238aaa30%22/%3E%0A%20%20%3C%21--%20Right%20plate%20inner%20shadow%20--%3E%0A%20%20%3Crect%20x%3D%22380%22%20y%3D%22176%22%20width%3D%2220%22%20height%3D%2258%22%20rx%3D%224%22%20fill%3D%22%236a8a22%22/%3E%0A%20%20%3C%21--%20Left%20collar%20--%3E%0A%20%20%3Crect%20x%3D%22140%22%20y%3D%22180%22%20width%3D%2218%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22%23d4a820%22/%3E%0A%20%20%3C%21--%20Right%20collar%20--%3E%0A%20%20%3Crect%20x%3D%22354%22%20y%3D%22180%22%20width%3D%2218%22%20height%3D%2250%22%20rx%3D%224%22%20fill%3D%22%23d4a820%22/%3E%0A%20%20%3C%21--%20G%20letter%20on%20dog%20tag%20--%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22168%22%20font-family%3D%22Georgia%2Cserif%22%20font-weight%3D%22bold%22%20font-size%3D%2290%22%20fill%3D%22%23d4a820%22%20text-anchor%3D%22middle%22%20opacity%3D%220.15%22%3EG%3C/text%3E%0A%20%20%3C%21--%20GRIND%20text%20on%20tag%20--%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22280%22%20font-family%3D%22Arial%2Csans-serif%22%20font-weight%3D%22bold%22%20font-size%3D%2228%22%20fill%3D%22%23d4a820%22%20text-anchor%3D%22middle%22%20letter-spacing%3D%228%22%3EGRIND%3C/text%3E%0A%20%20%3C%21--%20Stars%20flanking%20--%3E%0A%20%20%3Ctext%20x%3D%22192%22%20y%3D%22148%22%20font-family%3D%22Arial%22%20font-size%3D%2218%22%20fill%3D%22%23d4a820%22%20text-anchor%3D%22middle%22%20opacity%3D%220.8%22%3E%E2%98%85%3C/text%3E%0A%20%20%3Ctext%20x%3D%22320%22%20y%3D%22148%22%20font-family%3D%22Arial%22%20font-size%3D%2218%22%20fill%3D%22%23d4a820%22%20text-anchor%3D%22middle%22%20opacity%3D%220.8%22%3E%E2%98%85%3C/text%3E%0A%20%20%3C%21--%20Thin%20lines%20on%20tag%20%28dog%20tag%20text%20lines%29%20--%3E%0A%20%20%3Cline%20x1%3D%22196%22%20y1%3D%22158%22%20x2%3D%22316%22%20y2%3D%22158%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%221.5%22%20opacity%3D%220.3%22/%3E%0A%20%20%3Cline%20x1%3D%22196%22%20y1%3D%22245%22%20x2%3D%22316%22%20y2%3D%22245%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%221.5%22%20opacity%3D%220.3%22/%3E%0A%20%20%3Cline%20x1%3D%22196%22%20y1%3D%22258%22%20x2%3D%22316%22%20y2%3D%22258%22%20stroke%3D%22%23d4a820%22%20stroke-width%3D%221.5%22%20opacity%3D%220.3%22/%3E%0A%3C/svg%3E">
+
+<title>GRIND</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Barlow+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   GRIND — US ARMY FIELD EDITION
+   Colors: OD Green / Tactical Black / Army Gold / White
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap');
+
+:root{
+  /* TACTICAL BACKGROUNDS */
+  --bg:#060805;
+  --bg2:#0c1008;
+  --bg3:#14190e;
+  --bg4:#1c2414;
+  /* FIELD BORDERS */
+  --border:#2a3a1e;
+  --border2:#4a6028;
+  /* TYPOGRAPHY */
+  --text:#f4f2e8;
+  --text2:#dce4c0;
+  --text3:#a0aa88;
+  --text4:#4a5230;
+  /* OD GREEN — primary action */
+  --green:#8aaa30;
+  --green-bg:#0e1808;
+  --green-border:#4a6820;
+  /* ARMY GOLD — accent, alerts, emphasis */
+  --amber:#d4a820;
+  --amber-bg:#1a1400;
+  --amber-border:#806010;
+  /* ALERT RED */
+  --red:#c04040;
+  --red-bg:#180808;
+  --red-border:#802020;
+  /* INTEL PURPLE */
+  --purple:#8a70c0;
+  --purple-bg:#100c1c;
+  --purple-border:#4a3880;
+  /* COMMS BLUE */
+  --blue:#4a7aaa;
+  --blue-bg:#080e18;
+  --blue-border:#28486a;
+  /* FONTS */
+  --display:'Bebas Neue',cursive;
+  --mono:'Share Tech Mono',monospace;
+  --body:'Barlow Condensed',sans-serif;
+  /* SYSTEM */
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  /* ARMY GOLD — used for highlights */
+  --gold:#d4a820;
+  --gold-dim:#8a6c10;
+}
+
+/* Force dark color-scheme on all form controls — prevents iOS white bg */
+input,select,textarea{color-scheme:dark}
+
+/* ---- RESET ---- */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--bg);overscroll-behavior:none}
+body{
+  height:100%;overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+}
+
+/* ---- LAYOUT ---- */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:540px;margin:0 auto}
+#safe-top{height:var(--safe-t);background:var(--bg);flex-shrink:0}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:var(--bg)}
+
+/* ---- NAV — tactical bottom strip ---- */
+#nav{
+  flex-shrink:0;
+  background:#060805;
+  border-top:2px solid var(--amber);
+  display:flex;
+  padding-bottom:var(--safe-b);
+  position:relative;
+}
+/* nav tick strip removed */
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:9px 2px 7px;border:none;background:none;
+  color:var(--text3);
+  font-family:var(--mono);font-size:9px;letter-spacing:1px;
+  cursor:pointer;gap:3px;transition:all 0.15s;
+  position:relative;
+}
+.nav-btn svg{width:17px;height:17px;stroke-width:1.5}
+.nav-btn.active{color:var(--amber)}
+.nav-btn.active svg{stroke:var(--amber)}
+.nav-btn.active::after{
+  content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;
+  background:var(--amber);
+}
+
+/* ---- SHARED COMPONENTS ---- */
+.section-label{
+  font-family:var(--mono);font-size:18px;letter-spacing:4px;
+  color:var(--amber);
+  margin-bottom:10px;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::before{content:'▸';color:var(--green);font-size:9px}
+
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:0;
+  /* tactical corner marks */
+  position:relative;
+}
+.card::before,.card::after{
+  content:'';position:absolute;width:8px;height:8px;
+  border-color:var(--amber);border-style:solid;
+}
+.card::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.card::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+
+/* ---- EXERCISE DESCRIPTION (collapsible) ---- */
+.ex-row{cursor:default}
+.ex-row.has-desc{cursor:pointer}
+.ex-row.has-desc:active{background:rgba(255,255,255,.03)}
+.ex-toggle{
+  font-size:22px;line-height:1;
+  color:var(--amber);
+  flex-shrink:0;
+  font-family:var(--mono);font-weight:300;
+  margin-left:auto;padding-left:12px;
+  align-self:center;
+  user-select:none;
+}
+.ex-toggle.open{color:var(--text2)}
+.ex-desc{
+  padding:12px 16px 14px 16px;
+  background:rgba(212,168,32,.04);
+  border-top:1px solid rgba(212,168,32,.15);
+  animation:fadeIn 0.15s ease both;
+}
+.ex-desc-text{
+  font-family:var(--body);font-weight:400;font-size:15px;
+  color:var(--text2);line-height:1.65;margin-bottom:2px;
+}
+.ex-desc-cue{
+  font-family:var(--mono);font-size:11px;letter-spacing:1.5px;
+  color:var(--amber);margin-top:10px;
+  display:block;
+}
+
+/* ---- EXERCISE LIST ---- */
+.ex-list{border-top:1px solid var(--border)}
+.ex-row{
+  display:flex;gap:10px;padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  align-items:flex-start;
+}
+.ex-row:last-child{border-bottom:none}
+.ex-tag{
+  font-family:var(--mono);font-size:8px;letter-spacing:1px;
+  padding:3px 6px;min-width:52px;text-align:center;
+  flex-shrink:0;margin-top:1px;
+  border:1px solid currentColor;
+  text-transform:uppercase;
+}
+.ex-name{
+  font-family:var(--body);font-weight:700;font-size:17px;
+  color:var(--text);margin-bottom:2px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.ex-detail{
+  font-family:var(--body);font-weight:400;font-size:17px;
+  color:var(--text2);line-height:1.45;
+}
+.ex-note{
+  font-family:var(--mono);font-size:9px;
+  color:var(--amber);letter-spacing:.5px;margin-top:4px;
+}
+
+/* ---- BUTTONS ---- */
+.action-btn{
+  display:block;width:100%;padding:14px;
+  background:none;
+  border:1px solid var(--green-border);
+  color:var(--green);
+  font-family:var(--mono);font-size:17px;letter-spacing:3px;
+  cursor:pointer;transition:all 0.1s;margin-top:12px;
+  text-transform:uppercase;
+  position:relative;
+}
+.action-btn::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  border:1px solid var(--green-border);
+  margin:2px;opacity:0;transition:opacity 0.1s;
+}
+.action-btn:active{background:var(--green-bg);color:var(--green)}
+.action-btn:active::before{opacity:1}
+.action-btn.secondary{border-color:var(--border2);color:var(--text2)}
+.action-btn.secondary::before{border-color:var(--border2)}
+.action-btn.amber{border-color:var(--amber-border);color:var(--amber)}
+.action-btn.amber::before{border-color:var(--amber-border)}
+.action-btn.amber:active{background:var(--amber-bg)}
+.action-btn.red{border-color:var(--red-border);color:var(--red)}
+.action-btn.red:active{background:var(--red-bg)}
+.action-btn.blue{border-color:var(--blue-border);color:var(--blue)}
+
+/* ---- PILLS ---- */
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{
+  font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
+  padding:6px 11px;border:1px solid var(--border);
+  background:none;color:var(--text3);cursor:pointer;transition:all 0.1s;
+}
+.pill.active{background:var(--bg4);color:var(--amber);border-color:var(--amber-border)}
+
+/* ---- TODAY HEADER — Mission Briefing style ---- */
+.today-head{
+  padding:calc(18px + var(--safe-t)) 16px 14px;
+  border-bottom:2px solid var(--amber);
+  background:linear-gradient(180deg,#0a0e06 0%,var(--bg) 100%);
+  position:relative;
+  overflow:hidden;
+}
+.today-head::after{
+  content:'CLASSIFIED';
+  position:absolute;top:14px;right:14px;
+  font-family:var(--mono);font-size:9px;letter-spacing:4px;
+  color:var(--amber);opacity:0.65;
+  border:2px solid var(--amber);padding:3px 8px;
+  transform:rotate(4deg);
+  font-weight:bold;
+  text-shadow:0 0 8px rgba(212,168,32,.4);
+}
+.today-dayname{
+  font-family:var(--mono);font-size:18px;letter-spacing:4px;
+  color:var(--amber);margin-bottom:4px;
+}
+.today-date{
+  font-family:var(--display);
+  font-size:42px;letter-spacing:3px;line-height:1;
+  color:var(--text);
+  text-shadow:0 0 30px rgba(212,168,32,.15);
+}
+.phase-dot{width:6px;height:6px;flex-shrink:0;display:inline-block;margin-right:6px}
+.today-rest{
+  padding:36px 24px;text-align:center;
+  font-family:var(--mono);font-size:17px;letter-spacing:3px;
+  color:var(--text);line-height:2;
+}
+.logged-pill{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:2px;
+  background:var(--green-bg);border:1px solid var(--green-border);
+  color:var(--green);padding:2px 8px;vertical-align:middle;
+}
+.moved-pill{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:2px;
+  background:var(--amber-bg);border:1px solid var(--amber-border);
+  color:var(--amber);padding:2px 8px;vertical-align:middle;
+}
+.skipped-pill{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:2px;
+  background:var(--red-bg);border:1px solid var(--red-border);
+  color:var(--red);padding:2px 8px;vertical-align:middle;
+}
+
+/* ---- SITREP STRIP ---- */
+.sitrep-strip{
+  padding:12px 16px;
+  background:#0a0e06;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  border-left:3px solid var(--green);
+}
+.sitrep-strip-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.sitrep-title{font-family:var(--mono);font-size:13px;letter-spacing:3px;color:var(--amber);flex-shrink:0}
+.sitrep-summary{font-family:var(--mono);font-size:13px;color:var(--text2);letter-spacing:1px;text-align:right;line-height:1.6}
+.sitrep-prompt{
+  font-family:var(--mono);font-size:13px;color:var(--green);letter-spacing:2px;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.sitrep-expanded{
+  padding:14px 16px 4px;
+  background:#0a0e06;
+  border-bottom:1px solid var(--amber-border);
+  border-left:3px solid var(--amber);
+}
+.sitrep-row{margin-bottom:14px}
+.sitrep-row-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;
+  color:var(--text2);margin-bottom:6px;
+}
+.num-pills{display:flex;gap:4px}
+.num-pill{
+  flex:1;padding:10px 0;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-family:var(--mono);font-size:17px;
+  cursor:pointer;text-align:center;transition:all 0.1s;
+}
+.num-pill.selected{
+  background:var(--amber-bg);border-color:var(--amber-border);
+  color:var(--amber);
+}
+.pain-pills{display:flex;gap:6px}
+.pain-pill{
+  flex:1;padding:10px 0;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-family:var(--mono);font-size:17px;
+  letter-spacing:1px;cursor:pointer;text-align:center;
+}
+.pain-pill.selected-ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.pain-pill.selected-bad{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+
+/* ---- MISSION BRIEFING — classified document ---- */
+.mission-card{
+  margin:14px 16px 0;
+  border:1px solid var(--amber-border);
+  background:var(--amber-bg);
+  position:relative;
+  overflow:hidden;
+}
+.mission-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:repeating-linear-gradient(90deg,var(--amber) 0,var(--amber) 6px,transparent 6px,transparent 12px);
+}
+.mission-head{
+  padding:10px 14px;background:rgba(212,168,32,.08);
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--amber-border);
+  margin-top:3px;
+}
+.mission-label{font-family:var(--mono);font-size:18px;letter-spacing:3px;color:var(--amber)}
+.mission-label::before{display:none}
+.mission-body{padding:14px}
+.mission-title{
+  font-family:var(--display);font-size:24px;letter-spacing:3px;
+  color:var(--text);line-height:1;margin-bottom:6px;
+}
+.mission-sub{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:12px}
+.mission-bullet{
+  font-family:var(--body);font-weight:500;font-size:18px;
+  color:var(--text2);line-height:1.5;
+  padding:7px 0 7px 18px;position:relative;
+  border-bottom:1px solid rgba(212,168,32,.1);
+}
+.mission-bullet:last-child{border-bottom:none}
+.mission-bullet::before{
+  content:'★';position:absolute;left:0;
+  color:var(--amber);font-size:8px;top:11px;
+}
+
+/* ---- CANT DO PANEL ---- */
+.cant-do-panel{
+  margin:0 16px;
+  border:1px solid var(--red-border);
+  border-left:4px solid var(--red);
+  background:var(--bg2);
+}
+.cant-do-header{
+  padding:14px 16px;background:var(--red-bg);
+  border-bottom:1px solid var(--red-border);
+}
+.cant-do-title{font-family:var(--display);font-size:24px;letter-spacing:3px;color:var(--text)}
+.accountability-box{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  background:var(--bg);
+}
+.accountability-text{
+  font-family:var(--body);font-weight:500;font-size:18px;
+  color:var(--text2);line-height:1.6;
+}
+.phase-context{
+  font-family:var(--mono);font-size:18px;letter-spacing:1px;
+  color:var(--text2);margin-top:8px;padding-top:8px;
+  border-top:1px solid var(--border);
+}
+.option-section{padding:14px 16px;border-bottom:1px solid var(--border)}
+.option-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;
+  color:var(--amber);margin-bottom:8px;
+}
+.conflict-box{padding:9px 12px;margin-bottom:8px;border-left:3px solid currentColor}
+.conflict-box.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.conflict-box.warn{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
+.conflict-box.bad{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.conflict-text{font-family:var(--body);font-weight:400;font-size:17px;line-height:1.5;color:inherit}
+.move-alt-dates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.move-alt-btn{
+  font-family:var(--mono);font-size:18px;letter-spacing:1px;
+  padding:7px 12px;border:1px solid var(--border);
+  background:none;color:var(--text2);cursor:pointer;
+}
+.move-alt-btn.selected{border-color:var(--amber-border);color:var(--amber);background:var(--amber-bg)}
+.skip-accountability{
+  font-family:var(--body);font-weight:500;font-size:17px;
+  color:var(--red);line-height:1.6;margin-bottom:10px;
+}
+.never-mind-btn{
+  display:block;width:100%;padding:16px;
+  background:var(--green-bg);border:none;
+  border-top:2px solid var(--green);
+  color:var(--green);font-family:var(--mono);
+  font-size:17px;letter-spacing:3px;cursor:pointer;
+}
+.never-mind-btn:active{background:var(--green-bg)}
+
+/* ---- PROTEIN BAR ---- */
+.protein-card{
+  margin:14px 16px 0;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  padding:14px;
+  position:relative;
+}
+.protein-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.protein-title{font-family:var(--mono);font-size:18px;letter-spacing:3px;color:var(--amber)}
+.protein-numbers{display:flex;align-items:baseline;gap:6px;margin-bottom:10px}
+.protein-current{font-family:var(--display);font-size:40px;letter-spacing:2px;color:var(--text);line-height:1}
+.protein-target{font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px}
+.protein-unit{font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px;margin-left:4px}
+.protein-bar{height:6px;background:#18200e;margin-bottom:8px;position:relative}
+.protein-bar::before{content:'';position:absolute;top:0;left:0;bottom:0;width:100%;
+  background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 1px,transparent 1px,transparent 10px);
+}
+.protein-bar-fill{
+  height:100%;position:relative;z-index:1;
+  background:linear-gradient(90deg,#8aaa30 0%,var(--amber) 100%);
+  transition:width 0.4s;
+}
+.protein-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:18px;color:var(--text2);letter-spacing:1px}
+
+/* ---- PLAN PHASE CARDS ---- */
+.phase-card{
+  margin:0 16px 10px;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  position:relative;
+}
+.phase-card::before{
+  content:'';position:absolute;top:-1px;left:-1px;
+  width:12px;height:12px;
+  border-top:2px solid var(--amber);border-left:2px solid var(--amber);
+}
+.phase-card-stripe{width:4px;flex-shrink:0;align-self:stretch}
+.day-tabs{
+  display:flex;gap:0;
+  border-bottom:1px solid var(--border);
+  padding:0;
+  overflow-x:auto;scrollbar-width:none;
+  background:var(--bg3);
+}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{
+  flex-shrink:0;padding:9px 14px;
+  font-family:var(--mono);font-size:18px;letter-spacing:2px;
+  border:none;border-right:1px solid var(--border);
+  background:none;color:var(--text3);cursor:pointer;
+  border-bottom:3px solid transparent;transition:all 0.1s;
+  white-space:nowrap;position:relative;
+}
+.day-tab.active{
+  color:var(--amber);background:var(--bg2);
+  border-bottom-color:var(--amber);
+}
+
+/* ---- LOG ---- */
+.log-ex{
+  background:var(--bg2);border:1px solid var(--border);
+  margin-bottom:8px;border-left:3px solid var(--border2);
+}
+.log-ex-head{
+  padding:11px 14px 9px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border);
+  background:var(--bg3);
+}
+.log-ex-title{
+  font-family:var(--body);font-weight:700;font-size:17px;
+  color:var(--text);text-transform:uppercase;letter-spacing:.5px;
+}
+.log-ex-type{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text2)}
+.set-row{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 14px;border-bottom:1px solid #0e1208;
+}
+.set-num{
+  font-family:var(--mono);font-size:17px;color:var(--amber);
+  width:22px;flex-shrink:0;text-align:right;
+}
+.num-input{
+  background:#080c06;border:1px solid var(--border);
+  color:var(--text);font-family:var(--mono);font-size:18px;
+  padding:6px 4px;width:58px;text-align:center;
+  -webkit-appearance:none;-moz-appearance:textfield;
+}
+.num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.num-input:focus{outline:none;border-color:var(--amber-border);background:#101408}
+.check-btn{
+  margin-left:auto;width:32px;height:32px;
+  border:1px solid var(--border);background:none;
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all 0.12s;font-size:18px;
+}
+.check-btn.done{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.del-btn{
+  width:22px;height:22px;border:none;background:none;
+  color:var(--text3);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.add-set-btn{
+  font-family:var(--mono);font-size:18px;letter-spacing:2px;
+  color:var(--text2);background:none;border:none;
+  padding:9px 14px;cursor:pointer;width:100%;text-align:left;
+  border-top:1px solid var(--border);
+}
+.done-only{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.big-check{
+  width:34px;height:34px;border:1px solid var(--border);
+  background:none;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;transition:all 0.12s;
+}
+.big-check.done{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.save-btn{
+  width:100%;padding:16px;background:none;
+  border:2px solid var(--green-border);
+  color:var(--green);font-family:var(--mono);
+  font-size:18px;letter-spacing:4px;
+  cursor:pointer;transition:all 0.1s;margin-top:16px;
+  text-transform:uppercase;
+}
+.save-btn:active,.save-btn.saved{background:var(--green-bg);border-color:var(--green)}
+textarea.notes{
+  width:100%;background:var(--bg2);
+  border:1px solid var(--border);border-left:3px solid var(--border2);
+  color:var(--text2);font-family:var(--body);
+  font-size:18px;font-weight:400;
+  padding:11px 12px;resize:none;height:78px;margin-top:14px;
+}
+textarea.notes:focus{outline:none;border-left-color:var(--amber)}
+textarea.notes::placeholder{color:var(--text3)}
+.log-select{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-family:var(--mono);font-size:18px;
+  padding:7px 10px;-webkit-appearance:none;cursor:pointer;
+  letter-spacing:.5px;
+}
+
+/* ---- GENERATOR ---- */
+.gen-option{
+  display:block;width:100%;
+  padding:16px 18px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-left:3px solid var(--border2);
+  color:var(--text2);font-family:var(--mono);
+  font-size:18px;letter-spacing:2px;
+  cursor:pointer;margin-bottom:8px;text-align:left;
+  transition:all 0.12s;
+}
+.gen-option:active,.gen-option.selected{
+  background:var(--bg3);border-color:var(--green-border);
+  border-left-color:var(--green);color:var(--text);
+}
+.gen-option-sub{
+  font-family:var(--body);font-weight:400;font-size:18px;
+  color:var(--text2);margin-top:5px;letter-spacing:0;display:block;
+}
+.gen-back{
+  font-family:var(--mono);font-size:18px;letter-spacing:3px;
+  color:var(--text2);background:none;border:none;
+  cursor:pointer;padding:0 0 16px;display:block;
+}
+.spinner{
+  width:36px;height:36px;
+  border:2px solid var(--border);border-top-color:var(--amber);
+  border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.equip-check{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  background:var(--bg2);border:1px solid var(--border);
+  cursor:pointer;margin-bottom:6px;transition:all 0.1s;
+}
+.equip-check.selected{border-color:var(--green-border);border-left:3px solid var(--green);background:var(--bg3)}
+.equip-check-box{
+  width:20px;height:20px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:var(--green);flex-shrink:0;
+}
+.equip-check.selected .equip-check-box{background:var(--green-bg);border-color:var(--green-border)}
+
+/* ---- CHOW / RATIONS ---- */
+.chow-main{padding:20px 16px 30px;background:var(--bg)}
+.chow-hero{
+  text-align:center;padding:14px 0 16px;
+  background:var(--bg);
+  border-bottom:1px solid var(--amber-border);
+  margin-bottom:18px;
+  position:relative;
+}
+.chow-hero::before{
+  content:'FIELD RATIONS';
+  position:absolute;top:0;left:0;right:0;
+  font-family:var(--mono);font-size:8px;letter-spacing:4px;
+  color:var(--amber);opacity:0.4;
+}
+.chow-big-number{
+  font-family:var(--display);font-size:80px;letter-spacing:3px;
+  color:var(--text);line-height:1;
+  text-shadow:0 0 40px rgba(212,168,32,.2);
+}
+.chow-target{font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:2px;margin-top:4px}
+.chow-bar{height:8px;background:#0e1208;margin:14px 0 8px;position:relative}
+.chow-bar-fill{
+  height:100%;
+  background:repeating-linear-gradient(90deg,var(--green) 0,var(--green) 6px,var(--amber) 6px,var(--amber) 7px,var(--green) 7px,var(--green) 14px);
+  transition:width 0.4s;
+}
+.chow-status{
+  font-family:var(--mono);font-size:17px;letter-spacing:3px;
+  color:var(--text2);text-align:center;
+}
+.chow-section-label{
+  font-family:var(--mono);font-size:18px;letter-spacing:4px;
+  color:var(--amber);margin:18px 0 10px;
+  display:flex;align-items:center;gap:8px;
+}
+.chow-section-label::before{content:'▸';color:var(--green)}
+.food-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.food-tile{
+  background:var(--bg2);border:1px solid var(--border);
+  padding:10px 11px;cursor:pointer;text-align:left;
+  transition:all 0.1s;position:relative;
+}
+.food-tile:active{background:var(--bg3);border-color:var(--green-border)}
+.food-name{
+  font-family:var(--body);font-weight:700;font-size:18px;
+  color:var(--text);margin-bottom:1px;
+  line-height:1.2;text-transform:uppercase;
+}
+.food-portion{
+  font-family:var(--body);font-weight:400;font-size:17px;
+  color:var(--text2);line-height:1.2;
+}
+.food-grams{
+  font-family:var(--mono);font-size:18px;
+  color:var(--green);letter-spacing:.5px;margin-top:5px;
+}
+.chow-entry{
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  padding:9px 12px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:5px;
+}
+.chow-entry-main{flex:1;min-width:0}
+.chow-entry-name{
+  font-family:var(--body);font-weight:700;font-size:17px;
+  color:var(--text);text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.chow-entry-time{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:.5px;margin-top:1px}
+.chow-entry-grams{font-family:var(--mono);font-size:18px;color:var(--green);letter-spacing:.5px;margin-left:8px;flex-shrink:0}
+.chow-remove{color:var(--text3);background:none;border:none;font-size:18px;cursor:pointer;margin-left:4px;padding:0 4px}
+.custom-input-row{display:flex;gap:6px;margin-bottom:10px}
+.custom-input{
+  flex:1;background:var(--bg3);
+  border:1px solid var(--border);border-bottom:2px solid var(--border2);
+  color:var(--text);font-family:var(--body);font-size:18px;
+  padding:9px 10px;
+}
+.custom-input:focus{outline:none;border-bottom-color:var(--amber)}
+.custom-input.small{flex:0 0 80px;font-family:var(--mono);text-align:center}
+.timing-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:3px solid var(--amber);
+  padding:12px;margin-bottom:8px;
+}
+.timing-title{font-family:var(--mono);font-size:18px;letter-spacing:2px;color:var(--amber);margin-bottom:6px}
+.timing-text{font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);line-height:1.5}
+
+/* ---- INTEL ---- */
+.intel-tabs{
+  display:flex;gap:4px;
+  border-bottom:2px solid var(--amber-border);
+  margin-bottom:16px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.intel-tabs::-webkit-scrollbar{display:none}
+.intel-tab{
+  flex-shrink:0;padding:10px 14px;
+  font-family:var(--mono);font-size:17px;letter-spacing:2px;
+  border:1px solid var(--border);border-bottom:none;
+  background:var(--bg2);color:var(--text2);cursor:pointer;
+  transition:all 0.1s;
+}
+.intel-tab.active{
+  color:var(--text);background:var(--bg4);
+  border-color:var(--amber-border);
+  border-bottom:2px solid var(--amber);
+  font-weight:600;
+  margin-bottom:-2px;
+}
+.pt-input-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.pt-input-label{
+  flex:1;font-family:var(--body);font-weight:600;font-size:18px;
+  color:var(--text2);text-transform:uppercase;
+}
+.pt-input-unit{
+  font-family:var(--mono);font-size:18px;color:var(--amber);
+  letter-spacing:2px;min-width:40px;text-align:left;
+}
+.pt-record{
+  background:var(--bg2);border:1px solid var(--border);
+  border-left:4px solid var(--amber);
+  padding:10px 14px;margin-bottom:8px;
+}
+.pt-record-date{
+  font-family:var(--mono);font-size:17px;
+  color:var(--amber);letter-spacing:1px;margin-bottom:6px;
+}
+.pt-record-data{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4px;font-family:var(--mono);font-size:17px;
+  color:var(--text2);letter-spacing:.5px;
+}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-tile{
+  background:var(--bg2);border:1px solid var(--border);
+  padding:14px 12px;text-align:center;
+  position:relative;
+}
+.stat-tile::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--amber);opacity:.3;
+}
+.stat-label{
+  font-family:var(--mono);font-size:9px;letter-spacing:3px;
+  color:var(--amber);margin-bottom:6px;
+}
+.stat-value{
+  font-family:var(--display);font-size:34px;
+  letter-spacing:2px;color:var(--text);line-height:1;
+}
+.stat-unit{font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px;margin-top:3px}
+
+/* ---- HISTORY ---- */
+.hist-entry{
+  background:var(--bg2);border:1px solid var(--border);
+  margin-bottom:8px;overflow:hidden;
+}
+.hist-head{
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;border-left:3px solid var(--border2);
+}
+.hist-date{font-family:var(--mono);font-size:18px;color:var(--text);letter-spacing:1px}
+.hist-sub{font-family:var(--mono);font-size:18px;color:var(--text2);letter-spacing:.5px;margin-top:2px}
+.hist-chevron{font-size:17px;color:var(--text3);transition:transform 0.15s}
+.hist-chevron.open{transform:rotate(180deg)}
+.hist-body{display:none;padding:10px 16px 14px;border-top:1px solid var(--border)}
+.hist-body.open{display:block}
+.hist-ex-name{
+  font-family:var(--body);font-weight:700;font-size:17px;
+  color:var(--text2);text-transform:uppercase;margin:8px 0 3px;
+}
+.hist-set{font-family:var(--mono);font-size:17px;color:var(--text2);margin-bottom:2px}
+.hist-set.done-set{color:var(--green)}
+.hist-notes-text{
+  font-family:var(--body);font-weight:400;font-size:17px;
+  color:var(--text2);font-style:italic;
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+}
+.date-input{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-family:var(--mono);font-size:17px;
+  padding:6px 8px;
+}
+.date-input:focus{outline:none;border-color:var(--amber-border)}
+
+/* ---- PLAN MOVE PANEL ---- */
+.plan-move-panel-inner{
+  margin:10px 0 0;
+  border:1px solid var(--amber-border);
+  border-left:4px solid var(--amber);
+  background:var(--bg);
+}
+
+/* ---- ANIMATIONS ---- */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.2s ease both}
+.tab-safe{padding-top:var(--safe-t)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.slide-down{animation:slideDown 0.2s ease both}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="safe-top"></div>
+  <main id="main"></main>
+  <nav id="nav">
+    <button class="nav-btn" id="nav-today" onclick="setTab('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>TODAY</button>
+    <button class="nav-btn" id="nav-plan" onclick="setTab('plan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>PLAN</button>
+    <button class="nav-btn" id="nav-log" onclick="setTab('log')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>LOG</button>
+    <button class="nav-btn" id="nav-chow" onclick="setTab('chow')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10h18M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M5 10v8a2 2 0 002 2h10a2 2 0 002-2v-8"/><path d="M8 14h8"/></svg>CHOW</button>
+    <button class="nav-btn" id="nav-gen" onclick="setTab('gen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>BUILD</button>
+    <button class="nav-btn" id="nav-intel" onclick="setTab('intel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>INTEL</button>
+  </nav>
+</div>
+<script>
+// ============================================================
+// PHASE DATA
+// ============================================================
+const PHASE_LENGTHS=[14,21,21,14,28];
+const PHASES=[
+ {id:0,title:"REACTIVATION",short:"REACT.",weeks:"Wks 1–2",color:"#6a8c30",tagline:"Wake the body up. Don't crush it.",dowMap:{1:0,2:1,4:2,6:3},schedule:[
+  {day:"MON",label:"Upper Body",tag:"BODYWEIGHT",exercises:[
+   {n:"Dynamic Warmup",d:"5 min — arm circles, cat-cow, hip circles",t:"warmup",log:false},
+   {n:"Push-Ups",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Pike Push-Ups",d:"3 × 8",t:"bw",log:true,ro:true},
+   {n:"Bench-Assisted Rows",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Plank",d:"3 × 30 sec",t:"core",log:true,ro:true},
+   {n:"Dead Hang",d:"2 × 20 sec",t:"mob",log:false},
+   {n:"Cool Down",d:"5 min — pec, lat, thoracic",t:"cool",log:false},
+  ]},
+  {day:"TUE",label:"Lower + Cardio",tag:"BODYWEIGHT",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Bodyweight Squat",d:"3 × 15",t:"bw",log:true,ro:true},
+   {n:"Reverse Lunge",d:"3 × 10 each leg",t:"bw",log:true,ro:true},
+   {n:"Glute Bridge",d:"3 × 15",t:"bw",log:true,ro:true},
+   {n:"Calf Raises",d:"3 × 20",t:"bw",log:true,ro:true},
+   {n:"Rower or Treadmill",d:"20 min easy — RPE 4–5",t:"cardio",log:true,ro:true},
+   {n:"Hip Flexor Stretch",d:"2 × 60 sec each side",t:"cool",log:false},
+  ]},
+  {day:"THU",label:"Full Body Circuit",tag:"CIRCUIT",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Circuit — 4 Rounds",d:"Push-ups ×10 → Squats ×15 → Mtn Climbers ×20 → Glute Bridges ×15",t:"circuit",log:true,ro:true},
+   {n:"Bird Dog",d:"3 × 10 each side",t:"core",log:true,ro:true},
+   {n:"Dead Bug",d:"3 × 8 each side",t:"core",log:true,ro:true},
+   {n:"Cool Down",d:"5 min",t:"cool",log:false},
+  ]},
+  {day:"SAT",label:"Active Recovery",tag:"MOBILITY",exercises:[
+   {n:"Easy Cardio",d:"30 min walk or easy row — RPE 3",t:"cardio",log:true,ro:true},
+   {n:"Hip Flexor & Quad Stretch",d:"2 × 90 sec each",t:"mob",log:false},
+   {n:"Thoracic Rotation",d:"2 × 10 each side",t:"mob",log:false},
+   {n:"Hamstring Stretch",d:"2 × 60 sec each leg",t:"mob",log:false},
+   {n:"Foam Roll",d:"10 min",t:"mob",log:false},
+  ]},
+ ]},
+ {id:1,title:"FOUNDATION",short:"FOUND.",weeks:"Wks 3–5",color:"#c8a020",tagline:"Introduce the iron. Build work capacity.",dowMap:{1:0,2:1,4:2,5:3,6:4},schedule:[
+  {day:"MON",label:"Upper Push",tag:"DUMBBELLS",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Incline DB Bench Press",d:"3 × 10–12",t:"lift",log:true},
+   {n:"DB Shoulder Press",d:"3 × 10",t:"lift",log:true},
+   {n:"Push-Ups to Failure",d:"2 sets",t:"bw",log:true,ro:true},
+   {n:"DB Lateral Raise",d:"3 × 12",t:"lift",log:true},
+   {n:"Bench Tricep Dips",d:"3 × 12",t:"bw",log:true,ro:true},
+   {n:"Plank",d:"3 × 45 sec",t:"core",log:true,ro:true},
+  ]},
+  {day:"TUE",label:"Lower + Intervals",tag:"DUMBBELLS + CARDIO",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Goblet Squat",d:"3 × 12",t:"lift",log:true},
+   {n:"Romanian Deadlift",d:"3 × 10",t:"lift",log:true},
+   {n:"Walking Lunge",d:"3 × 12 each leg",t:"lift",log:true},
+   {n:"Rower Intervals",d:"25 min — 5 easy, 5×1 min moderate, 5 easy",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"THU",label:"Upper Pull + Arms",tag:"DUMBBELLS",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Single-Arm DB Row",d:"3 × 10–12 each",t:"lift",log:true},
+   {n:"DB Hammer Curl",d:"3 × 12",t:"lift",log:true},
+   {n:"DB Bicep Curl",d:"3 × 10",t:"lift",log:true},
+   {n:"Reverse Fly",d:"3 × 12",t:"lift",log:true},
+   {n:"Core Circuit",d:"Plank 45s + Russian Twist ×20 + Leg Raise ×10 — 3 rounds",t:"core",log:true,ro:true},
+  ]},
+  {day:"FRI",label:"Lower + Conditioning",tag:"DUMBBELLS + CARDIO",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"DB Squat",d:"3 × 12",t:"lift",log:true},
+   {n:"DB RDL",d:"3 × 10",t:"lift",log:true},
+   {n:"Step-Ups on Bench",d:"3 × 10 each leg",t:"lift",log:true},
+   {n:"Rower 8×250m",d:"8 intervals, rest 1 min",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"SAT",label:"Run + Mobility",tag:"CARDIO",exercises:[
+   {n:"Treadmill Run/Walk",d:"35 min — 2 min run / 1 min walk",t:"cardio",log:true,ro:true},
+   {n:"Full Mobility Routine",d:"20 min",t:"mob",log:false},
+  ]},
+ ]},
+ {id:2,title:"BUILD",short:"BUILD",weeks:"Wks 6–8",color:"#a06020",tagline:"Load the bar. Raise the ceiling.",dowMap:{1:0,2:1,3:2,4:3,6:4},schedule:[
+  {day:"MON",label:"Upper Push — Heavy",tag:"HEAVY",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Incline DB Bench Press",d:"4 × 8–10",t:"lift",log:true},
+   {n:"DB Shoulder Press",d:"4 × 10",t:"lift",log:true},
+   {n:"DB Lateral Raise",d:"3 × 15",t:"lift",log:true},
+   {n:"DB Close-Grip Floor Press",d:"3 × 10",t:"lift",log:true},
+   {n:"Push-Up Burnout",d:"Max reps, 2 sets",t:"bw",log:true,ro:true},
+   {n:"Plank to Pike",d:"3 × 10",t:"core",log:true,ro:true},
+  ]},
+  {day:"TUE",label:"Legs — Heavy",tag:"HEAVY",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Goblet Squat",d:"4 × 10 — 3 sec down, 1 sec pause",t:"lift",log:true},
+   {n:"Romanian Deadlift",d:"4 × 10",t:"lift",log:true},
+   {n:"Bulgarian Split Squat",d:"3 × 10 each",t:"lift",log:true},
+   {n:"Weighted Calf Raise",d:"4 × 15",t:"lift",log:true},
+   {n:"Hip Flexor Stretch",d:"2 × 90 sec each",t:"cool",log:false},
+  ]},
+  {day:"WED",label:"Conditioning",tag:"CARDIO ONLY",exercises:[
+   {n:"Rower 5×500m",d:"5 rounds, rest 90 sec",t:"cardio",log:true,ro:true},
+   {n:"OR Treadmill HIIT",d:"10 × 30 sec sprint / 30 sec walk",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"THU",label:"Upper Pull + Arms",tag:"DUMBBELLS",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Single-Arm DB Row",d:"4 × 10–12",t:"lift",log:true},
+   {n:"DB Curl",d:"3 × 12",t:"lift",log:true},
+   {n:"Incline DB Curl",d:"3 × 10",t:"lift",log:true},
+   {n:"Reverse Fly",d:"3 × 15",t:"lift",log:true},
+   {n:"Core Circuit",d:"Hollow 30s + V-up ×12 + Bicycle ×20 — 3 rounds",t:"core",log:true,ro:true},
+  ]},
+  {day:"SAT",label:"Full Body Circuit",tag:"CIRCUIT",exercises:[
+   {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
+   {n:"Circuit — 5 Rounds",d:"Thrusters ×10 → Push-Ups ×15 → RDL ×10 → Rower 200m",t:"circuit",log:true,ro:true},
+   {n:"Cool Down + Mobility",d:"15 min",t:"cool",log:false},
+  ]},
+ ]},
+ {id:3,title:"PROVE IT",short:"PROVE",weeks:"Wks 9–10",color:"#c04040",tagline:"No excuses. No modifications. Just work.",dowMap:{1:0,2:1,3:2,4:3,5:4,6:5},schedule:[
+  {day:"MON",label:"Upper Push — Max",tag:"MAX EFFORT",exercises:[
+   {n:"Incline DB Bench",d:"5 × 8",t:"lift",log:true},
+   {n:"DB Shoulder Press",d:"4 × 8",t:"lift",log:true},
+   {n:"DB Lateral Raise",d:"4 × 15",t:"lift",log:true},
+   {n:"Dips + Push-Up Superset",d:"4 rounds: Dips ×12 → Push-Ups to failure",t:"circuit",log:true,ro:true},
+   {n:"Plank Circuit",d:"Standard + side + reverse — 45 sec each, 3 rounds",t:"core",log:true,ro:true},
+  ]},
+  {day:"TUE",label:"Legs — Max",tag:"MAX EFFORT",exercises:[
+   {n:"Goblet Squat",d:"5 × 10",t:"lift",log:true},
+   {n:"Romanian Deadlift",d:"5 × 10",t:"lift",log:true},
+   {n:"Bulgarian Split Squat",d:"4 × 10 each",t:"lift",log:true},
+   {n:"Jump Squat",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Weighted Calf Raise",d:"4 × 20",t:"lift",log:true},
+  ]},
+  {day:"WED",label:"Hero Conditioning",tag:"BENCHMARK",exercises:[
+   {n:"Rower 2000m Time Trial",d:"Warm up 5 min then ALL OUT",t:"cardio",log:true,ro:true},
+   {n:"Treadmill 20 min",d:"Sustained run — no walking",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"THU",label:"Upper Pull — Max",tag:"MAX EFFORT",exercises:[
+   {n:"Single-Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
+   {n:"DB Curl Superset",d:"4 rounds: Curl ×10 → Hammer ×10",t:"lift",log:true},
+   {n:"Reverse Fly",d:"4 × 15",t:"lift",log:true},
+   {n:"Core Max",d:"3 rounds: Hollow 45s + V-up ×15 + Bicycle ×25 + Leg raise ×15",t:"core",log:true,ro:true},
+  ]},
+  {day:"FRI",label:"Full Body — Max",tag:"MAX EFFORT",exercises:[
+   {n:"Complex Circuit — 6 Rounds",d:"Thrusters ×12 → Push-Ups ×20 → RDL ×12 → Rower 250m → Rev. Lunge ×10",t:"circuit",log:true,ro:true},
+  ]},
+  {day:"SAT",label:"Long Run + Mobility",tag:"CARDIO",exercises:[
+   {n:"Treadmill Run",d:"45–50 min sustained — no walk breaks",t:"cardio",log:true,ro:true},
+   {n:"Full Mobility Session",d:"20 min",t:"mob",log:false},
+  ]},
+ ]},
+ {id:4,title:"FINISH STRONG",short:"FINISH",weeks:"Wks 11–14",color:"#d4a820",tagline:"Don't you dare let up.",dowMap:{1:0,2:1,3:2,4:3,5:4,6:5},schedule:[
+  {day:"MON",label:"Upper Push (Ph4+)",tag:"CONTINUE",exercises:[
+   {n:"Incline DB Bench",d:"5 × 8",t:"lift",log:true},
+   {n:"DB Shoulder Press",d:"4 × 8–10",t:"lift",log:true},
+   {n:"DB Lateral Raise",d:"4 × 15",t:"lift",log:true},
+   {n:"DB Fly",d:"3 × 12",t:"lift",log:true},
+   {n:"Dips + Push-Up Superset",d:"4 rounds to failure",t:"circuit",log:true,ro:true},
+   {n:"Plank Circuit",d:"45 sec each, 3 rounds",t:"core",log:true,ro:true},
+  ]},
+  {day:"TUE",label:"Legs (Ph4+)",tag:"CONTINUE",exercises:[
+   {n:"Goblet Squat",d:"5 × 10",t:"lift",log:true},
+   {n:"Romanian Deadlift",d:"5 × 10",t:"lift",log:true},
+   {n:"Bulgarian Split Squat",d:"4 × 10 each",t:"lift",log:true},
+   {n:"Single-Leg RDL",d:"3 × 10 each",t:"lift",log:true},
+   {n:"Weighted Calf Raise",d:"4 × 20",t:"lift",log:true},
+  ]},
+  {day:"WED",label:"Run Day",tag:"CARDIO",exercises:[
+   {n:"Treadmill Run",d:"40 min sustained",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"THU",label:"Upper Pull (Ph4+)",tag:"CONTINUE",exercises:[
+   {n:"Single-Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
+   {n:"DB Curl Superset",d:"4 rounds: Curl ×10 → Hammer ×10",t:"lift",log:true},
+   {n:"Reverse Fly",d:"4 × 15",t:"lift",log:true},
+   {n:"DB Pullover",d:"3 × 12",t:"lift",log:true},
+   {n:"Core Circuit",d:"Hollow 45s + V-up ×15 + Bicycle ×25 — 3 rounds",t:"core",log:true,ro:true},
+  ]},
+  {day:"FRI",label:"Conditioning",tag:"CARDIO",exercises:[
+   {n:"Rower 5×500m",d:"Beat Phase 3 times",t:"cardio",log:true,ro:true},
+   {n:"Treadmill HIIT",d:"10 × 30/30",t:"cardio",log:true,ro:true},
+  ]},
+  {day:"SAT — FINAL TEST",label:"End of July Test",tag:"BENCHMARK",exercises:[
+   {n:"Max Push-Ups",d:"One set, max reps — RECORD IT",t:"bw",log:true,ro:true},
+   {n:"Rower 2000m",d:"Beat Week 10 time",t:"cardio",log:true,ro:true},
+   {n:"100 DB Thrusters for Time",d:"Moderate weight — RECORD TIME",t:"circuit",log:true,ro:true},
+   {n:"1 Mile Run",d:"Treadmill — record time",t:"cardio",log:true,ro:true},
+   {n:"Max Plank Hold",d:"Hold until you drop",t:"core",log:true,ro:true},
+  ]},
+ ]},
+];
+
+const TM={
+ warmup:{label:"WARMUP",bg:"#141a08",c:"#8aaa30"},
+ bw:    {label:"B.W.",  bg:"#101408",c:"#d4a820"},
+ lift:  {label:"LIFT",  bg:"#0e1408",c:"#d4a820"},
+ circuit:{label:"CIRC.",bg:"#18100a",c:"#c04040"},
+ core:  {label:"CORE",  bg:"#0e1810",c:"#8aaa30"},
+ cardio:{label:"CARDIO",bg:"#181408",c:"#d4a820"},
+ mob:   {label:"MOB.",  bg:"#100e18",c:"#8a70c0"},
+ cool:  {label:"COOL",  bg:"#101010",c:"#788060"},
+};
+
+// ============================================================
+// FOOD DATABASE
+// ============================================================
+const FOODS=[
+ {n:"Chicken breast",p:"6 oz",g:42},
+ {n:"Greek yogurt",p:"1 cup plain",g:20},
+ {n:"Whey shake",p:"1 scoop",g:25},
+ {n:"3 whole eggs",p:"3 large",g:18},
+ {n:"Cottage cheese",p:"1 cup",g:25},
+ {n:"Ground beef 80/20",p:"6 oz",g:42},
+ {n:"Canned tuna",p:"1 can",g:25},
+ {n:"Deli turkey",p:"4 oz",g:24},
+ {n:"Salmon",p:"6 oz",g:40},
+ {n:"Shrimp",p:"6 oz",g:36},
+ {n:"Sirloin steak",p:"6 oz",g:46},
+ {n:"Pork tenderloin",p:"6 oz",g:40},
+ {n:"Tofu firm",p:"6 oz",g:25},
+ {n:"Protein bar",p:"avg bar",g:20},
+ {n:"2% milk",p:"1 cup",g:8},
+ {n:"String cheese",p:"1 stick",g:7},
+ {n:"Almonds",p:"1 oz",g:6},
+ {n:"Peanut butter",p:"2 tbsp",g:8},
+ {n:"4 egg whites",p:"4 whites",g:14},
+ {n:"Beef jerky",p:"1 oz",g:11},
+];
+
+// ============================================================
+// BRIEFINGS
+// ============================================================
+const BRIEFINGS={
+ 1:{title:"WEEK ONE — WAKE UP",bullets:["Four sessions this week. Mon, Tue, Thu, Sat.","Do not go hard. Go consistent. Soreness is information, not a badge.","Protein minimum 150g every day — including rest days.","Show up to all four sessions. That is the only objective."]},
+ 2:{title:"WEEK TWO — THE QUIT ZONE",bullets:["Most people quit in week 2. The novelty is gone, the soreness is real.","Your body is adapting right now. You can't feel it yet. Trust the process.","Same four sessions. Same standard. Keep showing up.","Watch your sleep. Bad sleep = bad Tuesday leg day."]},
+ 3:{title:"WEEK THREE — IRON WEEK",bullets:["The dumbbells come out. Track every weight.","Five sessions this week. The load steps up.","Goal: next Monday's bench numbers beat this Monday's.","Focus on form on new lifts before you chase weight."]},
+ 4:{title:"WEEK FOUR — PRESSURE TEST",bullets:["Load is increasing across every lift.","Five sessions. No days off because you feel tight — stretch and show up.","This is the phase where real discipline either forms or cracks.","Protein 160g+ every day. Your body is building tissue now."]},
+ 5:{title:"WEEK FIVE — FOUNDATION FINALE",bullets:["Final week of Phase 2. Push every weight up.","This is your last chance to bank numbers before the Build phase.","Hit the full five sessions — especially Saturday.","Measure yourself this week: weight, waist, chest. Log it in INTEL."]},
+ 6:{title:"WEEK SIX — BUILD BEGINS",bullets:["Bulgarian split squats arrive. They hurt. Do them.","Heavier loads this phase. Your 3x12 from Phase 2 becomes 4x8-10.","Wednesday is conditioning-only — use it. It's not a rest day.","Track your 500m rower times every Wednesday."]},
+ 7:{title:"WEEK SEVEN — THE GRIND",bullets:["Week 7 is a grind. Low energy is normal. Push through.","Sleep is non-negotiable this week — aim for 7+ hours.","Bulgarians are the test. If you skip them this week, you're cheating yourself.","Halfway to Phase 3 complete. The weights should keep climbing."]},
+ 8:{title:"WEEK EIGHT — HALFWAY HOME",bullets:["You're past the halfway point. Numbers should be visibly up.","Last week of the Build phase. Leave nothing in reserve.","Saturday circuit should feel faster than Week 6.","Re-measure: weight, waist, chest. Compare to Week 5."]},
+ 9:{title:"WEEK NINE — PROVE IT",bullets:["Max effort phase. Six sessions. No modifications.","Wednesday is a 2000m rower TIME TRIAL. Record the number. It's your Phase 4 benchmark.","Saturday is a 45-50 min sustained run. No walking.","This phase is what you've been building toward. Show up."]},
+ 10:{title:"WEEK TEN — FINAL TEST",bullets:["Last week of the core program. Find the bottom of your tank.","Every lift: push for one more rep or one more 5lbs than Phase 3.","Saturday's long run is the test. Complete it or admit you didn't.","Book time after Saturday to reflect. You've earned it."]},
+ 11:{title:"WEEK ELEVEN — VICTORY LAP",bullets:["Four weeks until July 31. This is not the time to coast.","Add DB Fly and DB Pullover to your menu — new stimulus.","Maintain intensity. Compound the gains.","Re-measure. Compare to Week 1. See what you've done."]},
+ 12:{title:"WEEK TWELVE — HOLD THE LINE",bullets:["Don't coast. The people who quit late regret it most.","Push weights up wherever possible — beat Phase 4.","Sleep and protein are more important now than ever.","Three weeks to the final test."]},
+ 13:{title:"WEEK THIRTEEN — ONE MORE WEEK",bullets:["Final full training week before the July 31 test.","Every session matters. No coasting. No shortcuts.","Sharpen execution, not intensity. Form over ego.","Book July 31 in your calendar. Clear it. Prepare for the test."]},
+ 14:{title:"WEEK FOURTEEN — FINAL PUSH",bullets:["This is it. Saturday is the End of July Test.","Lighter volume early in the week — be fresh for Saturday.","Write down every benchmark number on Saturday. This is your proof.","What you do this week decides what you tell your kids you accomplished."]},
+};
+// ============================================================
+// STORAGE
+// ============================================================
+const SETTINGS_KEY='grind_cfg';
+const STORE_KEY='grind_v2';
+const SKIPS_KEY='grind_skips';
+const MOVES_KEY='grind_moves';
+const SITREP_KEY='grind_sitrep';
+const RATIONS_KEY='grind_rations';
+const PT_KEY='grind_pt';
+const METRICS_KEY='grind_metrics';
+
+function getSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')}catch(e){return{}}}
+function saveSettings(o){localStorage.setItem(SETTINGS_KEY,JSON.stringify({...getSettings(),...o}))}
+function getStartDate(){return getSettings().startDate||'2026-04-22'}
+function getProteinTarget(){return getSettings().proteinTarget||170}
+function loadStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
+function saveLogEntry(date,phaseId,dayIdx,sets,notes){const s=loadStore();s[date]={phaseId,dayIdx,sets,notes,savedAt:new Date().toISOString()};localStorage.setItem(STORE_KEY,JSON.stringify(s));}
+function getLogEntry(date){return loadStore()[date]||null}
+function getAllLogs(){return Object.entries(loadStore()).sort((a,b)=>b[0].localeCompare(a[0]))}
+function getSkips(){try{return JSON.parse(localStorage.getItem(SKIPS_KEY)||'{}')}catch(e){return{}}}
+function saveSkipEntry(date,type,phaseId,dayIdx,movedTo){const s=getSkips();s[date]={type,phaseId,dayIdx,movedTo:movedTo||null,savedAt:new Date().toISOString()};localStorage.setItem(SKIPS_KEY,JSON.stringify(s));}
+function getMoves(){try{return JSON.parse(localStorage.getItem(MOVES_KEY)||'{}')}catch(e){return{}}}
+function saveMoveEntry(targetDate,phaseId,dayIdx,originalDate){const m=getMoves();m[targetDate]={phaseId,dayIdx,originalDate,savedAt:new Date().toISOString()};localStorage.setItem(MOVES_KEY,JSON.stringify(m));}
+
+function getSitreps(){try{return JSON.parse(localStorage.getItem(SITREP_KEY)||'{}')}catch(e){return{}}}
+function getSitrep(date){return getSitreps()[date]||null}
+function saveSitrep(date,data){const s=getSitreps();s[date]={...data,savedAt:new Date().toISOString()};localStorage.setItem(SITREP_KEY,JSON.stringify(s));}
+
+function getAllRations(){try{return JSON.parse(localStorage.getItem(RATIONS_KEY)||'{}')}catch(e){return{}}}
+function getRations(date){return getAllRations()[date]||{entries:[]}}
+function addRation(date,food,grams){const all=getAllRations();if(!all[date])all[date]={entries:[]};all[date].entries.push({food,grams:Number(grams),time:new Date().toISOString()});localStorage.setItem(RATIONS_KEY,JSON.stringify(all));}
+function removeRation(date,idx){const all=getAllRations();if(!all[date])return;all[date].entries.splice(idx,1);localStorage.setItem(RATIONS_KEY,JSON.stringify(all));}
+function getProteinTotal(date){return getRations(date).entries.reduce((s,e)=>s+e.grams,0)}
+function getProteinWeekAvg(){let total=0,days=0;for(let i=0;i<7;i++){const d=addDays(todayStr(),-i);const t=getProteinTotal(d);if(t>0){total+=t;days++;}}return days>0?Math.round(total/days):0}
+
+function getPTTests(){try{return JSON.parse(localStorage.getItem(PT_KEY)||'{}')}catch(e){return{}}}
+function savePTTest(date,data){const t=getPTTests();t[date]={...data,savedAt:new Date().toISOString()};localStorage.setItem(PT_KEY,JSON.stringify(t));}
+function deletePTTest(date){const t=getPTTests();delete t[date];localStorage.setItem(PT_KEY,JSON.stringify(t));}
+function getAllPTSorted(){return Object.entries(getPTTests()).sort((a,b)=>b[0].localeCompare(a[0]))}
+
+function getMetrics(){try{return JSON.parse(localStorage.getItem(METRICS_KEY)||'{}')}catch(e){return{}}}
+function saveMetric(date,data){const m=getMetrics();m[date]={...data,savedAt:new Date().toISOString()};localStorage.setItem(METRICS_KEY,JSON.stringify(m));}
+function deleteMetric(date){const m=getMetrics();delete m[date];localStorage.setItem(METRICS_KEY,JSON.stringify(m));}
+function getAllMetricsSorted(){return Object.entries(getMetrics()).sort((a,b)=>b[0].localeCompare(a[0]))}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function parseDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function dateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function todayStr(){return dateStr(new Date())}
+function fmtDate(ds){const d=parseDate(ds);const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return{dow:days[d.getDay()],full:`${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`,short:`${days[d.getDay()]} ${months[d.getMonth()]} ${d.getDate()}`}}
+function addDays(ds,n){const d=parseDate(ds);d.setDate(d.getDate()+n);return dateStr(d)}
+function getPhaseStart(pi){const s=parseDate(getStartDate());for(let i=0;i<pi;i++)s.setDate(s.getDate()+PHASE_LENGTHS[i]);return s}
+function getPhaseEnd(pi){const s=getPhaseStart(pi);s.setDate(s.getDate()+PHASE_LENGTHS[pi]-1);return s}
+function getPhaseDates(pi){const s=getPhaseStart(pi),e=getPhaseEnd(pi);const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${months[s.getMonth()]} ${s.getDate()} – ${months[e.getMonth()]} ${e.getDate()}`}
+function getPhaseForDate(ds){const d=parseDate(ds);for(let i=0;i<PHASES.length;i++){if(d>=getPhaseStart(i)&&d<=getPhaseEnd(i))return i;}return -1}
+function getDayIdxForDate(ds,pi){if(pi<0)return -1;const dow=parseDate(ds).getDay();const m=PHASES[pi].dowMap;return m[dow]!==undefined?m[dow]:-1}
+function getWeekNum(ds){const start=parseDate(getStartDate());const d=parseDate(ds);return Math.max(1,Math.floor((d-start)/(7*86400000))+1)}
+function isMonday(ds){return parseDate(ds).getDay()===1}
+function isProgramWeekStart(ds){const sd=getStartDate();const startDow=parseDate(sd).getDay();return ds===sd||parseDate(ds).getDay()===startDow;}
+
+// ============================================================
+// CONFLICTS & ACCOUNTABILITY
+// ============================================================
+function sessionIntensity(pi,di){
+ if(pi<0||di<0)return'rest';
+ const tag=PHASES[pi].schedule[di].tag;
+ if(/MOBILITY|RECOVERY/.test(tag))return'easy';
+ if(/^CARDIO ONLY/.test(tag)||/^CARDIO$/.test(tag))return'medium';
+ if(/^BODYWEIGHT$/.test(tag))return'medium';
+ return'hard';
+}
+function analyzeConflict(targetDate,movingPi,movingDi){
+ const movingInt=sessionIntensity(movingPi,movingDi);
+ const prevDate=addDays(targetDate,-1),nextDate=addDays(targetDate,1);
+ const prevPi=getPhaseForDate(prevDate),prevDi=getDayIdxForDate(prevDate,prevPi);
+ const nextPi=getPhaseForDate(nextDate),nextDi=getDayIdxForDate(nextDate,nextPi);
+ const moves=getMoves();const prevMoved=moves[prevDate],nextMoved=moves[nextDate];
+ const prevInt=prevMoved?sessionIntensity(prevMoved.phaseId,prevMoved.dayIdx):(prevDi>=0?sessionIntensity(prevPi,prevDi):'rest');
+ const nextInt=nextMoved?sessionIntensity(nextMoved.phaseId,nextMoved.dayIdx):(nextDi>=0?sessionIntensity(nextPi,nextDi):'rest');
+ const prevDay=prevDi>=0?PHASES[prevPi].schedule[prevDi]:null,nextDay=nextDi>=0?PHASES[nextPi].schedule[nextDi]:null;
+ if(movingInt==='hard'&&prevInt==='hard')return{level:'bad',text:`The day before (${fmtDate(prevDate).dow}) already has a hard session: ${prevDay?prevDay.label:'a workout'}. Back-to-back heavy days will wreck your performance and spike injury risk.`};
+ if(movingInt==='hard'&&nextInt==='hard')return{level:'bad',text:`The day after (${fmtDate(nextDate).dow}) has a hard session: ${nextDay?nextDay.label:'a workout'}. Running two heavy sessions back to back degrades the second — less weight, worse form, slower recovery.`};
+ if(movingInt==='hard'&&(prevInt==='medium'||nextInt==='medium'))return{level:'warn',text:`Adjacent to a moderate session. Manageable, but make sure you're eating and sleeping well.`};
+ return{level:'ok',text:`No conflict. Clean fit — performance won't be compromised.`};
+}
+function findMoveDates(fromDate,phaseId,dayIdx){
+ const results=[];
+ for(let i=1;i<=7;i++){
+  const ds=addDays(fromDate,i);
+  const pi=getPhaseForDate(ds),di=getDayIdxForDate(ds,pi);
+  const moves=getMoves(),skips=getSkips();
+  if(di>=0||moves[ds])continue;
+  if(skips[ds]&&skips[ds].type==='moved')continue;
+  results.push({date:ds,conflict:analyzeConflict(ds,phaseId,dayIdx)});
+  if(results.length>=3)break;
+ }
+ return results;
+}
+function getSessionType(pi,di){
+ const day=PHASES[pi].schedule[di];const l=day.label.toLowerCase(),t=day.tag;
+ if(/lower|leg/i.test(l))return'leg';
+ if(/push/i.test(l))return'push';
+ if(/pull/i.test(l))return'pull';
+ if(/conditioning|hero/i.test(l))return'conditioning';
+ if(/recovery|mobility/i.test(t))return'recovery';
+ if(/benchmark|test/i.test(t))return'benchmark';
+ if(/circuit/i.test(l)||/circuit/i.test(t))return'circuit';
+ return'general';
+}
+function getPhaseContext(pi){
+ if(pi===0)return"You're in the first two weeks. The habit isn't formed yet — every skip now teaches your brain that the workout is negotiable. It isn't.";
+ if(pi===1)return"You're building the foundation right now. Every session you complete compounds. Every one you don't leaves a crack.";
+ if(pi===2)return"This is the Build phase — where the program gets harder and where the physique change starts to show. Missing sessions now costs double.";
+ if(pi===3)return"You've built eight weeks of work to get here. Phase 4 is where you cash in. Don't hand it back.";
+ return"You're in the final push. July 31 is the deadline you set. Every session between now and then matters.";
+}
+const MOVE_MSGS={
+ leg:"Leg days are the most skipped sessions in any program and the most important for physique change. Your lower body is your largest muscle group — it drives the results you want by July. Moving it works. Just make sure it actually gets done.",
+ push:"Chest, shoulders, and triceps. This is the session that changes how you carry yourself. Moving it is fine as long as the sequence doesn't stack two hard sessions back to back.",
+ pull:"Pulling strength is the most undertrained pattern for most guys and the one that keeps your shoulders and back healthy long-term. Make sure this one lands.",
+ conditioning:"Cardiovascular base takes longer to build than strength and disappears faster. Moving is fine. Just know that interrupting your cardio now makes Phase 3 harder than it needs to be.",
+ recovery:"Recovery isn't a soft session — it's injury prevention. Your hip flexors especially need this. Move it if you have to. But don't skip it.",
+ benchmark:"Benchmark days are non-negotiable wherever possible. They're your proof of work. Moving this one means delaying your own data.",
+ circuit:"Full body circuits are high-value sessions — strength and conditioning in one. Moving works, but these sessions are cumulative. Every one you complete compounds.",
+ general:"Moving a workout is fine. Stacking two hard sessions back to back because of it is not.",
+};
+const SKIP_MSGS={
+ leg:"You've found a reason to skip leg day. Everyone does. Legs are hard, they leave you sore, and there's always a reason. They're also the sessions that change bodies fastest. A week without a leg session is a week your lower body didn't grow. Your kids deserve a dad who shows up for the hard things. This is a hard thing.",
+ push:"Every push session you skip is a session your chest, shoulders, and triceps didn't grow. You set a July deadline. The clock is running. Skipping this means less change in the mirror.",
+ pull:"Pulling strength is what separates disciplined training from just going through the motions. Skip it now and you'll feel the imbalance in Phase 3 when the weights get heavier.",
+ conditioning:"Cardio is the first thing people skip. It's also what makes you feel capable — in workouts, chasing your kids, breathing through stress. Your base is being built right now. Interrupt it and Phase 3 will punish you.",
+ recovery:"You mentioned getting tight when you restart training. This session is why you won't. Skip recovery consistently and your other workouts start breaking your body down instead of building it up.",
+ benchmark:"Benchmark days are the only way to know if this is working. Skipping one means you're choosing not to measure yourself. You said you wanted to prove something.",
+ circuit:"Full body circuits have the highest caloric burn of any session in this program. They also require the most mental toughness. Skipping the hard sessions is exactly how people stay soft.",
+ general:"You're choosing comfort over the person you're trying to become. That's what a skip is. Your kids and your wife don't see the times you thought about working out. They see the person who either did it or didn't.",
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let S={
+ tab:'today',
+ planOpen:[true,false,false,false,false],planDayIdx:[0,0,0,0,0],
+ planMove:{open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]},
+ logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',
+ histOpen:{},showSettings:false,showBriefing:true,
+ cantDo:{open:false,selectedMoveDate:null,moveDates:[]},
+ sitrepOpen:false,sitrepDraft:{sleep:null,energy:null,pain:null},
+ chowCustom:{name:'',grams:''},
+ intelTab:'history',
+ ptDraft:{pushups:'',row2k:'',mile:'',plank:'',notes:''},
+ metricDraft:{weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''},
+ expandedEx:{},
+};
+let G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};
+
+
+
+// ============================================================
+// WORKOUT DURATION ESTIMATES (minutes)
+// ============================================================
+const DAY_DURATIONS = {
+ "Upper Body":35,"Lower + Cardio":40,"Full Body Circuit":35,"Active Recovery":45,
+ "Upper Push":45,"Lower + Intervals":50,"Upper Pull + Arms":50,"Lower + Conditioning":50,"Run + Mobility":55,
+ "Upper Push — Heavy":50,"Legs — Heavy":45,"Conditioning":35,"Full Body Circuit":50,
+ "Upper Push — Max":55,"Legs — Max":50,"Hero Conditioning":45,"Upper Pull — Max":50,"Full Body — Max":55,"Long Run + Mobility":65,
+ "Upper Push (Ph4+)":60,"Legs (Ph4+)":55,"Run Day":45,"Upper Pull (Ph4+)":55,"End of July Test":75,
+};
+function getDayEst(label){return DAY_DURATIONS[label]||null}
+
+// ============================================================
+// EXERCISE DESCRIPTION DATABASE
+// ============================================================
+const EX_DESC = {
+ "Push-Ups":"Starting position: hands just outside shoulder-width, body rigid from head to heel. Lower your chest all the way to the floor — no half reps. Drive through palms back to full lockout. Elbows at 45° from torso, not flared wide.\n★ FEEL IT: chest and triceps on the way down, full contraction at top.",
+ "Pike Push-Ups":"Start in downward-dog, hips high, hands shoulder-width. Bend elbows and lower the crown of your head toward the floor between your hands. Press back to start.\n★ FEEL IT: front deltoids driving the press — shoulders, not chest.",
+ "Bench-Assisted Rows":"Lie on your back under a bench. Grip the edge, pull your chest up to touch it — squeeze shoulder blades at the top. Lower with control.\n★ FEEL IT: mid-back and rear shoulders. Biceps assist but shouldn't lead.",
+ "Plank":"Forearms flat, elbows under shoulders, body a straight line heel to head. Brace core, squeeze glutes. Don't sag or pike.\n★ FEEL IT: deep abdominal wall. If lower back hurts — you're sagging. Reset.",
+ "Plank to Pike":"Start in forearm plank. Drive hips up into a pike, then lower back to plank. Control both directions.\n★ FEEL IT: core and shoulders integrated through full range.",
+ "Dead Hang":"Grip bar with both hands, arms fully extended. Let your spine decompress. Engage shoulder blades slightly — don't fully disengage.\n★ FEEL IT: lats stretching, spine lengthening. Active recovery.",
+ "Bench Tricep Dips":"Hands on bench behind you, fingers forward. Lower until elbows hit 90°, press back up. Shoulders stay down.\n★ FEEL IT: back of upper arm. If shoulder joint aches, move feet closer.",
+ "Pseudo-Planche Push-Up":"Shift hands toward your hips — beside your lower ribs. Lean bodyweight forward before lowering. Elbows pinned to sides.\n★ FEEL IT: intense shoulder and tricep load — harder than it looks.",
+ "Wall Walks":"Feet against wall in push-up position. Walk feet up the wall as hands walk toward it until as vertical as possible. Walk back down with control.\n★ FEEL IT: shoulders and core stability — go slow, this is skill work.",
+ "Bodyweight Squat":"Feet shoulder-width, toes slightly out. Sit back and down, chest up, knees over toes. Full depth — hip crease below knees. Drive through heels.\n★ FEEL IT: quads, glutes, hamstrings equally — not just your knees.",
+ "Reverse Lunge":"Step one foot straight back, lower rear knee to just above the floor. Front shin stays vertical. Drive through front heel to return.\n★ FEEL IT: front glute and quad — rear leg is just balance.",
+ "Glute Bridge":"On your back, knees bent, feet flat. Drive through heels, squeeze glutes hard, raise hips to a straight line from knees to shoulders. Hold 1 second.\n★ FEEL IT: glutes contracting. If you feel lower back — push through heels more.",
+ "Calf Raises":"Rise up onto toes as high as possible. Lower for 3 slow seconds. Full range every rep.\n★ FEEL IT: calf belly burning on the descent. 3 seconds down is non-negotiable.",
+ "Jump Squat":"Squat to full depth, explode upward off both feet. Land softly toes-to-heel, absorb the impact, straight into next rep.\n★ FEEL IT: explosive glutes and quads. Land quiet — not heavy.",
+ "Wall Sit":"Back flat on wall, thighs parallel to floor, shins vertical. Hold position. Don't let thighs rise above parallel.\n★ FEEL IT: quads burning — breathe steadily.",
+ "Step-Ups on Bench":"Step up with one foot, drive through that heel to stand tall on bench. Step down with control. All reps one side before switching.\n★ FEEL IT: glute of the working leg. If you're pushing off the back foot — step higher.",
+ "Cossack Squat":"Feet wide. Shift weight to one side, bend that knee into a deep squat, other leg stays straight. Return through center, shift sides.\n★ FEEL IT: inner thigh and hip flexibility — only go as deep as mobility allows.",
+ "Bird Dog":"On hands and knees, spine neutral. Extend opposite arm and leg simultaneously, hold 1-2 seconds, return. Don't let hips rotate.\n★ FEEL IT: deep core stabilizers. If hips swing — slow down.",
+ "Dead Bug":"On your back, arms straight up, knees bent at 90° in the air. Lower opposite arm and leg toward floor, keeping lower back pressed flat. Return.\n★ FEEL IT: lower abs bracing. Lower back must stay on the floor.",
+ "Hollow Hold":"Press lower back to floor. Raise shoulders and legs off floor into a dish shape. Arms overhead.\n★ FEEL IT: entire anterior chain. If lower back lifts — raise legs higher or bend knees.",
+ "V-Ups":"Lie flat. Simultaneously raise straight legs and upper body, reaching hands toward feet. Lower with control.\n★ FEEL IT: full rectus abdominis. No momentum. Too hard — bend your knees.",
+ "Bicycle Crunches":"Hands behind head, knees raised. Alternate elbow to opposite knee while extending the other leg. Move slowly.\n★ FEEL IT: obliques on each rotation. Rushing eliminates the benefit.",
+ "Russian Twists":"Knees bent, feet off floor, torso at 45°. Rotate side to side, touching the floor at each hip. Add weight when easy.\n★ FEEL IT: obliques and deep core — spine tall, don't collapse forward.",
+ "Leg Raises":"Lie on back, hands under lower back. Raise straight legs to vertical, lower slowly. Stop just before heels touch the floor.\n★ FEEL IT: lower abs. Slow descent. Lower back stays pressed down.",
+ "Mountain Climbers":"In push-up position, drive one knee toward chest in a running motion. Hips stay level.\n★ FEEL IT: hip flexors and core. Faster is cardio, slower is core work.",
+ "Side Plank":"On forearm and outside foot, body in a straight diagonal. Keep hips elevated and square.\n★ FEEL IT: lateral core — obliques and glute medius both firing.",
+ "Plank Circuit":"Three variations back to back: standard forearm plank, left side plank, right side plank. Minimal transition time.\n★ FEEL IT: full core — front and both sides in one circuit.",
+ "Incline DB Bench Press":"Set bench to 30-45°. DBs at shoulder level, palms forward. Press up and slightly in. Lower with a 3-second count — feel the stretch at the bottom.\n★ FEEL IT: upper chest and front shoulder. Don't fully lockout — keep tension.",
+ "DB Shoulder Press":"DBs at ear height, palms forward. Press straight up. Don't lean back to assist — if you have to, the weight is too heavy.\n★ FEEL IT: front and side deltoids. Core braced throughout.",
+ "DB Lateral Raise":"DBs at sides. Raise out to shoulder height, slight elbow bend — like pouring water. Lower slowly. No swinging.\n★ FEEL IT: lateral deltoid. Light weight done right beats heavy done wrong.",
+ "DB Close-Grip Floor Press":"Lie on floor, DBs together at chest, elbows tucked close. Press up keeping elbows in. Floor limits range — intentional. Tricep exercise.\n★ FEEL IT: back of the arm driving the press, not your chest.",
+ "DB Fly":"On incline bench. DBs above chest, palms facing. Lower in a wide arc — feel the deep chest stretch. Return in the same arc.\n★ FEEL IT: pec stretch at the bottom. This is a fly, not a press.",
+ "DB Tricep Extension":"Hold one DB overhead with both hands. Lower behind head by bending elbows, drive back up. Upper arms pinned in place.\n★ FEEL IT: long head of the tricep — the stretch at the bottom is the point.",
+ "Push-Ups to Failure":"After weighted work, push until you physically can't. Record the number every session — this number going up is one of your clearest progress markers.\n★ STANDARD: chest touches the floor on every rep. Partial reps don't count.",
+ "Push-Up Burnout":"Same as push-ups to failure — go until you hit the floor.\n★ FEEL IT: complete chest and tricep fatigue.",
+ "Dips + Push-Up Superset":"Bench dips immediately into push-ups to failure — no rest between. This is a superset — the discomfort is the point.\n★ FEEL IT: tricep and chest pump. Tight on dips, no flaring elbows.",
+ "Goblet Squat":"Hold DB vertically at chest. Squat down between your heels — elbows track inside knees at the bottom. Drive through heels.\n★ FEEL IT: quads and glutes. The DB counterbalances — use it to squat deeper.",
+ "Romanian Deadlift":"DBs at thighs. Hinge at hip, push hips back as DBs travel down your legs. Slight knee bend, flat back. Stop when you feel a strong hamstring stretch.\n★ FEEL IT: hamstrings loading under stretch. If lower back hurts — you're rounding.",
+ "Walking Lunge":"Step forward into a lunge, front shin vertical, rear knee lowers to just above the floor. Drive through front heel to bring rear foot forward.\n★ FEEL IT: each glute independently — unilateral strength is the goal.",
+ "Bulgarian Split Squat":"Rear foot elevated on bench, front foot forward so shin stays vertical. Lower straight down — rear knee approaches the floor.\n★ FEEL IT: glute and quad of the front leg. This will humble you. Don't rush the descent.",
+ "DB RDL":"Same as Romanian Deadlift. On heavier weeks, increase weight from last session.\n★ FEEL IT: hamstrings. If not feeling them — hinge more at the hip.",
+ "DB Squat":"DBs at sides, feet shoulder-width. Squat to full depth.\n★ FEEL IT: quads and glutes. Heavier weight means harder squeeze on the way up.",
+ "Weighted Calf Raise":"DBs at sides. Full rise onto toes, then lower for 3 slow seconds. Full range every rep.\n★ FEEL IT: calf belly burning on descent.",
+ "Single-Leg RDL":"Balance on one foot. Hinge at hip, opposite leg extends behind as counterbalance. Keep back flat, hips square.\n★ FEEL IT: hamstring of working leg plus balance challenge.",
+ "DB Sumo Squat":"Feet wider than shoulder-width, toes out 45°. One DB held vertically at center. Squat between your feet.\n★ FEEL IT: inner thighs and glutes — the wide stance shifts emphasis.",
+ "Single-Arm DB Row":"Brace one hand and knee on the bench. Pull elbow back and up — DB comes to your hip, not armpit. Don't rotate torso to assist.\n★ FEEL IT: mid-back and lat. If bicep is tired and back isn't — use more back.",
+ "DB Hammer Curl":"DBs at sides, palms facing each other. Curl without rotating wrists. Neutral grip throughout.\n★ FEEL IT: brachialis — under the bicep. Builds arm thickness.",
+ "DB Bicep Curl":"DBs at sides, palms forward. Full range — fully extended at bottom, fully contracted at top. No swinging.\n★ FEEL IT: bicep peak contraction. Squeeze hard at top, lower 2-3 seconds.",
+ "DB Curl":"Same as DB Bicep Curl. Heavier weeks — increase weight, slow the eccentric.\n★ FEEL IT: full bicep — controlled, no momentum.",
+ "DB Curl Superset":"Standard curl immediately into hammer curl. Back to back, no rest between movements.\n★ FEEL IT: complete bicep fatigue across both heads.",
+ "Incline DB Curl":"Lie back on incline bench, arms hanging straight down. Curl from fully stretched position.\n★ FEEL IT: deep stretch at the bottom — upper arm stays in place.",
+ "Reverse Fly":"Hinge forward at hips, DBs hanging. Raise out to sides, slight elbow bend — like opening a book. Squeeze shoulder blades at top.\n★ FEEL IT: rear deltoids and upper back. If neck hurts — lighten the weight.",
+ "DB Pullover":"Lie flat on bench. One DB overhead with both hands. Lower in an arc behind your head until you feel a lat and chest stretch. Return.\n★ FEEL IT: lats and chest stretch. Keep slight elbow bend throughout.",
+ "Rower or Treadmill":"Easy effort — RPE 4-5 means you can hold a full conversation. Building aerobic base, not burning yourself out.\n★ ON THE ROWER: legs drive first, then lean back, then pull. Sequence matters every stroke.",
+ "Rower Intervals":"Work at moderate-hard effort. Lock in stroke rate — 22-26 spm for conditioning work.\n★ ROWER FORM: legs → back → arms on drive. Arms → back → legs on recovery.",
+ "Rower 8×250m":"Each 250m should be a hard, consistent effort. Your splits should be within 3-4 seconds of each other. If last intervals drop dramatically — you went out too hard.\n★ AIM: consistent splits, not a fast first and dying last.",
+ "Rower 5×500m":"Each 500m is a hard sustained effort. Record every split. These numbers tell you week-to-week conditioning progress.\n★ TARGET: sub-2:00/500m if you're pushing. Record every split.",
+ "Rower 2000m Time Trial":"The gold standard rowing benchmark. Warm up thoroughly. Go all out for 2000m. Pace the first 500m — going out too hard means a death march at the end.\n★ STRATEGY: even splits or negative split (faster in the second half). Don't sprint the first 500m.",
+ "Treadmill Run/Walk":"Run 2 minutes, walk 1 minute. Reduce walk breaks each week until running continuously.\n★ FORM: don't hold the rails. Arms drive pace. Land midfoot, not heel.",
+ "Treadmill Run":"Sustained effort — no walking. RPE 6-7 means you can speak a sentence but not a paragraph.\n★ IF YOU NEED TO WALK: slow the belt before stepping off — don't just grab the rails.",
+ "Treadmill 20 min":"No walking. 20 minutes sustained at challenging but sustainable pace.\n★ PACE: uncomfortable but repeatable. This trains your aerobic engine.",
+ "Treadmill HIIT":"30 seconds hard sprint (RPE 8-9), 30 seconds walking. The sprint should feel genuinely hard — not a fast jog.\n★ HARDER WITHOUT MORE SPEED: increase incline instead. Safer on knees.",
+ "Easy Cardio":"Walk or easy row at RPE 3 — fully conversational, no sweat. This is active recovery, not training.\n★ DON'T SKIP: it accelerates recovery for the next hard session.",
+ "Circuit — 4 Rounds":"Move between exercises with no rest within the round. Rest 90 seconds between rounds.\n★ PACING: round 1 should feel manageable. If you're dying in round 1 — scale the reps.",
+ "Circuit — 5 Rounds":"Same as 4-round circuit. Phase 3 volume increase is intentional.\n★ EXPECTATION: rounds 4 and 5 will be hard. That's the signal.",
+ "DB Thrusters":"DBs at shoulder height. Squat to depth, then drive out of the squat and press overhead in one continuous movement. Squat powers the press.\n★ FEEL IT: legs and shoulders integrated. Don't break into two separate movements.",
+ "Core Circuit":"Three movements back to back with minimal rest between. Rest only between full rounds.\n★ PURPOSE: core endurance, not just strength. High rep counts are intentional.",
+ "Dynamic Warmup":"Move through all joints in order — never skip this. Takes 5 minutes, prevents injuries, and directly improves performance in the session.\nSTANDARD SEQUENCE:\n1. Arm circles — 10 forward, 10 back\n2. Shoulder rolls — 10 each direction\n3. Cat-cow — 10 slow reps on hands and knees\n4. Hip circles — 10 each direction standing\n5. Leg swings — 10 front/back each leg, 10 side/side each leg\n6. Inchworm walks — 5 reps\n7. Deep squat hold — 20 seconds\n★ BEFORE LEG DAYS: add glute bridges x10 and cossack squats x5 each side.\n★ BEFORE UPPER DAYS: add shoulder dislocates x10 and doorframe pec stretch x30 sec.\n★ NEVER SKIP IT: 5 minutes of warmup prevents 5 weeks of injury recovery.",
+ "Hip Flexor Stretch":"Kneeling on one knee. Drive hips forward until you feel front of hip stretching. Torso upright — don't lean forward.\n★ WHY IT MATTERS: sitting wrecks hip flexors. This is injury prevention and affects your squat depth.",
+ "Hip Flexor & Quad Stretch":"Combine hip flexor kneeling position with grabbing the rear foot. Feel both the front of the hip and the quad.\n★ DO THIS EVERY NIGHT: workout or not.",
+ "Thoracic Rotation":"On your side, knees stacked, arms extended forward. Rotate top arm open toward ceiling. Return.\n★ WHY: locked thoracic spine affects every pressing and pulling movement. Especially if you sit at a desk.",
+ "Hamstring Stretch":"Extend one leg, hinge forward from the hips — not by rounding your back. Feel stretch in back of thigh, not behind the knee.\n★ KEY: fold from the hip joint, not by rounding your spine.",
+ "Foam Roll":"Sustained pressure on tight areas — glutes, IT band, upper back, calves. Hold on sore spots for 20-30 seconds.\n★ TECHNIQUE: hold, don't roll rapidly. Find the knot and breathe into it.",
+ "Cat-Cow":"On hands and knees. Inhale, let belly drop and look up (cow). Exhale, round spine and tuck chin (cat). Slow and deliberate.\n★ PURPOSE: spinal mobility in both flexion and extension before loading.",
+ "Inchworm Walks":"Hinge to touch floor, walk hands to push-up position, walk feet back to hands, stand. Keep legs as straight as possible.\n★ FEEL IT: hamstrings, lats, hip flexors all stretching in sequence.",
+ "World's Greatest Stretch":"Step into a lunge, place same-side hand on floor inside front foot. Rotate opposite arm toward ceiling. Return and repeat.\n★ WHY: hip, thoracic, and hamstring mobility in one movement. Earns its name.",
+ "Deep Squat Hold":"Hold a full squat position, heels down. Hold onto something if needed. Breathe deeply.\n★ GOAL: hip crease below parallel, chest up. Work toward 60 seconds.",
+ "Shoulder Dislocates":"Hold a towel or band with wide grip. Raise overhead and continue until behind your back with straight arms. Return.\n★ CAUTION: never force range. Pain means stop — tightness is fine.",
+ "90/90 Hip Switch":"Both knees bent at 90°, one in front and one to the side. Rotate through hips to switch sides. Stay upright.\n★ FEEL IT: hip external and internal rotation — critical for squat and lunge mechanics.",
+ "Couch Stretch":"Back knee on floor, rear foot against wall behind you. Upright torso, drive hips forward.\n★ PRIORITY: one of the most effective hip flexor stretches. Hold the full prescribed time.",
+ "Child's Pose":"Kneel, sit back on heels, arms extended forward on floor. Breathe deeply into your back.\n★ ACTIVE STRETCH: breathe into the resistance — don't just lie there.",
+ "Spinal Twist":"Lie on back. Pull one knee across your body toward the floor on the opposite side. Extend opposite arm out. Shoulders stay on floor.\n★ FEEL IT: lumbar rotation and IT band release.",
+ "Pigeon Pose":"From push-up position, bring one knee forward toward same-side wrist. Extend rear leg. Lower hips toward floor.\n★ PRIORITY AREA: glute and external hip rotator. One of the most important stretches in this program.",
+ "Band chest press":"Anchor band at chest height behind you. Hold both ends, press forward to full extension. Control the return.\n★ FEEL IT: chest and anterior deltoid — use enough resistance to feel it working at 10-12 reps.",
+ "Band rows":"Anchor band in front. Row both hands toward your lower ribs, elbows driven back. Squeeze shoulder blades.\n★ FEEL IT: mid-back. Shoulders stay down — not shrugging up.",
+ "Band overhead press":"Stand on the band, press overhead from shoulder height. Don't lean back.\n★ FEEL IT: deltoids. Same mechanics as a DB press.",
+ "Band pull-aparts":"Hold band at shoulder height with wide grip. Pull both ends apart, bringing hands to sides. Squeeze shoulder blades.\n★ FEEL IT: rear delts and upper back — key for shoulder health.",
+ "Band curls":"Stand on the band, curl as you would with dumbbells. High reps compensate for lower resistance.\n★ FEEL IT: bicep. Full range of motion.",
+ "Band tricep pushdowns":"Anchor band high. Press down, elbows pinned to sides.\n★ FEEL IT: tricep — no flaring, no leaning forward.",
+ "Lateral band walks":"Band at ankles or knees. Slight squat. Step laterally keeping tension in band. Feet never come together.\n★ FEEL IT: glute medius — the side of the glute. Key for knee stability.",
+ "Monster walks":"Band at ankles, slight squat. Walk forward and backward maintaining tension.\n★ FEEL IT: hip abductors and glutes — injury prevention work.",
+ "Banded glute bridge":"Band above the knees. Perform glute bridge with the band providing resistance.\n★ FEEL IT: glutes harder than standard bridge — working in two planes.",
+ "Band good mornings":"Band across upper back. Hinge at hips with slight knee bend. Return to standing.\n★ FEEL IT: hamstrings and lower back — move from hip, not spine.",
+ "Jumping jacks":"Full arm and leg extension at the top. Classic.\n★ PURPOSE: rapid warm-up or cardio gap filler.",
+ "High knees":"Drive knees up alternately with arms in opposition. Don't shuffle — drive upward.\n★ FEEL IT: hip flexors and calves. Keep pace up.",
+ "Burpees":"Squat down, place hands, jump feet to push-up position, push-up, jump feet forward, stand and jump with arms overhead.\n★ FULL REP: push-up must touch floor, jump must leave the ground. No shortcuts.",
+ "Skater hops":"Lateral jumps from foot to foot, reaching opposite hand toward landing foot. Absorb each landing with bent knee.\n★ FEEL IT: lateral power and single-leg stability.",
+ "Star jumps":"Jump from standing to spread-eagle in the air, arms and legs wide. Land softly.\n★ PURPOSE: high-intensity burst. Full extension counts.",
+ "Shadow boxing":"On balls of feet, knees slightly bent. Mix jabs, crosses, hooks. Hands up.\n★ PURPOSE: cardio requiring coordination — harder than it looks when done properly.",
+ "Rower steady":"20 minutes at RPE 6 — steady state aerobic work. Lock in a pace and hold it.\n★ STROKE RATE: 20-22 spm for aerobic work. Slower and more powerful, not faster and weaker.",
+ "Rower intervals":"Work at hard effort, rest easy. Consistent splits are the goal.\n★ ROWER FORM: legs first, then back, then arms. Recover in reverse.",
+ "Treadmill steady":"Sustained pace for the prescribed duration. RPE 5-6.\n★ IF IT FEELS EASY: increase incline by 1-2% rather than speed. Safer and more effective.",
+ "Cool Down":"After a hard session your heart rate is elevated and muscles are loaded. Don't just stop — a proper cooldown brings your heart rate down gradually and begins the recovery process.\n★ WHAT TO DO: 3-5 minutes walking or very light movement to let heart rate drop. Then spend 8-10 minutes on the muscles you just trained — hold each stretch 45-90 seconds. Don't rush. This is when flexibility improves.",
+ "Cool Down + Mobility":"After today's session, you need both heart rate reduction AND dedicated mobility work. Walk or pace lightly for 3-5 minutes first, then move through the following sequence:\n1. Hip flexor stretch — 90 sec each side (priority every time)\n2. Figure 4 / pigeon — 90 sec each side (glutes and external rotators)\n3. Hamstring stretch — 60 sec each leg\n4. Thoracic rotation — 10 reps each side\n5. Child's pose — 90 sec breathing into the stretch\n6. Couch stretch — 90 sec each side (quad + hip flexor together)\n★ TIME: this takes the full 15 minutes if done properly. Don't cut it short.",
+ "Full Mobility Routine":"This is your dedicated 20-minute mobility block. Move through the full sequence with intention — not rushing.\nSEQUENCE:\n1. Hip flexor stretch — 90 sec each side\n2. Pigeon pose or Figure 4 — 90 sec each side\n3. Couch stretch — 90 sec each side\n4. Deep squat hold — 60 sec\n5. Thoracic rotation — 10 reps each side\n6. 90/90 hip switch — 10 reps each side\n7. Hamstring stretch — 60 sec each leg\n8. Child's pose — 90 sec\n9. Spinal twist — 60 sec each side\n★ WHY: your hip flexors, glutes, and thoracic spine are your three biggest limiters in this program. This session directly addresses all three.",
+};
+
+function toggleExDesc(key){
+ S.expandedEx[key]=!S.expandedEx[key];
+ renderMain();
+}
+
+function renderExRow(ex, prefix){
+ const tm=TM[ex.t||ex.type]||TM.bw;
+ const name=ex.n||ex.name||'';
+ const detail=ex.d||ex.detail||'';
+ const note=ex.note||'';
+ const key=(prefix||'')+name;
+ const isOpen=!!S.expandedEx[key];
+ const desc=EX_DESC[name];
+ const esc=key.replace(/'/g,"\\'");
+ return `<div class="ex-row${desc?' has-desc':''}" ${desc?`onclick="toggleExDesc('${esc}')"`:''}>
+  <span class="ex-tag" style="color:${tm.c};border-color:${tm.c}">${tm.label}</span>
+  <div style="flex:1;min-width:0">
+   <div class="ex-name">${name}</div>
+   <div class="ex-detail">${detail}</div>
+   ${note?`<div class="ex-note">${note}</div>`:''}
+  </div>
+  ${desc?`<span class="ex-toggle${isOpen?' open':''}">${isOpen?'−':'+'}</span>`:''}
+ </div>
+ ${isOpen&&desc?`<div class="ex-desc">
+  ${desc.split('\n').map(line=>line.startsWith('★')?`<span class="ex-desc-cue">${line}</span>`:`<div class="ex-desc-text">${line}</div>`).join('')}
+ </div>`:''}`
+}
+
+// ============================================================
+// LOG HELPERS
+// ============================================================
+function initLogSets(pi,di){
+ const exs=PHASES[pi].schedule[di].exercises;const saved=getLogEntry(S.logDate);
+ if(saved&&saved.phaseId===pi&&saved.dayIdx===di){S.logSets=saved.sets;S.logNotes=saved.notes||'';}
+ else{const sets={};exs.forEach(ex=>{if(ex.log)sets[ex.n]=[{reps:'',weight:'',done:false}];});S.logSets=sets;S.logNotes='';}
+}
+function addSet(name){if(!S.logSets[name])S.logSets[name]=[];S.logSets[name].push({reps:'',weight:'',done:false});renderMain();}
+function removeSet(name,i){if(S.logSets[name]&&S.logSets[name].length>1)S.logSets[name].splice(i,1);renderMain();}
+function updateSet(name,i,f,v){if(S.logSets[name])S.logSets[name][i][f]=v;}
+function toggleDone(name,i){if(S.logSets[name])S.logSets[name][i].done=!S.logSets[name][i].done;renderMain();}
+function toggleDoneOnly(name){if(!S.logSets[name])S.logSets[name]=[{reps:'',weight:'',done:false}];S.logSets[name][0].done=!S.logSets[name][0].done;renderMain();}
+
+// ============================================================
+// SITREP
+// ============================================================
+function openSitrep(){
+ const today=getSitrep(todayStr());
+ S.sitrepDraft=today?{sleep:today.sleep,energy:today.energy,pain:today.pain}:{sleep:null,energy:null,pain:null};
+ S.sitrepOpen=true;renderMain();
+}
+function closeSitrep(){S.sitrepOpen=false;renderMain();}
+function setSitrepVal(field,val){S.sitrepDraft[field]=val;renderMain();}
+function saveSitrepNow(){
+ const d=S.sitrepDraft;
+ if(d.sleep===null||d.energy===null||d.pain===null)return;
+ saveSitrep(todayStr(),d);S.sitrepOpen=false;renderMain();
+}
+function renderSitrep(){
+ const today=getSitrep(todayStr());
+ if(!S.sitrepOpen){
+  if(today){
+   const painTxt=today.pain?'PAIN/TIGHTNESS FLAGGED':'CLEAR';
+   return`<div class="sitrep-strip" onclick="openSitrep()">
+    <div class="sitrep-strip-header">
+     <div class="sitrep-title">SITREP</div>
+     <div class="sitrep-summary">SLEEP ${today.sleep} · ENERGY ${today.energy} · ${painTxt}</div>
+    </div>
+   </div>`;
+  }
+  return`<div class="sitrep-strip" onclick="openSitrep()">
+   <div class="sitrep-strip-header">
+    <div class="sitrep-title">SITREP</div>
+    <div class="sitrep-prompt">CHECK IN — 5 SEC</div>
+   </div>
+  </div>`;
+ }
+ const d=S.sitrepDraft;
+ const complete=d.sleep!==null&&d.energy!==null&&d.pain!==null;
+ return`<div class="sitrep-expanded slide-down">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+   <div class="sitrep-title">DAILY SITREP</div>
+   <button onclick="closeSitrep()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+  </div>
+  <div class="sitrep-row">
+   <div class="sitrep-row-label">SLEEP (HOURS)</div>
+   <div class="num-pills">
+    ${[4,5,6,7,8,9,10].map(n=>`<button class="num-pill ${d.sleep===n?'selected':''}" onclick="setSitrepVal('sleep',${n})">${n}</button>`).join('')}
+   </div>
+  </div>
+  <div class="sitrep-row">
+   <div class="sitrep-row-label">ENERGY TODAY</div>
+   <div class="num-pills">
+    ${[1,2,3,4,5].map(n=>`<button class="num-pill ${d.energy===n?'selected':''}" onclick="setSitrepVal('energy',${n})">${n}</button>`).join('')}
+   </div>
+  </div>
+  <div class="sitrep-row">
+   <div class="sitrep-row-label">PAIN OR TIGHTNESS?</div>
+   <div class="pain-pills">
+    <button class="pain-pill ${d.pain===false?'selected-ok':''}" onclick="setSitrepVal('pain',false)">CLEAR</button>
+    <button class="pain-pill ${d.pain===true?'selected-bad':''}" onclick="setSitrepVal('pain',true)">FLAGGED</button>
+   </div>
+  </div>
+  <button class="save-btn" style="margin-top:6px;margin-bottom:10px;opacity:${complete?1:.4}" ${complete?'':'disabled'} onclick="saveSitrepNow()">${complete?'SAVE SITREP':'COMPLETE ALL THREE'}</button>
+ </div>`;
+}
+
+// ============================================================
+// BRIEFING
+// ============================================================
+function renderBriefing(){
+ const wk=getWeekNum(todayStr());
+ const b=BRIEFINGS[wk];
+ if(!b)return'';
+ const pi=getPhaseForDate(todayStr());
+ const collapsed=!S.showBriefing&&!isProgramWeekStart(todayStr());
+ if(collapsed){
+  return`<div class="mission-card" onclick="S.showBriefing=true;renderMain()" style="cursor:pointer">
+   <div class="mission-head" style="display:flex;align-items:center">
+    <div class="mission-label">MISSION BRIEFING — WK ${wk}</div>
+    <span style="font-family:var(--mono);font-size:24px;color:var(--amber);font-weight:300;margin-left:auto;line-height:1">+</span>
+   </div>
+  </div>`;
+ }
+ return`<div class="mission-card">
+  <div class="mission-head" onclick="S.showBriefing=false;renderMain()" style="cursor:pointer;display:flex;align-items:center">
+   <div class="mission-label">MISSION BRIEFING — WK ${wk}</div>
+   <span style="font-family:var(--mono);font-size:24px;color:var(--text2);font-weight:300;margin-left:auto;line-height:1">−</span>
+  </div>
+  <div class="mission-body">
+   <div class="mission-title">${b.title}</div>
+   <div class="mission-sub">${isProgramWeekStart(todayStr())?'NEW WEEK — READ THIS':'WEEK IN PROGRESS'}</div>
+   ${b.bullets.map(bt=>`<div class="mission-bullet">${bt}</div>`).join('')}
+  </div>
+ </div>`;
+}
+
+// ============================================================
+// CANT DO
+// ============================================================
+function openCantDo(pi,di){
+ const moveDates=findMoveDates(todayStr(),pi,di);
+ S.cantDo={open:true,selectedMoveDate:moveDates.length>0?moveDates[0].date:null,moveDates};
+ renderMain();
+ setTimeout(()=>document.getElementById('cant-do-panel')?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function closeCantDo(){S.cantDo={open:false,selectedMoveDate:null,moveDates:[]};renderMain();}
+function selectMoveDate(ds){S.cantDo.selectedMoveDate=ds;renderMain();}
+function confirmMove(pi,di){
+ const target=S.cantDo.selectedMoveDate;if(!target)return;
+ saveSkipEntry(todayStr(),'moved',pi,di,target);saveMoveEntry(target,pi,di,todayStr());
+ S.cantDo={open:false,selectedMoveDate:null,moveDates:[]};renderMain();
+}
+function confirmSkip(pi,di){
+ saveSkipEntry(todayStr(),'skipped',pi,di,null);
+ S.cantDo={open:false,selectedMoveDate:null,moveDates:[]};renderMain();
+}
+function renderCantDoPanel(pi,di){
+ const sType=getSessionType(pi,di);const phaseCtx=getPhaseContext(pi);
+ const moveMsg=MOVE_MSGS[sType]||MOVE_MSGS.general;const skipMsg=SKIP_MSGS[sType]||SKIP_MSGS.general;
+ const{moveDates,selectedMoveDate}=S.cantDo;
+ const selectedConflict=moveDates.find(m=>m.date===selectedMoveDate)?.conflict;
+ return`<div class="cant-do-panel slide-down" id="cant-do-panel">
+  <div class="cant-do-header">
+   <div class="cant-do-title">BEFORE YOU BAIL</div>
+   <div style="font-family:var(--body);font-weight:300;font-size:18px;color:#d88878;margin-top:4px">Read this first.</div>
+  </div>
+  <div class="accountability-box">
+   <div class="accountability-text">${moveMsg}</div>
+   <div class="phase-context">${phaseCtx}</div>
+  </div>
+  <div class="option-section">
+   <div class="option-label">OPTION A — MOVE IT</div>
+   ${moveDates.length===0?`<div style="font-family:var(--body);font-size:17px;color:var(--text2);margin-bottom:8px">No clean move dates in the next 7 days. The week is too packed.</div>`:`
+   <div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-bottom:10px">Select a date:</div>
+   <div class="move-alt-dates">${moveDates.map(m=>`<button class="move-alt-btn ${m.date===selectedMoveDate?'selected':''}" onclick="selectMoveDate('${m.date}')">${fmtDate(m.date).short}</button>`).join('')}</div>
+   ${selectedConflict?`<div class="conflict-box ${selectedConflict.level}"><div class="conflict-text">${selectedConflict.text}</div></div>`:''}
+   <button class="action-btn amber" style="margin-top:8px" onclick="confirmMove(${pi},${di})">MOVE TO ${selectedMoveDate?fmtDate(selectedMoveDate).short:'—'}</button>`}
+  </div>
+  <div class="option-section" style="border-bottom:none">
+   <div class="option-label">OPTION B — SKIP IT ENTIRELY</div>
+   <div class="skip-accountability">${skipMsg}</div>
+   <button class="action-btn red" onclick="confirmSkip(${pi},${di})">SKIP IT — I UNDERSTAND</button>
+  </div>
+  <button class="never-mind-btn" onclick="closeCantDo()">↑ NEVER MIND — I'LL DO IT NOW</button>
+ </div>`;
+}
+
+// ============================================================
+// TODAY
+// ============================================================
+function renderToday(){
+ const ds=todayStr();const{dow,full}=fmtDate(ds);
+ const startDs=getStartDate();
+ const moves=getMoves();const movedHere=moves[ds];
+ const skips=getSkips();const todaySkip=skips[ds];
+ let pi=getPhaseForDate(ds);let di=getDayIdxForDate(ds,pi);
+ let isMovedIn=false;
+ if(movedHere){pi=movedHere.phaseId;di=movedHere.dayIdx;isMovedIn=true;}
+ const logged=getLogEntry(ds);
+ const proteinTotal=getProteinTotal(ds);const proteinTarget=getProteinTarget();
+ const proteinPct=Math.min(100,Math.round(proteinTotal/proteinTarget*100));
+ let workoutBody='';
+ if(parseDate(ds)<parseDate(startDs)){
+  workoutBody=`<div class="today-rest">PROGRAM STARTS<br>${fmtDate(startDs).full.toUpperCase()}<br><br><span style="color:var(--text3);font-size:17px">REST. PREPARE. SHOW UP.</span></div>`;
+ }else if(todaySkip&&todaySkip.type==='skipped'&&!movedHere){
+  workoutBody=`<div style="padding:24px 16px"><div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:8px">SESSION SKIPPED</div><div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);line-height:1.6;margin-bottom:14px">${PHASES[todaySkip.phaseId].schedule[todaySkip.dayIdx].label} was marked skipped for today. It happens. Don't let it happen tomorrow.</div><button class="action-btn secondary" onclick="undoSkip('${ds}')">UNDO SKIP — I'LL DO IT</button></div>`;
+ }else if(todaySkip&&todaySkip.type==='moved'&&!movedHere){
+  workoutBody=`<div style="padding:24px 16px"><div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--amber);margin-bottom:8px">WORKOUT MOVED</div><div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);line-height:1.6;margin-bottom:14px">${PHASES[todaySkip.phaseId].schedule[todaySkip.dayIdx].label} was moved to <strong style="color:var(--amber)">${fmtDate(todaySkip.movedTo).short}</strong>. Today is a rest day.</div><button class="action-btn secondary" onclick="undoSkip('${ds}')">UNDO MOVE — DO IT TODAY</button></div>`;
+ }else if(pi<0){
+  const after=parseDate(ds)>getPhaseEnd(4);
+  workoutBody=`<div class="today-rest">${after?'PROGRAM COMPLETE.<br><br><span style="color:var(--text3);font-size:17px">YOU SHOWED UP.</span>':'REST DAY<br><br><span style="color:var(--text3);font-size:17px">RECOVER. HYDRATE.</span>'}</div>`;
+ }else if(di<0){
+  workoutBody=`<div class="today-rest">REST DAY<br><br><span style="color:var(--text3);font-size:17px">WEEK ${getWeekNum(ds)} — ${PHASES[pi].title}</span><br><br>RECOVER. HYDRATE.<br>STRETCH YOUR HIP FLEXORS.</div>`;
+ }else{
+  const ph=PHASES[pi],day=ph.schedule[di],wk=getWeekNum(isMovedIn?movedHere.originalDate:ds);
+  workoutBody=`<div style="padding:14px 16px 0">
+   <div class="section-label">TODAY — WEEK ${wk}${isMovedIn?' <span style="color:var(--amber);font-size:18px">(MOVED)</span>':''}</div>
+   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div><div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text)">${day.label}</div><div style="font-family:var(--mono);font-size:17px;letter-spacing:1.5px;color:var(--text2);margin-top:2px">${ph.title} · ${day.tag}${getDayEst(day.label)?` · <span style="color:var(--amber)">~${getDayEst(day.label)} MIN</span>`:''}</div></div>
+    ${logged?'<span class="logged-pill">LOGGED</span>':''}
+   </div>
+  </div>
+  <div class="ex-list card" style="margin:0 16px">${day.exercises.map((ex,ei)=>renderExRow(ex,'today-')).join('')}</div>
+  <div style="padding:0 16px">
+   <button class="action-btn" onclick="goLog(${pi},${di})">${logged?'UPDATE LOG':'LOG THIS WORKOUT'}</button>
+   ${!S.cantDo.open?`<button class="action-btn secondary" style="font-size:17px;letter-spacing:2px;padding:10px" onclick="openCantDo(${pi},${di})">CAN'T DO IT TODAY?</button>`:''}
+  </div>
+  ${S.cantDo.open?'<div style="height:12px"></div>'+renderCantDoPanel(pi,di):''}`;
+ }
+ return`<div class="fade-in">
+  <div class="today-head">
+   <div class="today-dayname">${dow.toUpperCase()}</div>
+   <div class="today-date">${full}</div>
+   ${pi>=0?`<div style="margin-top:8px;font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2)"><span class="phase-dot" style="background:${PHASES[pi].color}"></span>PHASE ${pi+1} — ${PHASES[pi].title}</div>`:''}
+  </div>
+  ${renderSitrep()}
+  ${renderBriefing()}
+  ${workoutBody}
+  <div class="protein-card">
+   <div class="protein-head"><div class="protein-title">RATIONS — TODAY</div><div style="font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px">${proteinPct}%</div></div>
+   <div class="protein-numbers"><div class="protein-current">${proteinTotal}</div><div class="protein-target">/ ${proteinTarget}</div><div class="protein-unit">G PROTEIN</div></div>
+   <div class="protein-bar"><div class="protein-bar-fill" style="width:${proteinPct}%"></div></div>
+   <div class="protein-meta"><span>7-DAY AVG: ${getProteinWeekAvg()}G</span><button onclick="setTab('chow')" style="background:none;border:none;color:var(--green);font-family:var(--mono);font-size:17px;letter-spacing:1px;cursor:pointer">+ LOG FOOD →</button></div>
+  </div>
+  <div style="margin:20px 16px 0;border-top:1px solid var(--border);padding-top:14px">
+   <button onclick="S.showSettings=!S.showSettings;renderMain()" style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0">⚙ PROGRAM SETTINGS ${S.showSettings?'▲':'▼'}</button>
+   ${S.showSettings?`<div style="margin-top:12px">
+    <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">PROGRAM START DATE</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="date" id="start-date-input" value="${startDs}" class="date-input" style="flex:1"><button onclick="updateStartDate()" style="background:none;border:1px solid var(--border2);color:var(--text2);font-family:var(--mono);font-size:17px;padding:7px 12px;border-radius:2px;cursor:pointer">UPDATE</button></div>
+    <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">DAILY PROTEIN TARGET (G)</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="number" id="protein-target-input" value="${proteinTarget}" class="date-input" style="flex:1"><button onclick="updateProteinTarget()" style="background:none;border:1px solid var(--border2);color:var(--text2);font-family:var(--mono);font-size:17px;padding:7px 12px;border-radius:2px;cursor:pointer">UPDATE</button></div>
+    <div style="margin-top:10px">${PHASES.map((p,i)=>`<div style="font-family:var(--mono);font-size:17px;color:var(--text2);margin-bottom:3px"><span style="color:${p.color}">PH${i+1}</span> ${getPhaseDates(i)}</div>`).join('')}</div>
+   </div>`:''}
+  </div>
+  <div style="height:24px"></div>
+ </div>`;
+}
+function updateStartDate(){const v=document.getElementById('start-date-input')?.value;if(v){saveSettings({startDate:v});renderMain();}}
+function updateProteinTarget(){const v=parseInt(document.getElementById('protein-target-input')?.value);if(v>0){saveSettings({proteinTarget:v});renderMain();}}
+function goLog(pi,di){S.logPhase=pi;S.logDay=di;initLogSets(pi,di);setTab('log');}
+function undoSkip(date){const s=getSkips();delete s[date];localStorage.setItem(SKIPS_KEY,JSON.stringify(s));const m=getMoves();const skipped=Object.entries(m).find(([k,v])=>v.originalDate===date);if(skipped){delete m[skipped[0]];localStorage.setItem(MOVES_KEY,JSON.stringify(m));}renderMain();}
+
+// ============================================================
+// PROACTIVE PLAN MOVE
+// ============================================================
+function getSessionDateInPlan(pi, di) {
+ // Find the next future date (or today) when this phase+day lands on the right DOW
+ const ph = PHASES[pi];
+ const targetDow = Object.entries(ph.dowMap).find(([dow, idx]) => parseInt(idx) === di)?.[0];
+ if (targetDow === undefined) return null;
+ const dow = parseInt(targetDow);
+ // Walk from phase start to phase end, find first matching DOW from today onward
+ const today = parseDate(todayStr());
+ const phStart = getPhaseStart(pi);
+ const phEnd = getPhaseEnd(pi);
+ const walkFrom = phStart > today ? phStart : today;
+ const d = new Date(walkFrom);
+ for (let i = 0; i < 14; i++) {
+  if (d.getDay() === dow && d <= phEnd) return dateStr(d);
+  d.setDate(d.getDate() + 1);
+ }
+ return null;
+}
+
+function openPlanMove(pi, di) {
+ const sourceDate = getSessionDateInPlan(pi, di);
+ if (!sourceDate) return;
+ const targets = findMoveDates(sourceDate, pi, di);
+ S.planMove = {open:true, phaseIdx:pi, dayIdx:di, sourceDateStr:sourceDate, selectedTarget:targets.length>0?targets[0].date:null, targets};
+ renderMain();
+ setTimeout(()=>document.getElementById('plan-move-panel')?.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+}
+
+function closePlanMove() {
+ S.planMove = {open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]};
+ renderMain();
+}
+
+function selectPlanMoveTarget(ds) {
+ S.planMove.selectedTarget = ds;
+ renderMain();
+}
+
+function confirmPlanMove() {
+ const {phaseIdx, dayIdx, sourceDateStr, selectedTarget} = S.planMove;
+ if (!selectedTarget || !sourceDateStr) return;
+ // Mark source date as moved away
+ saveSkipEntry(sourceDateStr, 'moved', phaseIdx, dayIdx, selectedTarget);
+ // Mark target date as having this session moved in
+ saveMoveEntry(selectedTarget, phaseIdx, dayIdx, sourceDateStr);
+ S.planMove = {open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]};
+ renderMain();
+}
+
+function renderPlanMovePanel(pi, di) {
+ const {sourceDateStr, selectedTarget, targets} = S.planMove;
+ const selectedConflict = targets.find(t => t.date === selectedTarget)?.conflict;
+ const ph = PHASES[pi];
+ const day = ph.schedule[di];
+ // Check if already moved
+ const skips = getSkips();
+ const alreadyMoved = sourceDateStr && skips[sourceDateStr] && skips[sourceDateStr].type === 'moved';
+
+ return `<div id="plan-move-panel" class="slide-down" style="margin:10px 0 0;border:1px solid var(--amber-border);border-radius:2px;overflow:hidden;background:var(--bg)">
+  <div style="padding:11px 14px;background:var(--amber-bg);border-bottom:1px solid var(--amber-border);display:flex;justify-content:space-between;align-items:center">
+   <div>
+    <div style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--text)">RESCHEDULE SESSION</div>
+    <div style="font-family:var(--mono);font-size:17px;color:var(--amber);letter-spacing:1px;margin-top:2px">${day.label} · Currently scheduled: ${sourceDateStr ? fmtDate(sourceDateStr).short : '—'}</div>
+   </div>
+   <button onclick="closePlanMove()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0 4px">×</button>
+  </div>
+  ${alreadyMoved ? `
+  <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:var(--amber-bg)">
+   <div style="font-family:var(--body);font-size:17px;color:var(--amber);margin-bottom:8px">This session is already moved to ${fmtDate(skips[sourceDateStr].movedTo).short}.</div>
+   <button class="action-btn secondary" style="margin-top:0;padding:8px;font-size:17px" onclick="undoSkip('${sourceDateStr}');closePlanMove()">UNDO — PUT IT BACK</button>
+  </div>` : `
+  ${targets.length === 0 ? `
+  <div style="padding:14px;font-family:var(--body);font-size:17px;color:var(--text2);line-height:1.5">
+   No clean slots available in the next 7 days. The schedule is too tight to absorb this session without conflict. Try again closer to the session date, or use the day-of CAN'T DO IT button.
+  </div>` : `
+  <div style="padding:14px">
+   <div style="font-family:var(--mono);font-size:18px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">MOVE TO</div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+    ${targets.map(t => `<button class="move-alt-btn ${t.date === selectedTarget ? 'selected' : ''}" onclick="selectPlanMoveTarget('${t.date}')">${fmtDate(t.date).short}</button>`).join('')}
+   </div>
+   ${selectedConflict ? `<div class="conflict-box ${selectedConflict.level}" style="margin-bottom:10px"><div class="conflict-text">${selectedConflict.text}</div></div>` : ''}
+   <button class="action-btn amber" style="margin-top:0" onclick="confirmPlanMove()">CONFIRM — MOVE TO ${selectedTarget ? fmtDate(selectedTarget).short : '—'}</button>
+  </div>`}`}
+ </div>`;
+}
+
+
+function renderPlan(){
+ const skips=getSkips();const moves=getMoves();
+ return`<div class="fade-in" style="padding:18px 0 20px">
+  <div style="padding:0 16px 14px"><div class="section-label">14-WEEK TRAINING PLAN</div></div>
+  ${PHASES.map((ph,pi)=>{
+   const open=S.planOpen[pi];const di=S.planDayIdx[pi];const day=ph.schedule[di];
+   const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
+   // Compute session status for viewed day
+   const sessionDate=getSessionDateInPlan(pi,di);
+   const isSkipped=sessionDate&&skips[sessionDate]&&skips[sessionDate].type==='skipped';
+   const isMoved=sessionDate&&skips[sessionDate]&&skips[sessionDate].type==='moved';
+   const movedTo=isMoved&&skips[sessionDate].movedTo;
+   const isMovedIn=sessionDate&&moves[sessionDate];
+   const isPast=sessionDate&&parseDate(sessionDate)<parseDate(todayStr());
+   const isLogged=sessionDate&&getLogEntry(sessionDate);
+   return`<div class="phase-card">
+    <div style="display:flex;align-items:center;cursor:pointer" onclick="togglePhase(${pi})">
+     <div class="phase-card-stripe" style="background:${ph.color}"></div>
+     <div style="flex:1;padding:12px 14px"><div style="font-family:var(--mono);font-size:18px;letter-spacing:2px;color:var(--text3)">PHASE ${pi+1} · ${ph.weeks}</div><div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text)">${ph.title}</div><div style="font-family:var(--mono);font-size:17px;color:var(--text2);margin-top:1px">${getPhaseDates(pi)}</div></div>
+     <div style="padding:14px;color:var(--text3)">${open?'▲':'▼'}</div>
+    </div>
+    ${open?`
+    <div style="padding:8px 14px 0;font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);font-style:italic">${ph.tagline}</div>
+    <div class="day-tabs" style="margin-top:10px">${ph.schedule.map((d,i)=>{
+     const sDate=getSessionDateInPlan(pi,i);
+     const sMoved=sDate&&skips[sDate]&&skips[sDate].type==='moved';
+     const sLogged=sDate&&getLogEntry(sDate);
+     return`<button class="day-tab ${i===di?'active':''}" onclick="setPlanDay(${pi},${i})" style="position:relative">
+      ${d.day}
+      ${sMoved?`<span style="position:absolute;top:4px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--amber);display:block"></span>`:''}
+      ${sLogged&&!sMoved?`<span style="position:absolute;top:4px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--green);display:block"></span>`:''}
+     </button>`;
+    }).join('')}</div>
+    <div style="padding:8px 14px 14px">
+     <!-- Session header row -->
+     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+      <div>
+       <div style="font-family:var(--body);font-weight:600;font-size:17px;color:var(--text);display:flex;align-items:center;gap:7px">
+        ${day.label}
+        ${isLogged?'<span class="logged-pill">LOGGED</span>':''}
+        ${isMoved?`<span class="moved-pill">MOVED → ${fmtDate(movedTo).short}</span>`:''}
+        ${isSkipped?'<span class="skipped-pill">SKIPPED</span>':''}
+       </div>
+       <div style="font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px;margin-top:2px">
+        ${day.tag}${sessionDate?' · '+fmtDate(sessionDate).short:''}${getDayEst(day.label)?' · <span style="color:var(--amber)">~'+getDayEst(day.label)+' MIN</span>':''}
+       </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+       ${!isPast&&!isSkipped?`<button onclick="${isMoveOpen?'closePlanMove()':'openPlanMove('+pi+','+di+')'}" style="background:${isMoveOpen?'var(--amber-bg)':'none'};border:1px solid var(--amber-border);color:var(--amber);font-family:var(--mono);font-size:18px;letter-spacing:1.5px;padding:6px 10px;border-radius:2px;cursor:pointer">${isMoveOpen?'× CANCEL':'⇄ MOVE'}</button>`:''}
+       <button class="action-btn secondary" style="width:auto;padding:6px 12px;margin:0;font-size:17px" onclick="goLog(${pi},${di})">LOG</button>
+      </div>
+     </div>
+     ${isMoveOpen?renderPlanMovePanel(pi,di):''}
+     <div class="ex-list" style="border-top:1px solid var(--border);margin-top:4px">${day.exercises.map(ex=>renderExRow(ex,'plan-')).join('')}</div>
+    </div>`:''}
+   </div>`;
+  }).join('')}
+ </div>`;
+}
+function togglePhase(pi){S.planOpen[pi]=!S.planOpen[pi];if(S.planMove.open&&S.planMove.phaseIdx!==pi)closePlanMove();renderMain();}
+function setPlanDay(pi,di){S.planDayIdx[pi]=di;if(S.planMove.open&&(S.planMove.phaseIdx!==pi||S.planMove.dayIdx!==di))closePlanMove();renderMain();}
+
+// ============================================================
+// LOG
+// ============================================================
+function renderLog(){
+ const ph=PHASES[S.logPhase],day=ph.schedule[S.logDay];const existing=getLogEntry(S.logDate);
+ return`<div class="fade-in" style="padding:18px 16px 30px">
+  <div class="section-label">WORKOUT LOG</div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
+   <input type="date" value="${S.logDate}" onchange="changeLogDate(this.value)" class="date-input" style="flex:1;min-width:130px">
+   <select class="log-select" onchange="changeLogPhase(this.value)">${PHASES.map((p,i)=>`<option value="${i}" ${i===S.logPhase?'selected':''}>${p.short}</option>`).join('')}</select>
+   <select class="log-select" onchange="changeLogDay(this.value)">${ph.schedule.map((d,i)=>`<option value="${i}" ${i===S.logDay?'selected':''}>${d.day} — ${d.label}</option>`).join('')}</select>
+  </div>
+  ${existing?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:1px;color:var(--green);margin-bottom:12px">✓ PREVIOUSLY LOGGED — UPDATING</div>`:''}
+  ${day.exercises.filter(ex=>ex.log).map(ex=>{
+   const sets=S.logSets[ex.n]||[{reps:'',weight:'',done:false}];const tm=TM[ex.t]||TM.bw;const esc=ex.n.replace(/'/g,"\\'");
+   if(ex.ro)return`<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">${ex.n}</div><span class="log-ex-type" style="color:${tm.c}">${tm.label}</span></div><div class="done-only"><button class="big-check ${sets[0]?.done?'done':''}" onclick="toggleDoneOnly('${esc}')">${sets[0]?.done?'✓':'○'}</button><div><div style="font-family:var(--body);font-size:17px;color:var(--text2)">${ex.d}</div>${sets[0]?.done?'<div style="font-family:var(--mono);font-size:18px;color:var(--green);margin-top:4px;letter-spacing:1px">COMPLETE</div>':''}</div></div></div>`;
+   return`<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">${ex.n}</div><span class="log-ex-type" style="color:${tm.c}">${tm.label}</span></div><div style="padding:4px 14px 2px;font-family:var(--mono);font-size:18px;color:var(--text2);letter-spacing:1px;display:flex;gap:7px"><span style="width:22px"></span><span style="width:56px;text-align:center">REPS</span><span style="width:56px;text-align:center">LBS</span></div>${sets.map((set,si)=>`<div class="set-row"><span class="set-num">${si+1}</span><input type="number" class="num-input" placeholder="—" value="${set.reps}" oninput="updateSet('${esc}',${si},'reps',this.value)" min="0" max="999"><input type="number" class="num-input" placeholder="0" value="${set.weight}" oninput="updateSet('${esc}',${si},'weight',this.value)" min="0" max="999"><button class="check-btn ${set.done?'done':''}" onclick="toggleDone('${esc}',${si})">${set.done?'✓':'○'}</button><button class="del-btn" onclick="removeSet('${esc}',${si})">×</button></div>`).join('')}<button class="add-set-btn" onclick="addSet('${esc}')">+ ADD SET</button></div>`;
+  }).join('')}
+  <textarea class="notes" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
+  <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
+  <div style="height:10px"></div>
+ </div>`;
+}
+function changeLogDate(v){S.logDate=v;const ex=getLogEntry(v);if(ex){S.logPhase=ex.phaseId;S.logDay=ex.dayIdx;S.logSets=ex.sets;S.logNotes=ex.notes||'';}else{const pi=getPhaseForDate(v);const di=getDayIdxForDate(v,pi>=0?pi:0);if(pi>=0)S.logPhase=pi;if(di>=0)S.logDay=di;initLogSets(S.logPhase,S.logDay);}renderMain();}
+function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;initLogSets(S.logPhase,S.logDay);renderMain();}
+function changeLogDay(v){S.logDay=parseInt(v);initLogSets(S.logPhase,S.logDay);renderMain();}
+function saveWorkout(){saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes);const btn=document.getElementById('save-btn');if(btn){btn.textContent='✓ SAVED';btn.classList.add('saved');}setTimeout(()=>{if(btn){btn.textContent='SAVE WORKOUT';btn.classList.remove('saved');}},1800);}
+
+// ============================================================
+// CHOW (RATIONS)
+// ============================================================
+function renderChow(){
+ const today=getRations(todayStr());
+ const total=getProteinTotal(todayStr());
+ const target=getProteinTarget();
+ const pct=Math.min(100,Math.round(total/target*100));
+ let status='KEEP GOING';
+ if(pct>=100)status='TARGET HIT. WELL DONE.';
+ else if(pct>=75)status=`${target-total}G TO GO — YOU'RE CLOSE`;
+ else if(pct>=50)status=`${target-total}G LEFT — HALFWAY`;
+ else if(pct>=25)status=`${target-total}G LEFT — KEEP EATING`;
+ else if(total>0)status=`${target-total}G LEFT — LONG WAY TO GO`;
+ const weekAvg=getProteinWeekAvg();
+ return`<div class="fade-in chow-main">
+  <div class="section-label">RATIONS</div>
+  <div class="chow-hero">
+   <div class="chow-big-number">${total}</div>
+   <div class="chow-target">/ ${target}G TODAY</div>
+   <div class="chow-bar"><div class="chow-bar-fill" style="width:${pct}%"></div></div>
+   <div class="chow-status">${status}</div>
+   <div style="font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px;margin-top:8px">7-DAY AVG: ${weekAvg}G</div>
+  </div>
+  <div class="chow-section-label">QUICK ADD</div>
+  <div class="food-grid">${FOODS.map((f,i)=>`<button class="food-tile" onclick="logFoodQuick(${i})"><div class="food-name">${f.n}</div><div class="food-portion">${f.p}</div><div class="food-grams">+${f.g}G</div></button>`).join('')}</div>
+  <div class="chow-section-label">CUSTOM ENTRY</div>
+  <div class="custom-input-row">
+   <input type="text" class="custom-input" id="chow-custom-name" placeholder="Food name" value="${S.chowCustom.name}" oninput="S.chowCustom.name=this.value">
+   <input type="number" class="custom-input small" id="chow-custom-grams" placeholder="g" value="${S.chowCustom.grams}" oninput="S.chowCustom.grams=this.value" min="0" max="999">
+   <button onclick="logFoodCustom()" style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-family:var(--mono);font-size:18px;letter-spacing:1px;padding:0 14px;border-radius:2px;cursor:pointer">ADD</button>
+  </div>
+  ${today.entries.length>0?`
+   <div class="chow-section-label">TODAY'S LOG (${today.entries.length})</div>
+   ${today.entries.map((e,i)=>{const t=new Date(e.time);const hh=t.getHours(),mm=String(t.getMinutes()).padStart(2,'0');const tStr=`${hh>12?hh-12:hh||12}:${mm} ${hh>=12?'PM':'AM'}`;return`<div class="chow-entry"><div class="chow-entry-main"><div class="chow-entry-name">${e.food}</div><div class="chow-entry-time">${tStr}</div></div><div class="chow-entry-grams">${e.grams}G</div><button class="chow-remove" onclick="removeFoodLog(${i})">×</button></div>`;}).join('')}
+  `:''}
+  <div class="chow-section-label">TIMING TACTICS</div>
+  <div class="timing-card"><div class="timing-title">▸ POST-WORKOUT (within 1 hr)</div><div class="timing-text">30–40g protein. Whey shake is easiest. Can also be chicken + rice, Greek yogurt, or eggs. Priority after lifts to drive recovery.</div></div>
+  <div class="timing-card"><div class="timing-title">▸ BEFORE BED</div><div class="timing-text">30–40g slow protein. Cottage cheese or Greek yogurt is ideal — feeds muscle repair through the night. Low-effort win.</div></div>
+  <div class="timing-card"><div class="timing-title">▸ THROUGHOUT THE DAY</div><div class="timing-text">Spread protein across 3–5 meals. Your body absorbs ~30–40g per sitting. Loading it all at dinner is a waste.</div></div>
+  <div class="chow-section-label">PORTION REFERENCE</div>
+  <div class="timing-card"><div class="timing-text" style="color:var(--text2)"><strong style="color:var(--text)">Chicken breast (6 oz)</strong> — palm of your hand, deck of cards thick — 42g<br><br><strong style="color:var(--text)">Ground beef (6 oz)</strong> — baseball-size loose cooked — 42g<br><br><strong style="color:var(--text)">Greek yogurt (1 cup)</strong> — full standard container (5.3 oz = 2/3 cup; 1 cup = large serving) — 20g<br><br><strong style="color:var(--text)">Whey scoop</strong> — check your tub — usually 25g per scoop<br><br><strong style="color:var(--text)">Cottage cheese (1 cup)</strong> — one full small tub — 25g</div></div>
+  <div style="font-family:var(--mono);font-size:17px;color:var(--text2);letter-spacing:1px;margin-top:20px;padding:12px;border:1px solid var(--border);border-radius:2px;line-height:1.6">NOTE: Protein values are estimates. ±5–10g variance per meal is normal. The goal is knowing if you hit 160g or 90g, not perfect accuracy.</div>
+ </div>`;
+}
+function logFoodQuick(idx){const f=FOODS[idx];addRation(todayStr(),`${f.n} (${f.p})`,f.g);renderMain();}
+function logFoodCustom(){const n=S.chowCustom.name.trim();const g=parseInt(S.chowCustom.grams);if(!n||!g||g<=0)return;addRation(todayStr(),n,g);S.chowCustom={name:'',grams:''};renderMain();}
+function removeFoodLog(idx){removeRation(todayStr(),idx);renderMain();}
+
+// ============================================================
+// GENERATOR (BUILD)
+// ============================================================
+const AWAY_EQUIP=[{id:'none',label:'BODYWEIGHT ONLY',sub:'No equipment'},{id:'bands',label:'RESISTANCE BANDS',sub:'Bands available'},{id:'dumbbells',label:'SOME DUMBBELLS',sub:'Limited dumbbell selection'},{id:'hotel',label:'HOTEL / COMMERCIAL GYM',sub:'Cables, machines, full rack'}];
+const FOCUS_OPTIONS=[{id:'upper',label:'UPPER BODY'},{id:'lower',label:'LOWER BODY'},{id:'full',label:'FULL BODY'},{id:'cardio',label:'CARDIO'},{id:'recovery',label:'ACTIVE RECOVERY'}];
+const DURATION_OPTIONS=[20,30,45,60];
+function renderGen(){
+ if(G.loading)return`<div class="fade-in" style="padding:60px 24px;text-align:center"><div class="spinner" style="margin-bottom:20px"></div><div style="font-family:var(--mono);font-size:18px;letter-spacing:2px;color:var(--text2)">GENERATING...</div></div>`;
+ if(G.error)return`<div class="fade-in" style="padding:24px 16px"><div style="font-family:var(--mono);font-size:18px;color:var(--red);margin-bottom:12px">ERROR</div><div style="font-family:var(--body);font-size:17px;color:var(--text2);margin-bottom:16px">${G.error}</div><button class="gen-option" onclick="G.error=null;G.step='start';renderMain()">← START OVER</button></div>`;
+ if(G.result)return renderGenResult();
+ switch(G.step){
+  case'start':return`<div class="fade-in" style="padding:24px 16px"><div class="section-label">WORKOUT GENERATOR</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:20px;line-height:1.5">Tell me where you are and I'll build a workout on the spot.</div><div style="font-family:var(--mono);font-size:18px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">WHERE ARE YOU TRAINING?</div><button class="gen-option" onclick="G.location='home';G.step='focus';renderMain()">AT HOME<span class="gen-option-sub">Rower · Treadmill · Dumbbells 5–55lb · Incline bench</span></button><button class="gen-option" onclick="G.location='away';G.step='equipment';renderMain()">AWAY FROM HOME<span class="gen-option-sub">Hotel, travel, or somewhere else</span></button></div>`;
+  case'equipment':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='start';renderMain()">← BACK</button><div class="section-label">STEP 1 OF 3 — EQUIPMENT</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What do you have access to?</div>${AWAY_EQUIP.map(e=>`<div class="equip-check ${G.equipment.includes(e.id)?'selected':''}" onclick="toggleEquip('${e.id}')"><div class="equip-check-box">${G.equipment.includes(e.id)?'✓':''}</div><div><div style="font-family:var(--mono);font-size:18px;letter-spacing:1px;color:var(--text2)">${e.label}</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);margin-top:2px">${e.sub}</div></div></div>`).join('')}<button class="action-btn" style="margin-top:10px" onclick="if(G.equipment.length===0)G.equipment=['none'];G.step='focus';renderMain()">NEXT →</button></div>`;
+  case'focus':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step=G.location==='away'?'equipment':'start';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 2 OF 3':'STEP 1 OF 2'} — FOCUS</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What are we training?</div>${FOCUS_OPTIONS.map(f=>`<button class="gen-option ${G.focus===f.id?'selected':''}" onclick="G.focus='${f.id}';renderMain()">${f.label}</button>`).join('')}${G.focus?`<button class="action-btn" style="margin-top:4px" onclick="G.step='duration';renderMain()">NEXT →</button>`:''}`;
+  case'duration':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='focus';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 3 OF 3':'STEP 2 OF 2'} — DURATION</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">How long do you have?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${DURATION_OPTIONS.map(d=>`<button class="gen-option ${G.duration===d?'selected':''}" onclick="G.duration=${d};renderMain()" style="text-align:center;padding:20px 8px"><span style="font-size:26px;font-family:var(--display);letter-spacing:2px;display:block">${d}</span><span style="font-size:18px;letter-spacing:2px;color:var(--text2)">MIN</span></button>`).join('')}</div>${G.duration?`<button class="action-btn amber" onclick="generateWorkout()">⚡ GENERATE WORKOUT</button>`:''}`;
+ }
+}
+function toggleEquip(id){const i=G.equipment.indexOf(id);if(i>=0)G.equipment.splice(i,1);else G.equipment.push(id);renderMain();}
+function renderGenResult(){
+ const w=G.result;
+ return`<div class="fade-in" style="padding:20px 16px 30px"><div class="section-label">GENERATED WORKOUT</div><div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:4px">${w.title}</div><div style="font-family:var(--mono);font-size:17px;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px">${G.location==='home'?'HOME':'AWAY'} · ${G.focus.toUpperCase()} · ${G.duration} MIN</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);font-style:italic;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">${w.coachNote}</div><div class="ex-list" style="margin-bottom:16px">${(w.exercises||[]).map(ex=>renderExRow(ex,'gen-')).join('')}</div><button class="action-btn" onclick="logGeneratedWorkout()">LOG THIS WORKOUT</button><button class="action-btn secondary" onclick="generateWorkout()">REGENERATE</button><button class="action-btn secondary" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};renderMain()">START OVER</button></div>`;
+}
+// ============================================================
+// OFFLINE WORKOUT GENERATOR — EXERCISE LIBRARY
+// ============================================================
+// Equipment tiers: 'bw' (bodyweight only), 'bands', 'db' (dumbbells), 'full' (hotel gym)
+const EX_LIB = {
+ warmup: [
+  {n:"Arm circles + leg swings",d:"1 min each — wake up the joints",t:"warmup"},
+  {n:"Cat-cow",d:"10 slow reps — mobilize the spine",t:"warmup"},
+  {n:"Inchworm walks",d:"5 reps — hamstrings and core",t:"warmup"},
+  {n:"World's greatest stretch",d:"3 each side — hip and thoracic mobility",t:"warmup"},
+  {n:"Hip circles",d:"10 each direction",t:"warmup"},
+  {n:"Shoulder dislocates",d:"10 reps — use a towel or band",t:"warmup"},
+  {n:"Glute bridges (warmup)",d:"15 reps slow — activate",t:"warmup"},
+  {n:"Deep squat hold",d:"30 sec — opens hips",t:"warmup"},
+ ],
+ upper_bw: [
+  {n:"Push-ups",d:"3 × 10–15 — chest to floor, full range",t:"bw"},
+  {n:"Pike push-ups",d:"3 × 8 — hips high, press overhead",t:"bw"},
+  {n:"Diamond push-ups",d:"3 × 8 — hands close, tricep focus",t:"bw"},
+  {n:"Decline push-ups",d:"3 × 10 — feet on bed/chair",t:"bw"},
+  {n:"Wide push-ups",d:"3 × 10 — chest focus",t:"bw"},
+  {n:"Bench/chair tricep dips",d:"3 × 12 — hands on edge",t:"bw"},
+  {n:"Inverted rows (under table)",d:"3 × 8 — pull chest to edge",t:"bw"},
+  {n:"Superman holds",d:"3 × 15 sec — hold up position",t:"bw"},
+  {n:"Pseudo-planche push-up",d:"3 × 6 — hands by hips, lean forward",t:"bw"},
+  {n:"Wall walks",d:"3 reps — walk feet up the wall",t:"bw"},
+ ],
+ upper_bands: [
+  {n:"Band chest press",d:"3 × 12 — anchor band behind you",t:"lift"},
+  {n:"Band rows",d:"3 × 12 — squeeze shoulder blades",t:"lift"},
+  {n:"Band overhead press",d:"3 × 10 — stand on band",t:"lift"},
+  {n:"Band pull-aparts",d:"3 × 15 — upper back priority",t:"lift"},
+  {n:"Band curls",d:"3 × 12 — stand on band",t:"lift"},
+  {n:"Band tricep pushdowns",d:"3 × 12 — anchor high",t:"lift"},
+  {n:"Band lateral raises",d:"3 × 12 — stand on band, arms out",t:"lift"},
+  {n:"Band face pulls",d:"3 × 15 — external rotation",t:"lift"},
+ ],
+ upper_db: [
+  {n:"DB bench press",d:"4 × 8–10 — floor or bench",t:"lift"},
+  {n:"DB shoulder press",d:"3 × 10 — strict, don't flare ribs",t:"lift"},
+  {n:"Single-arm DB row",d:"3 × 10 each — drive elbow back",t:"lift"},
+  {n:"DB curl",d:"3 × 12 — strict form",t:"lift"},
+  {n:"DB lateral raise",d:"3 × 12 — slow, controlled",t:"lift"},
+  {n:"DB tricep extension",d:"3 × 12 — overhead",t:"lift"},
+  {n:"DB hammer curl",d:"3 × 12 — neutral grip",t:"lift"},
+  {n:"DB reverse fly",d:"3 × 12 — hinge forward",t:"lift"},
+ ],
+ lower_bw: [
+  {n:"Bodyweight squat",d:"3 × 15 — full depth",t:"bw"},
+  {n:"Reverse lunge",d:"3 × 10 each leg",t:"bw"},
+  {n:"Walking lunge",d:"3 × 12 each leg",t:"bw"},
+  {n:"Jump squat",d:"3 × 10 — explosive",t:"bw"},
+  {n:"Bulgarian split squat",d:"3 × 10 each — rear foot on chair",t:"bw"},
+  {n:"Glute bridge",d:"3 × 15 — squeeze at top",t:"bw"},
+  {n:"Single-leg glute bridge",d:"3 × 10 each",t:"bw"},
+  {n:"Cossack squat",d:"3 × 8 each side — lateral mobility",t:"bw"},
+  {n:"Calf raises",d:"3 × 20 — slow down",t:"bw"},
+  {n:"Wall sit",d:"3 × 45 sec — 90 degree knees",t:"bw"},
+  {n:"Step-ups on chair",d:"3 × 10 each leg",t:"bw"},
+  {n:"Pistol squat progression",d:"3 × 5 each — use support if needed",t:"bw"},
+ ],
+ lower_bands: [
+  {n:"Band squats",d:"3 × 12 — band around shoulders",t:"lift"},
+  {n:"Band RDL",d:"3 × 12 — stand on band",t:"lift"},
+  {n:"Lateral band walks",d:"3 × 12 each way — band at knees",t:"lift"},
+  {n:"Monster walks",d:"3 × 10 forward/back — band at ankles",t:"lift"},
+  {n:"Banded glute bridge",d:"3 × 15 — band above knees",t:"lift"},
+  {n:"Band good mornings",d:"3 × 12 — band across hips",t:"lift"},
+ ],
+ lower_db: [
+  {n:"Goblet squat",d:"4 × 10 — DB at chest",t:"lift"},
+  {n:"DB Romanian deadlift",d:"4 × 10 — hinge at hip",t:"lift"},
+  {n:"DB reverse lunge",d:"3 × 10 each — DBs at sides",t:"lift"},
+  {n:"DB Bulgarian split squat",d:"3 × 10 each",t:"lift"},
+  {n:"DB step-up",d:"3 × 10 each leg",t:"lift"},
+  {n:"DB sumo squat",d:"3 × 12 — wide stance",t:"lift"},
+  {n:"DB walking lunge",d:"3 × 12 each leg",t:"lift"},
+  {n:"DB calf raise",d:"3 × 15 — hold DBs at sides",t:"lift"},
+ ],
+ core: [
+  {n:"Plank",d:"3 × 45 sec — brace everything",t:"core"},
+  {n:"Side plank",d:"3 × 30 sec each side",t:"core"},
+  {n:"Hollow hold",d:"3 × 30 sec — low back pressed down",t:"core"},
+  {n:"V-ups",d:"3 × 12 — touch toes",t:"core"},
+  {n:"Bicycle crunches",d:"3 × 20 — slow and controlled",t:"core"},
+  {n:"Dead bug",d:"3 × 10 each side",t:"core"},
+  {n:"Bird dog",d:"3 × 10 each side",t:"core"},
+  {n:"Russian twists",d:"3 × 20 — feet up if possible",t:"core"},
+  {n:"Leg raises",d:"3 × 10 — slow on the way down",t:"core"},
+  {n:"Mountain climbers",d:"3 × 30 sec — fast",t:"core"},
+ ],
+ cardio_bw: [
+  {n:"Jumping jacks",d:"3 × 45 sec",t:"cardio"},
+  {n:"High knees",d:"3 × 30 sec — fast",t:"cardio"},
+  {n:"Burpees",d:"3 × 10 — full down, jump up",t:"cardio"},
+  {n:"Skater hops",d:"3 × 20 — lateral jumps",t:"cardio"},
+  {n:"Squat jumps",d:"3 × 15 — explosive",t:"cardio"},
+  {n:"Mountain climbers",d:"3 × 40 sec",t:"cardio"},
+  {n:"Shadow boxing",d:"3 × 1 min — stay on toes",t:"cardio"},
+  {n:"Star jumps",d:"3 × 15",t:"cardio"},
+ ],
+ cardio_machine: [
+  {n:"Rower intervals",d:"8 × 250m — rest 1 min between",t:"cardio"},
+  {n:"Rower steady",d:"20 min at RPE 6 — hold the pace",t:"cardio"},
+  {n:"Treadmill HIIT",d:"10 × 30 sec sprint / 30 sec walk",t:"cardio"},
+  {n:"Treadmill steady",d:"30 min sustained — RPE 5–6",t:"cardio"},
+  {n:"Rower 5×500m",d:"Rest 90 sec between — push pace",t:"cardio"},
+ ],
+ recovery: [
+  {n:"Hip flexor stretch",d:"2 × 90 sec each side — priority",t:"mob"},
+  {n:"Pigeon pose",d:"2 × 90 sec each side",t:"mob"},
+  {n:"Figure 4 stretch",d:"2 × 60 sec each side",t:"mob"},
+  {n:"Hamstring stretch",d:"2 × 60 sec each leg",t:"mob"},
+  {n:"Deep squat hold",d:"3 × 60 sec",t:"mob"},
+  {n:"Thoracic rotation",d:"2 × 10 each side",t:"mob"},
+  {n:"Cat-cow slow",d:"20 reps — breathe deeply",t:"mob"},
+  {n:"Child's pose",d:"2 × 90 sec — breathe",t:"mob"},
+  {n:"90/90 hip switch",d:"10 each side",t:"mob"},
+  {n:"Spinal twist (lying)",d:"2 × 60 sec each side",t:"mob"},
+  {n:"Couch stretch",d:"2 × 90 sec each leg — priority",t:"mob"},
+  {n:"Neck rolls",d:"10 each direction — slow",t:"mob"},
+ ],
+ cooldown: [
+  {n:"Walking or easy pacing",d:"3 min — let heart rate drop",t:"cool"},
+  {n:"Standing forward fold",d:"60 sec",t:"cool"},
+  {n:"Chest doorframe stretch",d:"60 sec each side",t:"cool"},
+  {n:"Deep breathing",d:"2 min — 4 in / 6 out",t:"cool"},
+ ],
+};
+
+// Pick N random unique items from array
+function pickN(arr, n) {
+ const shuffled = [...arr].sort(() => Math.random() - 0.5);
+ return shuffled.slice(0, Math.min(n, arr.length));
+}
+
+function buildWorkout(location, equipment, focus, duration) {
+ const hasDB = location === 'home' || equipment.includes('dumbbells') || equipment.includes('hotel');
+ const hasBands = equipment.includes('bands') || equipment.includes('hotel');
+ const hasMachines = location === 'home' || equipment.includes('hotel');
+ const bwOnly = !hasDB && !hasBands && !hasMachines;
+
+ // Duration-based exercise counts
+ const counts = {
+  20: { warmup: 2, main: 4, finisher: 1, cool: 1 },
+  30: { warmup: 3, main: 6, finisher: 1, cool: 2 },
+  45: { warmup: 3, main: 8, finisher: 2, cool: 2 },
+  60: { warmup: 4, main: 10, finisher: 2, cool: 3 },
+ }[duration];
+
+ let exercises = [];
+ let title = '';
+ let coachNote = '';
+
+ // RECOVERY is special — all mobility
+ if (focus === 'recovery') {
+  title = `${duration}-Minute Recovery`;
+  coachNote = "Recovery is not a soft session. It's injury prevention. Breathe through every stretch, move slow, respect the hold times.";
+  exercises = [
+   ...pickN(EX_LIB.warmup.filter(e => /cat-cow|hip circles|shoulder/i.test(e.n)), 2),
+   ...pickN(EX_LIB.recovery, counts.main + 2),
+   ...pickN(EX_LIB.cooldown, 1),
+  ];
+  return { title, coachNote, exercises };
+ }
+
+ // Warmup
+ exercises.push(...pickN(EX_LIB.warmup, counts.warmup));
+
+ // Main work based on focus + equipment
+ let mainPool = [];
+ if (focus === 'upper') {
+  if (hasDB) mainPool.push(...EX_LIB.upper_db);
+  if (hasBands) mainPool.push(...EX_LIB.upper_bands);
+  mainPool.push(...EX_LIB.upper_bw);
+  title = bwOnly ? 'Bodyweight Upper' : hasDB ? 'Dumbbell Upper' : 'Banded Upper';
+  coachNote = bwOnly ? "No iron, no problem. Push every set to 2 reps shy of failure. Bodyweight still builds." : "Pick weights you can control with crisp form. Push the last 2 reps.";
+ } else if (focus === 'lower') {
+  if (hasDB) mainPool.push(...EX_LIB.lower_db);
+  if (hasBands) mainPool.push(...EX_LIB.lower_bands);
+  mainPool.push(...EX_LIB.lower_bw);
+  title = bwOnly ? 'Bodyweight Lower' : hasDB ? 'Dumbbell Lower' : 'Banded Lower';
+  coachNote = "Legs built mine, they'll build yours. Full range on every rep — no half squats.";
+ } else if (focus === 'full') {
+  const upperP = hasDB ? EX_LIB.upper_db : hasBands ? EX_LIB.upper_bands : EX_LIB.upper_bw;
+  const lowerP = hasDB ? EX_LIB.lower_db : hasBands ? EX_LIB.lower_bands : EX_LIB.lower_bw;
+  const upperCount = Math.ceil(counts.main / 2);
+  const lowerCount = Math.floor(counts.main / 2);
+  exercises.push(...pickN(upperP, upperCount));
+  exercises.push(...pickN(lowerP, lowerCount));
+  exercises.push(...pickN(EX_LIB.core, 2));
+  title = 'Full Body';
+  coachNote = "Compound sessions build the most in the least time. Rest 60 sec between sets — keep moving.";
+ } else if (focus === 'cardio') {
+  if (hasMachines) {
+   exercises.push(...pickN(EX_LIB.cardio_machine, 1));
+  }
+  exercises.push(...pickN(EX_LIB.cardio_bw, counts.main - (hasMachines ? 1 : 0)));
+  exercises.push(...pickN(EX_LIB.core, 2));
+  title = hasMachines ? 'Mixed Cardio' : 'Bodyweight Conditioning';
+  coachNote = "Cardio builds the base that makes every lift feel easier. Push hard, recover fast, repeat.";
+ }
+
+ // For upper/lower, add main work from pool
+ if (focus === 'upper' || focus === 'lower') {
+  exercises.push(...pickN(mainPool, counts.main));
+  // Add core if time allows
+  if (counts.main >= 6) exercises.push(...pickN(EX_LIB.core, 2));
+ }
+
+ // Finisher for longer workouts
+ if (counts.finisher > 0 && focus !== 'cardio') {
+  const finisherPool = bwOnly ? EX_LIB.cardio_bw : [...EX_LIB.cardio_bw, ...EX_LIB.cardio_machine.slice(0, 2)];
+  exercises.push(...pickN(finisherPool, counts.finisher));
+ }
+
+ // Cooldown
+ exercises.push(...pickN(EX_LIB.cooldown.concat(EX_LIB.recovery.slice(0, 3)), counts.cool));
+
+ return { title: `${duration}-Min ${title}`, coachNote, exercises };
+}
+
+function generateWorkout() {
+ G.loading = true;
+ G.result = null;
+ G.error = null;
+ renderMain();
+ // Small UX delay so the loading state registers — feels more intentional
+ setTimeout(() => {
+  try {
+   G.result = buildWorkout(G.location, G.equipment, G.focus, G.duration);
+   G.loading = false;
+   renderMain();
+  } catch (err) {
+   G.loading = false;
+   G.error = 'Could not generate. Please try different options.';
+   renderMain();
+  }
+ }, 400);
+}
+function logGeneratedWorkout(){
+ if(!G.result)return;
+ const sets={};(G.result.exercises||[]).forEach(ex=>{if(ex.t!=='warmup'&&ex.t!=='cool'&&ex.t!=='mob')sets[ex.n]=[{reps:'',weight:'',done:false}];});
+ S.logDate=todayStr();S.logPhase=Math.max(0,getPhaseForDate(todayStr()));S.logDay=0;S.logSets=sets;S.logNotes=`Generated: ${G.result.title} (${G.location==='home'?'home':'away'}, ${G.focus}, ${G.duration}min)`;
+ setTab('log');
+}
+
+// ============================================================
+// INTEL (HISTORY + PT + METRICS + STATS)
+// ============================================================
+function renderIntel(){
+ const totalLogs=Object.keys(loadStore()).length;
+ const totalSkips=Object.values(getSkips()).filter(s=>s.type==='skipped').length;
+ const totalMoves=Object.values(getSkips()).filter(s=>s.type==='moved').length;
+ // Compute completion rate
+ const totalPlanned=totalLogs+totalSkips+totalMoves;
+ const rate=totalPlanned>0?Math.round(totalLogs/totalPlanned*100):0;
+ return`<div class="fade-in" style="padding:18px 16px 30px">
+  <div class="section-label">INTEL</div>
+  <div class="stat-grid">
+   <div class="stat-tile"><div class="stat-label">SESSIONS</div><div class="stat-value">${totalLogs}</div><div class="stat-unit">COMPLETED</div></div>
+   <div class="stat-tile"><div class="stat-label">COMPLETION</div><div class="stat-value">${rate}</div><div class="stat-unit">PERCENT</div></div>
+   <div class="stat-tile"><div class="stat-label">MOVED</div><div class="stat-value" style="color:var(--amber)">${totalMoves}</div><div class="stat-unit">RESCHEDULED</div></div>
+   <div class="stat-tile"><div class="stat-label">SKIPPED</div><div class="stat-value" style="color:var(--red)">${totalSkips}</div><div class="stat-unit">NOT DONE</div></div>
+  </div>
+  <div class="intel-tabs">
+   <button class="intel-tab ${S.intelTab==='history'?'active':''}" onclick="S.intelTab='history';renderMain()">HISTORY</button>
+   <button class="intel-tab ${S.intelTab==='pt'?'active':''}" onclick="S.intelTab='pt';renderMain()">PT TEST</button>
+   <button class="intel-tab ${S.intelTab==='metrics'?'active':''}" onclick="S.intelTab='metrics';renderMain()">BODY METRICS</button>
+  </div>
+  ${S.intelTab==='history'?renderHistoryBlock():''}
+  ${S.intelTab==='pt'?renderPTBlock():''}
+  ${S.intelTab==='metrics'?renderMetricsBlock():''}
+ </div>`;
+}
+
+function renderHistoryBlock(){
+ const logs=Object.entries(loadStore());const skips=getSkips();const moves=getMoves();
+ const allDates=new Set([...logs.map(l=>l[0]),...Object.keys(skips),...Object.keys(moves)]);
+ const sorted=[...allDates].sort((a,b)=>b.localeCompare(a));
+ if(sorted.length===0)return`<div style="padding:30px 0;text-align:center;font-family:var(--mono);font-size:18px;letter-spacing:2px;color:var(--text2);line-height:2">NO WORKOUTS LOGGED YET.<br><br>START TODAY.</div>`;
+ const logStore=loadStore();
+ return sorted.map(date=>{
+  const log=logStore[date];const skip=skips[date];const move=moves[date];
+  const{dow,full}=fmtDate(date);const isOpen=S.histOpen[date];
+  if(skip&&!log){
+   const ph=PHASES[skip.phaseId];const day=ph?.schedule[skip.dayIdx];
+   return`<div class="hist-entry" style="border-color:${skip.type==='skipped'?'var(--red-border)':'var(--amber-border)'}">
+    <div class="hist-head" onclick="S.histOpen['${date}']=!S.histOpen['${date}'];renderMain()">
+     <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${day?day.label:''} <span class="${skip.type==='skipped'?'skipped-pill':'moved-pill'}">${skip.type==='skipped'?'SKIPPED':'MOVED'}</span>${skip.movedTo?` → ${fmtDate(skip.movedTo).short}`:''}</div></div>
+     <div class="hist-chevron ${isOpen?'open':''}">▼</div>
+    </div>
+    <div class="hist-body ${isOpen?'open':''}">${skip.type==='skipped'?`<div style="font-family:var(--body);font-size:17px;color:var(--red);margin-bottom:8px">Session skipped.</div>`:`<div style="font-family:var(--body);font-size:17px;color:var(--amber);margin-bottom:8px">Moved to ${fmtDate(skip.movedTo||date).short}.</div>`}<button class="action-btn secondary" style="padding:8px;font-size:17px" onclick="undoSkip('${date}')">UNDO</button></div>
+   </div>`;
+  }
+  if(!log)return'';
+  const ph=PHASES[log.phaseId];const day=ph?.schedule[log.dayIdx];
+  const allSets=Object.values(log.sets||{}).flat();const done=allSets.filter(s=>s.done).length;
+  return`<div class="hist-entry">
+   <div class="hist-head" onclick="S.histOpen['${date}']=!S.histOpen['${date}'];renderMain()">
+    <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${ph?ph.short:''} — ${day?day.label:''} · ${done}/${allSets.length} sets${move?` <span class="moved-pill">MOVED IN</span>`:''}</div></div>
+    <div class="hist-chevron ${isOpen?'open':''}">▼</div>
+   </div>
+   <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<button class="action-btn secondary" style="margin-top:8px;padding:8px;font-size:17px" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button></div>
+  </div>`;
+ }).join('');
+}
+function editLog(date,pi,di){S.logDate=date;S.logPhase=pi;S.logDay=di;const e=getLogEntry(date);S.logSets=e?e.sets:{};S.logNotes=e?e.notes||'':'';setTab('log');}
+
+// ============================================================
+// PT TEST
+// ============================================================
+function renderPTBlock(){
+ const all=getAllPTSorted();const d=S.ptDraft;
+ return`<div>
+  <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">PT TEST / BENCHMARKS</div>
+  <div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);line-height:1.5;margin-bottom:16px">Log a baseline now. Retest at weeks 5, 10, and 14. These are your proof.</div>
+  <div class="card" style="padding:12px 14px;margin-bottom:16px">
+   <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">NEW PT TEST — ${fmtDate(todayStr()).short}</div>
+   <div class="pt-input-row"><div class="pt-input-label">Max Push-Ups</div><input type="number" class="num-input" placeholder="0" value="${d.pushups}" oninput="S.ptDraft.pushups=this.value"><span class="pt-input-unit">REPS</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Rower 2000m</div><input type="text" class="num-input" style="width:72px" placeholder="9:15" value="${d.row2k}" oninput="S.ptDraft.row2k=this.value"><span class="pt-input-unit">TIME</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">1-Mile Run</div><input type="text" class="num-input" style="width:72px" placeholder="8:45" value="${d.mile}" oninput="S.ptDraft.mile=this.value"><span class="pt-input-unit">TIME</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Max Plank Hold</div><input type="number" class="num-input" placeholder="60" value="${d.plank}" oninput="S.ptDraft.plank=this.value"><span class="pt-input-unit">SEC</span></div>
+   <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — conditions, how it felt, context" oninput="S.ptDraft.notes=this.value">${d.notes}</textarea>
+   <button class="action-btn" onclick="savePT()">SAVE PT TEST</button>
+  </div>
+  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,t])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="if(confirm('Delete this PT test?')){deletePT('${date}')}" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${t.pushups?`<div>PUSH-UPS: <span style="color:var(--text)">${t.pushups}</span></div>`:''}${t.row2k?`<div>ROW 2K: <span style="color:var(--text)">${t.row2k}</span></div>`:''}${t.mile?`<div>1 MILE: <span style="color:var(--text)">${t.mile}</span></div>`:''}${t.plank?`<div>PLANK: <span style="color:var(--text)">${t.plank}s</span></div>`:''}</div>${t.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${t.notes}"</div>`:''}</div>`).join('')}`:''}
+ </div>`;
+}
+function savePT(){const d=S.ptDraft;const data={};if(d.pushups)data.pushups=d.pushups;if(d.row2k)data.row2k=d.row2k;if(d.mile)data.mile=d.mile;if(d.plank)data.plank=d.plank;if(d.notes)data.notes=d.notes;if(Object.keys(data).length===0)return;savePTTest(todayStr(),data);S.ptDraft={pushups:'',row2k:'',mile:'',plank:'',notes:''};renderMain();}
+function deletePT(date){deletePTTest(date);renderMain();}
+
+// ============================================================
+// BODY METRICS
+// ============================================================
+function renderMetricsBlock(){
+ const all=getAllMetricsSorted();const d=S.metricDraft;
+ return`<div>
+  <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">BODY METRICS</div>
+  <div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);line-height:1.5;margin-bottom:16px">Log weekly. The scale lies sometimes — the tape measure doesn't. Iron-in Apple Health manually if you track there too.</div>
+  <div class="card" style="padding:12px 14px;margin-bottom:16px">
+   <div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">NEW ENTRY — ${fmtDate(todayStr()).short}</div>
+   <div class="pt-input-row"><div class="pt-input-label">Weight</div><input type="number" class="num-input" placeholder="0" value="${d.weight}" oninput="S.metricDraft.weight=this.value" step="0.1"><span class="pt-input-unit">LBS</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Body Fat (optional)</div><input type="number" class="num-input" placeholder="—" value="${d.bodyFat}" oninput="S.metricDraft.bodyFat=this.value" step="0.1"><span class="pt-input-unit">%</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Waist</div><input type="number" class="num-input" placeholder="—" value="${d.waist}" oninput="S.metricDraft.waist=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Chest</div><input type="number" class="num-input" placeholder="—" value="${d.chest}" oninput="S.metricDraft.chest=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Arm (flexed)</div><input type="number" class="num-input" placeholder="—" value="${d.arms}" oninput="S.metricDraft.arms=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — measurement conditions" oninput="S.metricDraft.notes=this.value">${d.notes}</textarea>
+   <button class="action-btn" onclick="saveMetricNow()">SAVE METRICS</button>
+  </div>
+  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,m])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="if(confirm('Delete this entry?')){delMetric('${date}')}" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${m.weight?`<div>WEIGHT: <span style="color:var(--text)">${m.weight} lbs</span></div>`:''}${m.bodyFat?`<div>BF: <span style="color:var(--text)">${m.bodyFat}%</span></div>`:''}${m.waist?`<div>WAIST: <span style="color:var(--text)">${m.waist}"</span></div>`:''}${m.chest?`<div>CHEST: <span style="color:var(--text)">${m.chest}"</span></div>`:''}${m.arms?`<div>ARM: <span style="color:var(--text)">${m.arms}"</span></div>`:''}</div>${m.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${m.notes}"</div>`:''}</div>`).join('')}`:''}
+ </div>`;
+}
+function saveMetricNow(){const d=S.metricDraft;const data={};if(d.weight)data.weight=d.weight;if(d.bodyFat)data.bodyFat=d.bodyFat;if(d.waist)data.waist=d.waist;if(d.chest)data.chest=d.chest;if(d.arms)data.arms=d.arms;if(d.notes)data.notes=d.notes;if(Object.keys(data).length===0)return;saveMetric(todayStr(),data);S.metricDraft={weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''};renderMain();}
+function delMetric(date){deleteMetric(date);renderMain();}
+
+// ============================================================
+// CORE
+// ============================================================
+function renderMain(){const m=document.getElementById('main');switch(S.tab){case'today':m.innerHTML=renderToday();break;case'plan':m.innerHTML=renderPlan();break;case'log':m.innerHTML=renderLog();break;case'chow':m.innerHTML=renderChow();break;case'gen':m.innerHTML=renderGen();break;case'intel':m.innerHTML=renderIntel();break;}}
+function renderNav(){['today','plan','log','chow','gen','intel'].forEach(t=>document.getElementById('nav-'+t)?.classList.toggle('active',S.tab===t));}
+function setTab(t){S.tab=t;renderNav();renderMain();document.getElementById('main').scrollTo(0,0);}
+function setupManifest(){
+  // Manifest is now external — manifest.json
+  // Register service worker for offline support
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').then(()=>{
+      console.log('GRIND: Service worker registered');
+    }).catch(()=>{});
+  }
+}
+function init(){setupManifest();const pi=getPhaseForDate(todayStr());const di=getDayIdxForDate(todayStr(),pi>=0?pi:0);S.logPhase=pi>=0?pi:0;S.logDay=di>=0?di:0;const ex=getLogEntry(todayStr());if(ex){S.logSets=ex.sets;S.logNotes=ex.notes||'';}else initLogSets(S.logPhase,S.logDay);renderNav();renderMain();}
+init();
+</script>
+</body>
+</html>
