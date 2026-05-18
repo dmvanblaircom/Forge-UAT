@@ -4,39 +4,23 @@
   <path d="M492,20 L460,20 M492,20 L492,52" stroke="#d4a820" stroke-width="7" fill="none"/>
   <path d="M20,492 L52,492 M20,492 L20,460" stroke="#d4a820" stroke-width="7" fill="none"/>
   <path d="M492,492 L460,492 M492,492 L492,460" stroke="#d4a820" stroke-width="7" fill="none"/>
-  <!-- Dog tag outer glow ring -->
-  <rect x="152" y="76" width="208" height="272" rx="30" fill="none" stroke="#d4a820" stroke-width="4" opacity="0.2"/>
-  <!-- Dog tag body -->
   <rect x="166" y="90" width="180" height="244" rx="24" fill="#0e1408" stroke="#d4a820" stroke-width="6"/>
-  <!-- Dog tag notch at bottom -->
   <rect x="242" y="316" width="28" height="18" rx="5" fill="#0e1408" stroke="#d4a820" stroke-width="5"/>
-  <!-- Chain -->
   <circle cx="256" cy="350" r="6" fill="#d4a820" opacity="0.7"/>
   <circle cx="256" cy="372" r="6" fill="#d4a820" opacity="0.7"/>
   <circle cx="256" cy="394" r="6" fill="#d4a820" opacity="0.7"/>
-  <circle cx="256" cy="416" r="6" fill="#d4a820" opacity="0.5"/>
-  <!-- Barbell shaft -->
   <rect x="110" y="196" width="292" height="24" rx="6" fill="#8aaa30"/>
-  <!-- Left outer plate -->
   <rect x="96" y="166" width="42" height="84" rx="10" fill="#8aaa30"/>
   <rect x="106" y="176" width="24" height="64" rx="6" fill="#6a8a22"/>
-  <!-- Right outer plate -->
   <rect x="374" y="166" width="42" height="84" rx="10" fill="#8aaa30"/>
   <rect x="382" y="176" width="24" height="64" rx="6" fill="#6a8a22"/>
-  <!-- Left collar -->
   <rect x="138" y="178" width="20" height="60" rx="5" fill="#d4a820"/>
-  <!-- Right collar -->
   <rect x="354" y="178" width="20" height="60" rx="5" fill="#d4a820"/>
-  <!-- Stars -->
   <text x="204" y="152" font-family="Arial" font-size="20" fill="#d4a820" text-anchor="middle">★</text>
   <text x="308" y="152" font-family="Arial" font-size="20" fill="#d4a820" text-anchor="middle">★</text>
-  <!-- Tag rule lines -->
   <line x1="192" y1="162" x2="320" y2="162" stroke="#d4a820" stroke-width="1.5" opacity="0.35"/>
   <line x1="192" y1="255" x2="320" y2="255" stroke="#d4a820" stroke-width="1.5" opacity="0.35"/>
   <line x1="192" y1="270" x2="320" y2="270" stroke="#d4a820" stroke-width="1.5" opacity="0.35"/>
-  <line x1="192" y1="285" x2="320" y2="285" stroke="#d4a820" stroke-width="1.5" opacity="0.35"/>
-  <!-- GRIND text -->
   <text x="256" y="246" font-family="Arial,sans-serif" font-weight="bold" font-size="34" fill="#d4a820" text-anchor="middle" letter-spacing="8">GRIND</text>
-  <!-- Rank/unit line -->
-  <text x="256" y="310" font-family="Arial,sans-serif" font-size="14" fill="#d4a820" text-anchor="middle" letter-spacing="4" opacity="0.7">US ARMY</text>
+  <text x="256" y="310" font-family="Arial,sans-serif" font-size="14" fill="#d4a820" text-anchor="middle" letter-spacing="4" opacity="0.7">SQUAD</text>
 </svg>

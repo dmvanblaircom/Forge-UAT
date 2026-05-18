@@ -1,52 +1,36 @@
-# DEPLOY GUIDE — GRIND
+# DEPLOY — GITHUB PAGES
 
-Quick reference card. Full instructions in README.md.
+## First deploy
+
+```
+1. github.com → Sign up / Log in
+2. + icon → New repository → name it "grind" → Public → Create
+3. Add file → Upload files → select ALL files in this folder
+4. Commit changes
+5. Settings → Pages → Source: Deploy from branch → main / root → Save
+6. Wait 1-2 min → your URL: https://YOURUSERNAME.github.io/grind
+7. Open URL in Safari → Share → Add to Home Screen → GRIND
+```
+
+## Redeploy after changes
+
+```
+1. github.com → your grind repo
+2. Click index.html → pencil (edit) → paste new content → Commit
+   OR: Add file → Upload files → select new index.html → Commit
+```
+
+## Update home screen icon
+
+```
+Remove old icon: hold → Remove App
+Re-add: Safari → your URL → Share → Add to Home Screen
+```
+
+## After deploy — connect squad
+
+See SQUAD-SETUP.md for Supabase setup (10 min, free).
 
 ---
 
-## FIRST DEPLOY
-
-```
-1. netlify.com → Sign up (free)
-2. Sites page → drag the grind-deploy folder onto the drop zone
-3. Wait ~10 sec → get your URL (e.g. grind-yourname.netlify.app)
-4. Safari → open URL → Share → Add to Home Screen → GRIND
-```
-
-## REDEPLOY (after updates)
-
-```
-1. app.netlify.com → tap your GRIND site
-2. Deploys tab → tap upload zone → select grind-deploy folder
-3. Wait ~10 sec → done. Same URL. Data intact.
-```
-
-## UPDATE HOME SCREEN ICON
-
-```
-After any redeploy:
-1. Hold GRIND icon → Remove App
-2. Safari → your URL → Share → Add to Home Screen → GRIND
-```
-
----
-
-## YOUR APP URL
-
-Write it here: ________________________________
-
----
-
-## TROUBLESHOOTING
-
-| Problem | Fix |
-|---------|-----|
-| App shows old version | Remove from home screen, re-add |
-| Data disappeared | Check you're on the same URL |
-| "Script error" on load | Redeploy — file may be corrupted |
-| Icon looks wrong | Remove + re-add to home screen |
-| Date input invisible | Tap it — iOS dark mode renders correctly |
-
----
-
-*Netlify free tier: unlimited deploys, 100GB bandwidth/month. More than enough.*
+Your URL: https://________________________.github.io/grind
