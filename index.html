@@ -1197,7 +1197,7 @@ let S={
  planMode:'myplan',
  showGoalCreator:false,
  activeGoalId:null,
- genericLog:{open:false,goalId:null,activityType:'',duration:'',distance:'',intensity:3,notes:''},
+ conflictOverride:false,planGoalId:null,confirmPending:null,promptPending:null,genericLog:{open:false,goalId:null,activityType:'',duration:'',distance:'',intensity:3,notes:''},
 
  custom:{exercises:[],search:'',searchResults:[],activeEx:null,workoutTitle:''},
  libOpen:false,
@@ -1233,9 +1233,9 @@ function getDayEst(label){return DAY_DURATIONS[label]||null}
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-const APP_URL = 'YOUR_GITHUB_PAGES_URL';
+const SUPABASE_URL = 'https://gqlzrfsjwjnujmrzxunn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxbHpyZnNqd2pudWptcnp4dW5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MTQ0MjUsImV4cCI6MjA5NDQ5MDQyNX0.Gh4lbX_LYtg4DZlc9NbbDzPJS-CDpLbBa2zrW0ALajw';
+const APP_URL = 'https://dmvanblaircom.github.io/Grind-app/';
 
 function supaFetch(path, opts={}) {
   return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -1510,7 +1510,7 @@ function renderGoalStrip() {
     var isActive = S.activeGoalId === goal.id;
     var disc = getDisciplineLabel(goal.discipline);
     var subLabel = goalSubLabel(goal);
-    var hasAppPlan = goal.planType === 'app' && goal.planData;
+    var hasAppPlan = (goal.planType === 'app' || goal.planType === 'undecided') && getTodayGoalSession(goal) !== null;
     var isOwn = goal.planType === 'own';
 
     // Goal card
@@ -1549,7 +1549,7 @@ function renderGoalStrip() {
         if (S.genericLog.open && S.genericLog.goalId === goal.id) {
           html += renderGenericLogger(goal.id);
         } else {
-          html += '<button onclick="openGenericLog(' + JSON.stringify(goal.id) + ')" class="action-btn">+ LOG WORKOUT</button>';
+          html += '<button data-gid="'+goal.id+'" onclick="openGenericLog(this.dataset.gid)" class="action-btn">+ LOG WORKOUT</button>';
         }
       }
 
@@ -1576,6 +1576,7 @@ function renderGoalStrip() {
 }
 
 function gotoLog(){setTab('log');}
+function goPlan(){setTab('plan');}
 function openGenericLog(goalId){S.genericLog={open:true,goalId:goalId,activityType:'',duration:'',distance:'',intensity:3,notes:''};renderMain();}
 
 
@@ -1585,44 +1586,115 @@ function toggleGoalCard(id) {
 }
 
 function editGoalLabel(id) {
-  const goal = getGoals().find(g => g.id === id);
+  var goal = getGoals().find(function(g){return g.id===id;});
   if (!goal) return;
-  const newLabel = prompt('Rename goal:', goal.label);
-  if (newLabel && newLabel.trim()) {
-    upsertGoal({...goal, label: newLabel.trim()});
-    renderMain();
-  }
+  showPrompt('Rename goal:', goal.label, function(val) {
+    if (val && val.trim()) { upsertGoal(Object.assign({},goal,{label:val.trim()})); renderMain(); }
+  });
 }
 function editGoalDate(id) {
-  const goal = getGoals().find(g => g.id === id);
+  var goal = getGoals().find(function(g){return g.id===id;});
   if (!goal) return;
-  const newDate = prompt('Target date (YYYY-MM-DD), or leave blank to remove:', goal.targetDate || '');
-  if (newDate !== null) {
-    upsertGoal({...goal, targetDate: newDate.trim() || null});
-    renderMain();
-  }
+  showPrompt('Target date (YYYY-MM-DD) — leave blank to remove:', goal.targetDate||'', function(val) {
+    upsertGoal(Object.assign({},goal,{targetDate:val.trim()||null})); renderMain();
+  });
 }
-function deleteGoal(id) {
-  if (!confirm('Permanently delete this goal? This cannot be undone.')) return;
-  const all = getGoals().filter(g => g.id !== id);
-  saveGoals(all);
-  if (S.activeGoalId === id) S.activeGoalId = null;
+
+// ============================================================
+// INLINE CONFIRM — replaces browser confirm()/prompt() for iOS PWA
+// ============================================================
+function showConfirm(msg, onYes, yesLabel, yesStyle) {
+  S.confirmPending = {msg: msg, onYes: onYes, yesLabel: yesLabel||'YES', yesStyle: yesStyle||'red'};
   renderMain();
 }
+function confirmYes() {
+  if (S.confirmPending && S.confirmPending.onYes) {
+    var fn = S.confirmPending.onYes;
+    S.confirmPending = null;
+    fn();
+  }
+}
+function confirmNo() {
+  S.confirmPending = null;
+  renderMain();
+}
+function renderConfirmModal() {
+  if (!S.confirmPending) return '';
+  var p = S.confirmPending;
+  var btnColor = p.yesStyle === 'red' ? 'var(--red)' : p.yesStyle === 'green' ? 'var(--green)' : 'var(--amber)';
+  var btnBorder = p.yesStyle === 'red' ? 'var(--red-border)' : p.yesStyle === 'green' ? 'var(--green-border)' : 'var(--amber-border)';
+  return '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-top:3px solid '+btnColor+';padding:24px;width:100%;max-width:340px">' +
+    '<div style="font-family:var(--body);font-size:16px;color:var(--text);margin-bottom:20px;line-height:1.5">' + p.msg + '</div>' +
+    '<div style="display:flex;gap:10px">' +
+    '<button onclick="confirmNo()" style="flex:1;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer">CANCEL</button>' +
+    '<button onclick="confirmYes()" style="flex:1;padding:12px;background:none;border:1px solid '+btnBorder+';color:'+btnColor+';font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer">'+p.yesLabel+'</button>' +
+    '</div></div></div>';
+}
+
+function showPrompt(msg, defaultVal, onSave) {
+  S.promptPending = {msg: msg, val: defaultVal||'', onSave: onSave};
+  renderMain();
+}
+function promptSave() {
+  if (S.promptPending && S.promptPending.onSave) {
+    var fn = S.promptPending.onSave;
+    var val = document.getElementById('prompt-input') ? document.getElementById('prompt-input').value : S.promptPending.val;
+    S.promptPending = null;
+    fn(val);
+  }
+}
+function promptCancel() {
+  S.promptPending = null;
+  renderMain();
+}
+function renderPromptModal() {
+  if (!S.promptPending) return '';
+  var p = S.promptPending;
+  return '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--amber);padding:24px;width:100%;max-width:340px">' +
+    '<div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:12px">' + p.msg + '</div>' +
+    '<input id="prompt-input" type="text" value="' + (p.val||'').replace(/"/g,'&quot;') + '" ' +
+    'style="width:100%;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--amber);color:var(--text);font-family:var(--body);font-size:17px;padding:10px 12px;margin-bottom:16px;color-scheme:dark">' +
+    '<div style="display:flex;gap:10px">' +
+    '<button onclick="promptCancel()" style="flex:1;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer">CANCEL</button>' +
+    '<button onclick="promptSave()" style="flex:1;padding:12px;background:var(--amber);border:2px solid var(--amber);color:#111;font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer;font-weight:700">SAVE</button>' +
+    '</div></div></div>';
+}
+function deleteGoal(id) {
+  showConfirm('Permanently delete this goal? This cannot be undone.', function() {
+    var all = getGoals().filter(function(g){return g.id !== id;});
+    saveGoals(all);
+    if (S.activeGoalId === id) S.activeGoalId = null;
+    renderMain();
+  }, 'DELETE', 'red');
+}
 function goalArchiveConfirm(id) {
-  if (confirm('Archive this goal? It stays in your history.')) { archiveGoal(id); S.activeGoalId = null; renderMain(); }
+  showConfirm('Archive this goal? It stays in your history.', function() {
+    archiveGoal(id); S.activeGoalId = null; renderMain();
+  }, 'ARCHIVE', 'amber');
 }
 function goalCompleteConfirm(id) {
-  if (confirm('Mark this goal as complete?')) { completeGoal(id); S.activeGoalId = null; renderMain(); }
+  showConfirm('Mark this goal as complete? Great work.', function() {
+    completeGoal(id); S.activeGoalId = null; renderMain();
+  }, 'COMPLETE', 'green');
 }
 
 // Get today's scheduled session for a goal with an app plan
 function getTodayGoalSession(goal) {
-  if (!goal.planData || !goal.planData.phases) return null;
+  // Fall back to the built-in plan phases if goal has no stored planData
+  var phases;
+  if (goal.planData && goal.planData.phases) {
+    phases = goal.planData.phases;
+  } else if (goal.planType === 'app' || goal.planType === 'undecided') {
+    // Use the built-in 14-week plan
+    phases = getPlanPhases();
+  } else {
+    return null;
+  }
+  if (!phases || !phases.length) return null;
   var today = new Date();
   var dow = today.getDay();
-  var phases = goal.planData.phases;
-
   // Find which phase we're in based on goal start date (use settings startDate or goal createdAt)
   var startDate = parseDate(getStartDate());
   var daysSinceStart = Math.floor((today - startDate) / 86400000);
@@ -1707,6 +1779,70 @@ function saveGenericLog(goalId) {
   }
   S.genericLog.open = false;
   renderMain();
+}
+
+// ============================================================
+// MULTI-GOAL SESSION RESOLVER
+// ============================================================
+
+function getActivePlanPhases() {
+  // If a specific goal plan is selected, use that goal's planData
+  if (S.planGoalId) {
+    var goal = getGoals().find(function(g){ return g.id === S.planGoalId; });
+    if (goal && goal.planData && goal.planData.phases) {
+      return goal.planData.phases;
+    }
+  }
+  // Fall back to built-in 14-week plan
+  return getPlanPhases();
+}
+function getActivePlanStartDate() {
+  if (S.planGoalId) {
+    var goal = getGoals().find(function(g){ return g.id === S.planGoalId; });
+    if (goal && goal.createdAt) {
+      return goal.createdAt.slice(0,10);
+    }
+  }
+  return getStartDate();
+}
+function getAllTodaySessions() {
+  var goals = getActiveGoals();
+  var sessions = [];
+  goals.forEach(function(goal) {
+    var session = getTodayGoalSession(goal);
+    if (session) {
+      sessions.push({goal: goal, session: session});
+    }
+  });
+  return sessions;
+}
+
+function detectConflicts(sessions) {
+  // Conflict = two sessions that are both high-intensity on same day
+  // e.g. two IRON sessions, or IRON + FUNCTIONAL
+  // Easy Run + Lift = not a conflict
+  var conflicts = [];
+  var hardTags = ['IRON','FUNCTIONAL','HIIT','WOD','BUILD'];
+  var hardSessions = sessions.filter(function(s) {
+    return hardTags.some(function(t) { return (s.session.tag||'').includes(t); });
+  });
+  if (hardSessions.length > 1) {
+    conflicts = hardSessions;
+  }
+  return conflicts;
+}
+
+function renderConflictBanner(conflicts) {
+  if (!conflicts.length) return '';
+  var names = conflicts.map(function(c) { return c.session.label; }).join(' + ');
+  return '<div style="margin:0 16px 8px;background:var(--amber-bg);border:1px solid var(--amber-border);' +
+    'border-left:3px solid var(--amber);padding:10px 12px">' +
+    '<div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:4px">SCHEDULE CONFLICT</div>' +
+    '<div style="font-family:var(--body);font-size:13px;color:var(--text2);">' + names + ' both scheduled today.</div>' +
+    '<div style="display:flex;gap:8px;margin-top:8px">' +
+    '<button onclick="S.conflictOverride=true;renderMain()" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">DO BOTH</button>' +
+    '<button onclick="goPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">MOVE ONE</button>' +
+    '</div></div>';
 }
 // ============================================================
 // GOAL SYSTEM
@@ -2953,6 +3089,24 @@ function handleImportFile(input){
 function renderPlan(){
  const skips=getSkips();const moves=getMoves();
  const mode=S.planMode||'myplan';
+ var html='';
+
+  // Multi-goal plan switcher
+  var appGoals = getActiveGoals().filter(function(g){ return g.planType==='app' || (g.planType!=='own' && getActivePlanPhases().length>0); });
+  if(appGoals.length > 1) {
+    if(!S.planGoalId || !appGoals.find(function(g){return g.id===S.planGoalId;})) {
+      S.planGoalId = appGoals[0].id;
+    }
+    var goalTabs = '<div style="display:flex;overflow-x:auto;gap:0;border-bottom:2px solid var(--border);margin-bottom:0">' +
+      appGoals.map(function(g){
+        var active = S.planGoalId === g.id;
+        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--mono);font-size:9px;letter-spacing:2px;background:'+(active?'var(--amber)':'none')+';color:'+(active?'#111':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--amber)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
+      }).join('') + '</div>';
+    html += goalTabs;
+  } else if(appGoals.length === 1) {
+    S.planGoalId = appGoals[0].id;
+  }
+
  // Plan builder mode
  if(mode==='buildplan') return `<div class="fade-in" style="padding:18px 16px 0">
   <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:0">
@@ -2961,13 +3115,13 @@ function renderPlan(){
   </div>
   ${renderPlanBuilder()}
  </div>`;
- return`<div class="fade-in" style="padding:18px 0 20px">
+ return html+`<div class="fade-in" style="padding:18px 0 20px">
   <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
    <button style="flex:1;padding:11px 8px;font-family:var(--mono);font-size:11px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--amber);border-bottom:2px solid var(--amber)" onclick="S.planMode='myplan';renderMain()">MY PLAN</button>
    <button style="flex:1;padding:11px 8px;font-family:var(--mono);font-size:11px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.showGoalCreator=true;gbReset();renderMain()">BUILD A PLAN</button>
   </div>
   ${!hasCustomPlan()?'<div style="padding:0 16px 14px"><div class="section-label">DEFAULT PLAN</div></div>':'<div style="padding:0 16px 14px"><div class="section-label">MY PLAN</div></div>'}
-  ${getPlanPhases().map((ph,pi)=>{
+  ${getActivePlanPhases().map((ph,pi)=>{
    const open=S.planOpen[pi];const di=S.planDayIdx[pi]||0;const day=ph.schedule[di];
    const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
    // Compute session status for viewed day
@@ -3788,7 +3942,7 @@ function renderToday(){
   html+=renderGoalStrip();
 
   // Week briefing (for users with the built-in 14-week plan or similar)
-  if(ph&&ph.briefings){html+=renderBriefing(pi,ph);}
+  var _ap=getActivePlanPhases();var _pi=getPhaseForDate(todayStr());var _ph=_ap[_pi>=0?_pi:0];if(_ph&&_ph.briefings){html+=renderBriefing(_pi>=0?_pi:0,_ph);}
 
   // Settings panel
   if(S.showSettings){html+=renderSettingsPanel(settings,phases);}
@@ -3816,7 +3970,7 @@ function renderCheckinStrip(dateStr,checkin){
       </div>
       <div class="checkin-expanded">${renderCheckinForm(checkin,true)}</div>`;
     }
-    return `<div class="checkin-strip" onclick="S.checkinOpen=true;renderMain()" style="cursor:pointer">
+    return `<div class="checkin-strip" onclick="openCheckin()" style="cursor:pointer">
      <div class="checkin-strip-header">
       <span class="checkin-title">CHECK-IN</span>
       <span class="checkin-summary">${summary}</span>
@@ -3833,7 +3987,7 @@ function renderCheckinStrip(dateStr,checkin){
     </div>
     <div class="checkin-expanded">${renderCheckinForm(null,false)}</div>`;
   }
-  return `<div class="checkin-strip" onclick="S.checkinOpen=true;renderMain()" style="cursor:pointer">
+  return `<div class="checkin-strip" onclick="openCheckin()" style="cursor:pointer">
    <div class="checkin-strip-header">
     <span class="checkin-title">CHECK-IN</span>
     <span class="checkin-prompt">TAP TO LOG — 5 SEC</span>
@@ -3946,6 +4100,9 @@ function renderMain(){
     case'squad':m.innerHTML=renderSquad();break;
     case'stats':m.innerHTML=renderStats();break;
   }
+  // Inject modals on top
+  var _modalEl=document.getElementById('modal-layer');
+  if(_modalEl)_modalEl.innerHTML=renderConfirmModal()+renderPromptModal();
 }
 function renderNav(){['today','plan','log','fuel','gen','squad','stats'].forEach(t=>document.getElementById('nav-'+t)?.classList.toggle('active',S.tab===t));}
 function setTab(t){
