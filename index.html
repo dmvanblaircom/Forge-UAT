@@ -1233,9 +1233,9 @@ function getDayEst(label){return DAY_DURATIONS[label]||null}
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
-const SUPABASE_URL = 'https://gqlzrfsjwjnujmrzxunn.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxbHpyZnNqd2pudWptcnp4dW5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MTQ0MjUsImV4cCI6MjA5NDQ5MDQyNX0.Gh4lbX_LYtg4DZlc9NbbDzPJS-CDpLbBa2zrW0ALajw';
-const APP_URL = 'https://dmvanblaircom.github.io/Grind-app/';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const APP_URL = 'YOUR_GITHUB_PAGES_URL';
 
 function supaFetch(path, opts={}) {
   return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -1507,7 +1507,7 @@ function renderGoalStrip() {
 
   goals.forEach(function(goal, gi) {
     var countdown = goalCountdown(goal.targetDate);
-    var isActive = S.activeGoalId === goal.id || (!S.activeGoalId && gi === 0);
+    var isActive = S.activeGoalId === goal.id;
     var disc = getDisciplineLabel(goal.discipline);
     var subLabel = goalSubLabel(goal);
     var hasAppPlan = goal.planType === 'app' && goal.planData;
@@ -1519,7 +1519,7 @@ function renderGoalStrip() {
 
     // Card header
     html += '<div style="padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px" ' +
-      'onclick="S.activeGoalId=' + JSON.stringify(goal.id) + ';renderMain()">' +
+      'data-gid="'+goal.id+'" onclick="toggleGoalCard(this.dataset.gid)">' +
       '<div style="flex:1;min-width:0">' +
       '<div style="font-family:var(--body);font-weight:700;font-size:15px;color:' + (isActive?'var(--amber)':'var(--text)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + goal.label + '</div>' +
       '<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:1px;margin-top:2px">' + subLabel + '</div>' +
@@ -1555,9 +1555,9 @@ function renderGoalStrip() {
 
       // Goal management options
       html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button data-gid="'+goal.id+'" onclick="goalChangeDisc(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
+        '<button data-gid="'+goal.id+'" onclick="editGoalLabel(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">RENAME</button>'+'<button data-gid="'+goal.id+'" onclick="editGoalDate(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">EDIT DATE</button>'+'<button data-gid="'+goal.id+'" onclick="goalChangeDisc(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
         (hasAppPlan ? '<button data-gid="'+goal.id+'" onclick="goalAdaptPlan(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PLAN</button>' : '') +
-        '<button data-gid="'+goal.id+'" onclick="goalArchiveConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>' +
+        '<button data-gid="'+goal.id+'" onclick="goalArchiveConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>'+'<button data-gid="'+goal.id+'" onclick="deleteGoal(this.dataset.gid)" style="background:none;border:1px solid var(--red-border);color:var(--red);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">DELETE</button>' +
         '<button data-gid="'+goal.id+'" onclick="goalCompleteConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">COMPLETE</button>' +
         '</div>';
       html += '</div>';
@@ -1577,6 +1577,38 @@ function renderGoalStrip() {
 
 function gotoLog(){setTab('log');}
 function openGenericLog(goalId){S.genericLog={open:true,goalId:goalId,activityType:'',duration:'',distance:'',intensity:3,notes:''};renderMain();}
+
+
+function toggleGoalCard(id) {
+  S.activeGoalId = S.activeGoalId === id ? null : id;
+  renderMain();
+}
+
+function editGoalLabel(id) {
+  const goal = getGoals().find(g => g.id === id);
+  if (!goal) return;
+  const newLabel = prompt('Rename goal:', goal.label);
+  if (newLabel && newLabel.trim()) {
+    upsertGoal({...goal, label: newLabel.trim()});
+    renderMain();
+  }
+}
+function editGoalDate(id) {
+  const goal = getGoals().find(g => g.id === id);
+  if (!goal) return;
+  const newDate = prompt('Target date (YYYY-MM-DD), or leave blank to remove:', goal.targetDate || '');
+  if (newDate !== null) {
+    upsertGoal({...goal, targetDate: newDate.trim() || null});
+    renderMain();
+  }
+}
+function deleteGoal(id) {
+  if (!confirm('Permanently delete this goal? This cannot be undone.')) return;
+  const all = getGoals().filter(g => g.id !== id);
+  saveGoals(all);
+  if (S.activeGoalId === id) S.activeGoalId = null;
+  renderMain();
+}
 function goalArchiveConfirm(id) {
   if (confirm('Archive this goal? It stays in your history.')) { archiveGoal(id); S.activeGoalId = null; renderMain(); }
 }
@@ -3773,7 +3805,7 @@ function renderToday(){
 }
 function renderCheckinStrip(dateStr,checkin){
   if(checkin&&checkin.sleep!==null){
-    const summary='SLEEP '+checkin.sleep+' · ENERGY '+checkin.energy+' · PAIN '+(checkin.pain==='ok'?'OK':'SORE');
+    const summary='SLEEP '+checkin.sleep+'h · ENERGY '+checkin.energy+' · BODY '+(checkin.pain==='ok'?'GOOD':'SORE');
     if(S.checkinOpen){
       return `<div class="checkin-strip" style="cursor:pointer" onclick="S.checkinOpen=false;renderMain()">
        <div class="checkin-strip-header">
@@ -3814,21 +3846,21 @@ function renderCheckinForm(existing,editing){
   const en=d.energy!==null?d.energy:(existing?existing.energy:null);
   const pa=d.pain!==null?d.pain:(existing?existing.pain:null);
   return `<div class="checkin-row">
-   <div class="checkin-row-label">SLEEP QUALITY</div>
-   <div class="num-pills">${[1,2,3,4,5].map(n=>`<button class="num-pill${sl===n?' selected':''}" onclick="setCheckinVal('sleep',${n})">${n}</button>`).join('')}</div>
+   <div class="checkin-row-label">SLEEP (HRS)</div>
+   <div class="num-pills">${[4,5,6,7,8,9].map(n=>`<button class="num-pill${sl===n?' selected':''}" onclick="setCheckinVal('sleep',${n})">${n}</button>`).join('')}</div>
   </div>
   <div class="checkin-row">
    <div class="checkin-row-label">ENERGY LEVEL</div>
    <div class="num-pills">${[1,2,3,4,5].map(n=>`<button class="num-pill${en===n?' selected':''}" onclick="setCheckinVal('energy',${n})">${n}</button>`).join('')}</div>
   </div>
   <div class="checkin-row">
-   <div class="checkin-row-label">BODY FEEL</div>
+   <div class="checkin-row-label">BODY</div>
    <div class="pain-pills">
     <button class="pain-pill${pa==='ok'?' selected-ok':''}" onclick="setCheckinVal('pain','ok')">GOOD TO GO</button>
     <button class="pain-pill${pa==='bad'?' selected-bad':''}" onclick="setCheckinVal('pain','bad')">SORE / TIGHT</button>
    </div>
   </div>
-  ${sl!==null&&en!==null&&pa!==null?`<button class="action-btn" onclick="saveCheckinNow()">SAVE CHECK-IN</button>`:''}`;
+  <button class="action-btn" onclick="saveCheckinNow()" ${sl!==null&&en!==null&&pa!==null?'':' disabled style="opacity:0.4;cursor:not-allowed"'}> SAVE CHECK-IN</button>`;
 }
 function renderBriefing(pi,ph){
   if(!ph||!ph.briefings) return '';
@@ -3886,7 +3918,14 @@ function saveCheckinNow(){
   renderMain();
 }
 function setCheckinVal(k,v){S.checkinDraft[k]=v;renderMain();}
-function openCheckin(){S.checkinOpen=true;renderMain();}
+function openCheckin(){
+  S.checkinOpen=true;
+  const existing=getCheckin(todayStr());
+  if(existing&&S.checkinDraft.sleep===null){
+    S.checkinDraft={sleep:existing.sleep,energy:existing.energy,pain:existing.pain};
+  }
+  renderMain();
+}
 function closeCheckin(){S.checkinOpen=false;renderMain();}
 
 // ============================================================
