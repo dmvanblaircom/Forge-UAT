@@ -795,7 +795,7 @@ textarea.notes::placeholder{color:var(--text3)}
   <nav id="nav">
     <button class="nav-btn" id="nav-today" onclick="setTab('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>TODAY</button>
     <button class="nav-btn" id="nav-plan" onclick="setTab('plan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>PLAN</button>
-    <button class="nav-btn" id="nav-log" onclick="setTab(\"log\")"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>LOG</button>
+    <button class="nav-btn" id="nav-log" onclick="setTab('log')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>LOG</button>
     <button class="nav-btn" id="nav-fuel" onclick="setTab('fuel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10h18M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M5 10v8a2 2 0 002 2h10a2 2 0 002-2v-8"/><path d="M8 14h8"/></svg>FUEL</button>
     <button class="nav-btn" id="nav-gen" onclick="setTab('gen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>BUILD</button>
     <button class="nav-btn" id="nav-squad" onclick="setTab('squad')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>SQUAD</button>
@@ -1539,7 +1539,7 @@ function renderGoalStrip() {
           html += '<div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--amber);margin-bottom:8px">TODAY\u2019S SESSION</div>' +
             '<div style="font-family:var(--body);font-weight:700;font-size:16px;color:var(--text);margin-bottom:4px">' + todayInfo.label + '</div>' +
             '<div style="font-family:var(--mono);font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:10px">' + todayInfo.tag + (todayInfo.est?' · ~'+todayInfo.est+' MIN':'') + '</div>' +
-            '<button onclick="setTab(\"log\")" class="action-btn">LOG THIS SESSION</button>';
+            '<button onclick="gotoLog()" class="action-btn">LOG THIS SESSION</button>';
         } else {
           html += '<div style="font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:1px;padding:8px 0">REST DAY — no session scheduled</div>';
         }
@@ -1555,10 +1555,10 @@ function renderGoalStrip() {
 
       // Goal management options
       html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button onclick="goalChangeDisc(' + JSON.stringify(goal.id) + ')" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
-        (hasAppPlan ? '<button onclick="goalAdaptPlan(' + JSON.stringify(goal.id) + ')" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PLAN</button>' : '') +
-        '<button onclick="goalArchiveConfirm(' + JSON.stringify(goal.id) + ')" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>' +
-        '<button onclick="goalCompleteConfirm(' + JSON.stringify(goal.id) + ')" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">COMPLETE</button>' +
+        '<button data-gid="'+goal.id+'" onclick="goalChangeDisc(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
+        (hasAppPlan ? '<button data-gid="'+goal.id+'" onclick="goalAdaptPlan(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PLAN</button>' : '') +
+        '<button data-gid="'+goal.id+'" onclick="goalArchiveConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>' +
+        '<button data-gid="'+goal.id+'" onclick="goalCompleteConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer">COMPLETE</button>' +
         '</div>';
       html += '</div>';
     }
@@ -1575,6 +1575,7 @@ function renderGoalStrip() {
   return html;
 }
 
+function gotoLog(){setTab('log');}
 function openGenericLog(goalId){S.genericLog={open:true,goalId:goalId,activityType:'',duration:'',distance:'',intensity:3,notes:''};renderMain();}
 function goalArchiveConfirm(id) {
   if (confirm('Archive this goal? It stays in your history.')) { archiveGoal(id); S.activeGoalId = null; renderMain(); }
@@ -1891,8 +1892,9 @@ function renderGoalCreator() {
   const d = GB.draft;
   const step = GB.step;
   const backBtn = step > 0 ? '<button onclick="gbBack()" style="background:none;border:none;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text3);cursor:pointer;padding:0">← BACK</button>' : '';
+  const cancelX = '<button onclick="gbCancel()" style="background:none;border:none;font-family:var(--mono);font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1">×</button>';
   const hdr = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">' + backBtn +
-    '<div style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);flex:1;text-align:' + (step > 0 ? 'center' : 'left') + '">' + (GB.editingId ? 'EDIT GOAL' : 'NEW GOAL') + '</div></div>';
+    '<div style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);flex:1;text-align:' + (step > 0 ? 'center' : 'left') + '">' + (GB.editingId ? 'EDIT GOAL' : 'NEW GOAL') + '</div>' + cancelX + '</div>';
 
   if (step === 0) {
     return '<div class="fade-in" style="padding:24px 16px">' + hdr +
