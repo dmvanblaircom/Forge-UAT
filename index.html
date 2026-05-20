@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FORGE">
-<meta name="theme-color" content="#080B0B">
+<meta name="theme-color" content="#0B0D0B">
 <link rel="apple-touch-icon" href="./apple-touch-icon.svg">
 <title>FORGE</title>
 <link rel="manifest" href="./manifest.json">
@@ -23,18 +23,18 @@
 
 :root{
   /* FORGE brand palette */
-  --forge-bg:#080B0B;
+  --forge-bg:#0B0D0B;
   --forge-elevated:#141714;
   --forge-card:#1E2120;
   --forge-lime:#A6CB2A;
-  --forge-glow:#B7F36B;
+  --forge-glow:#A6CB2A;
   --forge-muted-lime:#80961F;
   --forge-text:#FFFFFF;
-  --forge-text-secondary:#B8B8B8;
-  --forge-text-tertiary:#727272;
+  --forge-text-secondary:#A6A9A6;
+  --forge-text-tertiary:#A6A9A6;
   --forge-border:rgba(255,255,255,.06);
-  --success:#4ADE80;
-  --warning:#FBBF24;
+  --success:#A6CB2A;
+  --warning:#A6CB2A;
   --error:#EF4444;
   /* BACKGROUNDS — elevation via bg steps */
   --bg:var(--forge-bg);
@@ -61,8 +61,8 @@
   --gold-dim:var(--forge-muted-lime);
   /* GREEN — logged/success (8.7:1 contrast) */
   --green:var(--success);
-  --green-bg:rgba(74,222,128,.1);
-  --green-border:rgba(74,222,128,.28);
+  --green-bg:rgba(166,203,42,.1);
+  --green-border:rgba(166,203,42,.28);
   /* RED — alert (5.3:1 contrast) */
   --red:var(--error);
   --red-bg:rgba(239,68,68,.1);
@@ -91,17 +91,7 @@
 
 .hist-sub,
 .fuel-target,
-.checkin-summary,
-.fuel-status,
-.protein-meta,
-.briefing-sub,
-.fuel-entry-time,
-.phase-week,
-.pt-input-label{
-  font-family:var(--body);
-  font-weight:500;
-  letter-spacing:.04em;
-}
+
 
 /* Force dark color-scheme on all form controls — prevents iOS white bg */
 input,select,textarea{color-scheme:dark}
@@ -292,27 +282,13 @@ body{
 }
 
 /* ---- CHECK-IN STRIP ---- */
-.checkin-strip{
-  padding:12px 16px;
-  background:var(--bg);
-  border-bottom:1px solid var(--border);
-  cursor:pointer;
-  border-left:3px solid var(--green);
-}
-.checkin-strip-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
-.checkin-title{font-family:var(--display);font-size:17px;letter-spacing:3px;color:var(--accent);flex-shrink:0}
+/* checkin-strip replaced by forge-checkin-card */
+
+
 .checkin-summary{font-family:var(--body);font-size:13px;color:var(--text2);letter-spacing:1px;text-align:right;line-height:1.6}
-.checkin-prompt{
-  font-family:var(--display);font-size:16px;color:var(--green);letter-spacing:2px;
-  animation:pulse 2s ease-in-out infinite;
-}
+
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.checkin-expanded{
-  padding:14px 16px 4px;
-  background:var(--bg);
-  border-bottom:1px solid var(--border);
-  border-left:3px solid var(--accent);
-}
+
 .checkin-row{margin-bottom:14px}
 .checkin-row-label{
   font-family:var(--display);font-size:14px;letter-spacing:3px;
@@ -517,19 +493,19 @@ body{
 }
 
 .day-tab.active{
-  color:#080B0B;
+  color:#0B0D0B;
 
   background:
     linear-gradient(
       180deg,
-      rgba(183,243,107,1),
+      rgba(166,203,42,1),
       rgba(166,203,42,1)
     );
 
   border:1px solid rgba(255,255,255,.06);
 
   box-shadow:
-    0 6px 18px rgba(183,243,107,.18);
+    0 6px 18px rgba(166,203,42,.18);
 
   font-weight:700;
 }
@@ -601,7 +577,7 @@ body{
   cursor:pointer;transition:all 0.1s;margin-top:16px;
   text-transform:uppercase;font-weight:700;
 }
-.save-btn:active,.save-btn.saved{background:#4ADE80;border-color:#4ADE80;}
+.save-btn:active,.save-btn.saved{background:#A6CB2A;border-color:#A6CB2A;}
 textarea.notes{
   width:100%;background:var(--bg2);
   border:1px solid var(--border);border-left:3px solid var(--border2);
@@ -906,7 +882,7 @@ button, [role="button"], a, input, select, textarea {
   top: -100%;
   left: 8px;
   background: var(--accent);
-  color: #080B0B;
+  color: #0B0D0B;
   padding: 8px 16px;
   font-family: var(--display);
   font-size: 14px;
@@ -1118,14 +1094,14 @@ input::placeholder, textarea::placeholder {
   --border:var(--forge-border);
   --border2:rgba(255,255,255,.1);
 
-  --accent:#B7F36B;
+  --accent:#A6CB2A;
   --accent-border:#80961F;
 
   --shadow-soft:
     0 8px 30px rgba(0,0,0,.28);
 
   --shadow-glow:
-    0 0 30px rgba(183,243,107,.12);
+    0 0 30px rgba(166,203,42,.12);
 }
 
 /* PREMIUM SURFACES */
@@ -1162,13 +1138,13 @@ input::placeholder, textarea::placeholder {
   background:
     linear-gradient(
       180deg,
-      rgba(183,243,107,.06),
+      rgba(166,203,42,.06),
       transparent 60%
     ),
     var(--bg);
 
   border-bottom:
-    1px solid rgba(183,243,107,.22);
+    1px solid rgba(166,203,42,.22);
 }
 
 /* BIG NUMBER REFINEMENT */
@@ -1241,7 +1217,7 @@ input::placeholder, textarea::placeholder {
   background:
     linear-gradient(
       180deg,
-      rgba(183,243,107,.12),
+      rgba(166,203,42,.12),
       transparent
     );
 }
@@ -1340,7 +1316,7 @@ textarea.notes,
     linear-gradient(
       90deg,
       transparent,
-      rgba(183,243,107,.8),
+      rgba(166,203,42,.8),
       transparent
     );
 
@@ -1442,7 +1418,7 @@ textarea.notes,
   border-radius:18px;
 
   box-shadow:
-    0 10px 30px rgba(74,222,128,.18);
+    0 10px 30px rgba(166,203,42,.18);
 }
 
 /* CLEANER TABS */
@@ -1485,18 +1461,18 @@ textarea.notes,
 .save-btn{
   background:linear-gradient(
     180deg,
-    #B7F36B,
+    #A6CB2A,
     #A6CB2A
   ) !important;
 
   border:none !important;
 
-  color:#080B0B !important;
+  color:#0B0D0B !important;
 
   border-radius:20px;
 
   box-shadow:
-    0 10px 30px rgba(183,243,107,.22);
+    0 10px 30px rgba(166,203,42,.22);
 
   letter-spacing:3px;
 
@@ -1510,7 +1486,7 @@ textarea.notes,
 .save-btn.saved{
   background:linear-gradient(
     180deg,
-    #B7F36B,
+    #A6CB2A,
     #A6CB2A
   ) !important;
 
@@ -1525,10 +1501,10 @@ textarea.notes,
 
   border-color:var(--accent) !important;
 
-  color:#080B0B !important;
+  color:#0B0D0B !important;
 
   box-shadow:
-    0 0 18px rgba(183,243,107,.18);
+    0 0 18px rgba(166,203,42,.18);
 }
 
 /* GREEN PANELS -> FORGE LIME */
@@ -1548,22 +1524,22 @@ textarea.notes,
 /* SUCCESS STATES */
 
 .logged-pill{
-  background:rgba(183,243,107,.14);
+  background:rgba(166,203,42,.14);
 
-  border:1px solid rgba(183,243,107,.35);
+  border:1px solid rgba(166,203,42,.35);
 
   color:var(--accent);
 
   box-shadow:
-    0 0 16px rgba(183,243,107,.08);
+    0 0 16px rgba(166,203,42,.08);
 }
 
 /* REMOVE OLD HARSH GREEN */
 
 :root{
-  --green:#B7F36B;
+  --green:#A6CB2A;
   --green-border:#80961F;
-  --green-bg:rgba(183,243,107,.08);
+  --green-bg:rgba(166,203,42,.08);
 }
 
 /* ---- SHARPEN SIGNATURE GLOW ---- */
@@ -1573,7 +1549,7 @@ textarea.notes,
 .fuel-big-number,
 .protein-current{
   text-shadow:
-    0 0 24px rgba(183,243,107,.08);
+    0 0 24px rgba(166,203,42,.08);
 }
 
 /* ============================================================
@@ -1596,8 +1572,8 @@ textarea.notes,
   --accent-bg:rgba(166,203,42,.1);
   --accent-border:rgba(166,203,42,.34);
   --green:var(--success);
-  --green-bg:rgba(74,222,128,.1);
-  --green-border:rgba(74,222,128,.28);
+  --green-bg:rgba(166,203,42,.1);
+  --green-border:rgba(166,203,42,.28);
   --amber:var(--forge-lime);
   --amber-bg:rgba(166,203,42,.1);
   --amber-border:rgba(166,203,42,.34);
@@ -1677,7 +1653,7 @@ body{
 .action-btn,
 .save-btn{
   background:linear-gradient(135deg, var(--accent-strong), var(--accent)) !important;
-  color:#080B0B !important;
+  color:#0B0D0B !important;
   border:none !important;
   border-radius:18px !important;
   box-shadow:0 12px 36px rgba(166,203,42,.22) !important;
@@ -1735,7 +1711,7 @@ body{
 .day-tab.active,
 .intel-tab.active{
   background:linear-gradient(135deg, var(--accent-strong), var(--accent)) !important;
-  color:#080B0B !important;
+  color:#0B0D0B !important;
   box-shadow:0 0 24px rgba(166,203,42,.2) !important;
   margin-bottom:0 !important;
 }
@@ -1761,7 +1737,7 @@ body{
   border-radius:50%;
   display:grid;
   place-items:center;
-  color:#080B0B;
+  color:#0B0D0B;
   background:linear-gradient(135deg, var(--accent-strong), var(--accent));
   font-family:var(--display);
   font-size:18px;
@@ -1974,31 +1950,31 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
 
 /* Strict brand lock: keep app chrome inside the approved FORGE palette. */
 :root{
-  --bg:#080B0B;
+  --bg:#0B0D0B;
   --bg2:#141714;
   --bg3:#1E2120;
   --bg4:#1E2120;
   --card:#1E2120;
   --accent:#A6CB2A;
-  --accent-strong:#B7F36B;
+  --accent-strong:#A6CB2A;
   --accent-bg:rgba(166,203,42,.1);
   --accent-border:rgba(166,203,42,.34);
   --muted-lime:#80961F;
   --text:#FFFFFF;
-  --text2:#B8B8B8;
-  --text3:#727272;
-  --text4:#727272;
+  --text2:#A6A9A6;
+  --text3:#A6A9A6;
+  --text4:#A6A9A6;
   --border:rgba(255,255,255,.06);
   --border2:rgba(255,255,255,.1);
-  --green:#4ADE80;
-  --green-bg:rgba(74,222,128,.1);
-  --green-border:rgba(74,222,128,.28);
+  --green:#A6CB2A;
+  --green-bg:rgba(166,203,42,.1);
+  --green-border:rgba(166,203,42,.28);
   --amber:#A6CB2A;
   --amber-bg:rgba(166,203,42,.1);
   --amber-border:rgba(166,203,42,.34);
   --gold:#A6CB2A;
   --gold-dim:#80961F;
-  --blue:#B8B8B8;
+  --blue:#A6A9A6;
   --blue-bg:#141714;
   --blue-border:rgba(255,255,255,.1);
   --purple:#80961F;
@@ -2015,7 +1991,7 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
 .intel-tab.active,
 .forge-avatar,
 .forge-progress span{
-  background:linear-gradient(135deg,#B7F36B,#A6CB2A) !important;
+  background:linear-gradient(135deg,#A6CB2A,#A6CB2A) !important;
 }
 
 .action-btn,
@@ -2023,7 +1999,7 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
 .day-tab.active,
 .intel-tab.active,
 .forge-avatar{
-  color:#080B0B !important;
+  color:#0B0D0B !important;
 }
 
 @media (max-width:380px){
@@ -2032,6 +2008,77 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   .forge-card-inner{padding:14px}
   .forge-metric{font-size:42px}
   .nav-btn{font-size:10px;letter-spacing:1px}
+}
+
+
+
+/* ============================================================
+   CHECK-IN CARD — matches forge-card exactly
+   ============================================================ */
+.forge-checkin-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018) 48%, rgba(166,203,42,.04)),
+    var(--card);
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.forge-checkin-card.expanded {
+  cursor: default;
+}
+/* Prompt state — lime border to draw attention */
+.forge-checkin-card.prompt {
+  border-color: rgba(166,203,42,.28);
+}
+.forge-checkin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* Label — matches .forge-card-label exactly */
+.forge-checkin-label {
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+/* Summary text — matches .forge-card-note */
+.forge-checkin-summary {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+/* Prompt text — matches .forge-card-note */
+.forge-checkin-prompt-text {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--text3);
+  line-height: 1.4;
+}
+/* Edit/Done — subtle, matches card secondary text */
+.forge-checkin-edit {
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+/* LOG → CTA — accent only on the prompt state */
+.forge-checkin-cta {
+  font-family: var(--display);
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 </style>
@@ -2044,19 +2091,24 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
 </main>
   <nav id="nav" aria-label="Main navigation" role="navigation">
     <button class="nav-btn" id="nav-today" onclick="setTab('today')" aria-label="Today" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>HOME</button>
-    <button class="nav-btn" id="nav-plan" onclick="setTab('plan')" aria-label="Plan" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M4 17h16"/><path d="M2 10v4"/><path d="M22 10v4"/></svg>WORKOUT</button>
-    <button class="nav-btn" id="nav-log" onclick="setTab('log')" aria-label="Log" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>LOG</button>
+      
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>HOME</button>
+    <button class="nav-btn" id="nav-plan" onclick="setTab('plan')" aria-label="Programs" role="tab" aria-selected="false">
+      
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg>PROGRAMS</button>
+    <button class="nav-btn" id="nav-log" onclick="setTab('log')" aria-label="Workout" role="tab" aria-selected="false">
+      
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="5" y="7" width="3" height="10" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/><rect x="16" y="7" width="3" height="10" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/></svg>WORKOUT</button>
     <button class="nav-btn" id="nav-fuel" onclick="setTab('fuel')" aria-label="Fuel" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 3h8l1 4H7L8 3z"/><path d="M7 7l-2 13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1L17 7"/><path d="M10 12h4"/><path d="M10 16h4"/></svg>FUEL</button>
-    <button class="nav-btn" id="nav-gen" onclick="setTab('gen')" aria-label="Build" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>BUILD</button>
+      
+      
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>FUEL</button>
     <button class="nav-btn" id="nav-squad" onclick="setTab('squad')" aria-label="Squad" role="tab" aria-selected="false">
+      
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>GROUP</button>
     <button class="nav-btn" id="nav-stats" onclick="setTab('stats')" aria-label="Stats" role="tab" aria-selected="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>STATS</button>
+      
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="15" rx="1"/><rect x="17" y="9" width="4" height="12" rx="1"/></svg>STATS</button>
   </nav>
 </div>
 <script>
@@ -2253,7 +2305,7 @@ const TM={
  core:  {label:"CORE",  bg:"var(--bg3)",c:"var(--green)"},
  cardio:{label:"CARDIO",bg:"#141714",c:"var(--accent)"},
  mob:   {label:"MOB.",  bg:"#141714",c:"#80961F"},
- cool:  {label:"COOL",  bg:"#141714",c:"#727272"},
+ cool:  {label:"COOL",  bg:"#141714",c:"#A6A9A6"},
 };
 
 // ============================================================
@@ -2571,7 +2623,7 @@ function renderForgeMark(size){
       <path d="M34 72 60 91l26-19v13L60 104 34 85V72Z" fill="url(#forgeGrad)" opacity=".92"/>
       <defs>
         <linearGradient id="forgeGrad" x1="18" y1="18" x2="96" y2="100" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#B7F36B"/>
+          <stop stop-color="#A6CB2A"/>
           <stop offset=".48" stop-color="#A6CB2A"/>
           <stop offset="1" stop-color="#80961F"/>
         </linearGradient>
@@ -2584,24 +2636,56 @@ function getForgeMetrics(){
   const store=loadStore();
   const logs=Object.keys(store).sort();
   const today=parseDate(todayStr());
+
+  // STREAK — no cap, every logged day counts
   let streak=0;
-  for(let i=0;i<90;i++){
+  for(let i=0;i<3650;i++){
     const d=new Date(today);
     d.setDate(today.getDate()-i);
     if(getLogEntry(dateStr(d))) streak++;
     else if(i>0) break;
   }
+
+  // CONSISTENCY — scored against your planned days this week, not a hardcoded 5
   const weekLogs=logs.filter(ds=>{
     const diff=(today-parseDate(ds))/86400000;
     return diff>=0&&diff<7;
   }).length;
+
+  // Get planned workout days this week from active goal plan
+  let plannedDaysThisWeek=5; // fallback only if no plan exists
+  const phases=getActivePlanPhases();
+  if(phases&&phases.length){
+    const pi=getPhaseForDate(todayStr());
+    const phase=phases[pi>=0?pi:0];
+    if(phase&&phase.schedule){
+      // Count non-rest sessions in this phase's weekly schedule
+      plannedDaysThisWeek=phase.schedule.filter(s=>
+        s.tag&&s.tag!=='REST'&&s.tag!=='RECOVERY'&&s.tag!=='ACTIVE'
+      ).length||phase.schedule.length;
+    }
+  }
+  const consistency=Math.min(100,Math.round((weekLogs/Math.max(1,plannedDaysThisWeek))*100));
+
+  // READINESS — only calculated if user has checked in today, null otherwise
   const checkin=getCheckin(todayStr());
-  const sleep=checkin&&checkin.sleep?checkin.sleep:7;
-  const energy=checkin&&checkin.energy?checkin.energy:4;
-  const consistency=Math.min(100,Math.round((weekLogs/5)*100));
-  const readiness=Math.max(45,Math.min(98,Math.round((sleep/8)*46 + (energy/5)*42 + 10)));
-  const score=Math.max(42,Math.min(99,Math.round(consistency*.48 + readiness*.32 + Math.min(streak,14)*1.4 + 8)));
-  return {score,streak,weekLogs,consistency,readiness};
+  let readiness=null;
+  if(checkin&&checkin.sleep!=null&&checkin.energy!=null){
+    readiness=Math.max(10,Math.min(100,Math.round((checkin.sleep/9)*50+(checkin.energy/5)*50)));
+  }
+
+  // SCORE — readiness only contributes if checked in, otherwise consistency+streak drive it
+  const readinessContrib=readiness!=null?readiness*.32:0;
+  const readinessBase=readiness!=null?0:16; // neutral baseline when not checked in yet
+  const score=Math.max(10,Math.min(99,Math.round(
+    consistency*.48+
+    readinessContrib+
+    readinessBase+
+    streak*1.4+  // no cap — every streak day counts
+    6
+  )));
+
+  return {score,streak,weekLogs,consistency,readiness,plannedDaysThisWeek};
 }
 
 function getTodaySession(){
@@ -2680,7 +2764,7 @@ function renderForgeRecentActivity(){
 // ============================================================
 // SETUP SCREEN
 // ============================================================
-let setupGender=null,setupPregnancy=false,setupPlanChoice='later';
+let setupGender=null,setupPregnancy=false,setupPlanChoice=null;
 
 function renderSetup(){
   return `<div class="fade-in" style="min-height:100vh;padding:40px 24px 40px;display:flex;flex-direction:column;justify-content:center">
@@ -2719,14 +2803,14 @@ function renderSetup(){
       BUILD MY OWN PLAN IN THE APP
     </button>
     <button id="setup-plan-now" onclick="setupSelectPlan('now')"
-      style="width:100%;padding:12px;font-family:var(--display);font-size:15px;letter-spacing:2px;background:var(--bg4);border:1px solid var(--accent-border);color:var(--accent);cursor:pointer;text-align:left;margin-bottom:28px">
+      style="width:100%;padding:12px;font-family:var(--display);font-size:15px;letter-spacing:2px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;text-align:left;margin-bottom:28px">
       USE DEFAULT PLAN TO START NOW
     </button>
     <button onclick="setupComplete()"
-      style="width:100%;padding:16px;background:none;border:2px solid var(--green-border);
-      color:var(--green);font-family:var(--display);font-size:17px;letter-spacing:4px;cursor:pointer">
+      style="width:100%;padding:18px;background:var(--forge-lime);border:none;
+      color:#0B0D0B;font-family:var(--display);font-size:22px;letter-spacing:4px;
+      cursor:pointer;border-radius:8px;">
       ENTER FORGE
-    </button>
   </div>`;
 }
 
@@ -2753,6 +2837,13 @@ function setupComplete(){
   const name=nameInput?nameInput.value.trim():'';
   if(!name){if(nameInput){nameInput.style.borderBottomColor='var(--red)';nameInput.focus();}return;}
   if(!setupGender){const mb=document.getElementById('setup-male');if(mb)mb.style.borderColor='var(--red)';return;}
+  if(!setupPlanChoice){
+    const pb=document.getElementById('setup-plan-later');
+    const nb=document.getElementById('setup-plan-now');
+    if(pb)pb.style.borderColor='var(--red)';
+    if(nb)nb.style.borderColor='var(--red)';
+    return;
+  }
   saveUser({name,gender:setupGender,mode:setupPregnancy?'pregnancy':'standard',createdAt:new Date().toISOString()});
   setupGender=null;setupPregnancy=false;
   if(setupPlanChoice==='later'){S.planMode='buildplan';renderNav();renderMain();setTab('plan');}
@@ -3093,7 +3184,7 @@ function renderPromptModal() {
     'style="width:100%;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:var(--body);font-size:17px;padding:10px 12px;margin-bottom:16px;color-scheme:dark">' +
     '<div style="display:flex;gap:10px">' +
     '<button onclick="promptCancel()" style="flex:1;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer">CANCEL</button>' +
-    '<button onclick="promptSave()" style="flex:1;padding:12px;background:var(--accent);border:2px solid var(--accent);color:#080B0B;font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer;font-weight:700">SAVE</button>' +
+    '<button onclick="promptSave()" style="flex:1;padding:12px;background:var(--accent);border:2px solid var(--accent);color:#0B0D0B;font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer;font-weight:700">SAVE</button>' +
     '</div></div></div>';
 }
 function deleteGoal(id) {
@@ -3192,7 +3283,7 @@ function renderGenericLogger(goalId) {
     '</div>' +
     '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:6px">NOTES</div>' +
     '<textarea oninput="S.genericLog.notes=this.value" placeholder="How did it go?" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-family:var(--body);font-size:14px;padding:8px;resize:none;height:60px;color-scheme:dark">' + (gl.notes||'') + '</textarea>' +
-    '<button onclick="saveGenericLog(' + JSON.stringify(goalId) + ')" class="action-btn amber" style="margin-top:8px">SAVE WORKOUT</button>' +
+    '<button data-glid="'+(goalId||'')+'" onclick="saveGenericLog(this.dataset.glid)" class="action-btn amber" style="margin-top:8px">SAVE WORKOUT</button>' +
     '<button onclick="S.genericLog.open=false;renderMain()" class="action-btn secondary">CANCEL</button>' +
     '</div>';
 }
@@ -3721,7 +3812,7 @@ function buildOfflinePlan(opts) {
 function makePlanId() { return 'p_' + Date.now().toString(36); }
 
 function phaseColor(i) {
-  return ['var(--green)','var(--accent)','#80961F','#4ADE80','#B7F36B'][i % 5];
+  return ['var(--green)','var(--accent)','#80961F','#A6CB2A','#A6CB2A'][i % 5];
 }
 
 function dowLabel(dow) {
@@ -4502,7 +4593,7 @@ async function buildAIPlan_unused(){
     const text=data.content?.find(b=>b.type==='text')?.text||'';
     const plan=JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'').trim());
     if(!plan.phases||!Array.isArray(plan.phases)) throw new Error('Invalid structure');
-    plan.phases.forEach((ph,i)=>{ph.id=i;ph.color=ph.color||['#80961F','#80961F','#727272','#EF4444','#80961F'][i%5];ph.schedule=ph.schedule||[];});
+    plan.phases.forEach((ph,i)=>{ph.id=i;ph.color=ph.color||['#80961F','#80961F','#A6A9A6','#EF4444','#80961F'][i%5];ph.schedule=ph.schedule||[];});
     PB.generatedPlan=plan;PB.step='review';PB.loading=false;renderMain();
   }catch(e){
     PB.loading=false;PB.error='Could not generate. Check connection. ('+e.message+')';PB.step='questions';renderMain();
@@ -4530,16 +4621,19 @@ function renderPlan(){
  const mode=S.planMode||'myplan';
  var html='';
 
-  // Multi-goal plan switcher
-  var appGoals = getActiveGoals().filter(function(g){ return g.planType==='app' || (g.planType!=='own' && getActivePlanPhases().length>0); });
-  if(appGoals.length > 1) {
+  // Multi-goal plan switcher — always resolve planGoalId from first app goal
+  var appGoals = getActiveGoals().filter(function(g){ return g.planType==='app' || g.planType==='undecided'; });
+  // Always ensure planGoalId is set to a valid goal
+  if(appGoals.length > 0) {
     if(!S.planGoalId || !appGoals.find(function(g){return g.id===S.planGoalId;})) {
       S.planGoalId = appGoals[0].id;
     }
+  }
+  if(appGoals.length > 1) {
     var goalTabs = '<div style="display:flex;overflow-x:auto;gap:0;border-bottom:2px solid var(--border);margin-bottom:0">' +
       appGoals.map(function(g){
         var active = S.planGoalId === g.id;
-        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--display);font-size:14px;letter-spacing:2px;background:'+(active?'var(--accent)':'none')+';color:'+(active?'#080B0B':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--accent)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
+        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--display);font-size:14px;letter-spacing:2px;background:'+(active?'var(--accent)':'none')+';color:'+(active?'#0B0D0B':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--accent)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
       }).join('') + '</div>';
     html += goalTabs;
   } else if(appGoals.length === 1) {
@@ -4707,13 +4801,70 @@ function saveAndShareCustomWorkout(){
 // ============================================================
 // LOG TAB
 // ============================================================
+
+// ============================================================
+// GENERATE TAB — embedded inside Log tab
+// ============================================================
+function renderGenInLog(tabBar) {
+  // If result exists, show it with a "Log This Workout" CTA
+  if (G.result) {
+    const w = G.result;
+    const exRows = (w.exercises||[]).map(ex => `
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--display);font-size:18px;letter-spacing:1px;color:var(--text)">${ex.n}</div>
+        <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-top:2px">${ex.d}</div>
+      </div>`).join('');
+    return `<div class="fade-in" style="padding:0 0 30px">
+      ${tabBar}
+      <div style="padding:0 16px">
+        <div class="section-label">${w.title||'GENERATED WORKOUT'}</div>
+        <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:16px">${w.location==='home'?'Home':'Away'} · ${G.duration} min · ${w.focus||''}</div>
+        ${exRows}
+        <button class="action-btn" style="margin-top:20px" onclick="loadGenIntoCustomLog()">
+          START &amp; LOG THIS WORKOUT →
+        </button>
+        <button class="action-btn secondary" style="margin-top:8px" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};renderMain()">
+          GENERATE ANOTHER
+        </button>
+      </div>
+    </div>`;
+  }
+  // Otherwise show the generator flow
+  const genContent = renderGen();
+  return `<div class="fade-in" style="padding:0 0 30px">
+    ${tabBar}
+    ${genContent}
+  </div>`;
+}
+
+function loadGenIntoCustomLog() {
+  // Transfer generated exercises into custom session state
+  const w = G.result;
+  if (!w || !w.exercises) return;
+  S.custom = {
+    exercises: w.exercises.filter(ex => ex.log !== false).map(ex => ({
+      ...ex,
+      sets: [{reps:'', weight:'', done:false}]
+    })),
+    search: '',
+    searchResults: [],
+    workoutTitle: w.title || 'Generated Workout',
+    activeEx: null,
+  };
+  S.logMode = 'custom';
+  // Reset generator for next time
+  G = {step:'start', location:null, equipment:[], focus:null, duration:null, result:null, error:null, loading:false};
+  renderMain();
+}
 function renderLog(){
   const mode=S.logMode||'plan';
   const ts=(active)=>`flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:${active?'var(--bg4)':'var(--bg2)'};color:${active?'var(--accent)':'var(--text3)'};border-bottom:2px solid ${active?'var(--accent)':'var(--border)'};`;
   const tabBar=`<div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
-    <button style="${ts(mode==='plan')}" onclick="S.logMode='plan';renderMain()">PLAN SESSION</button>
-    <button style="${ts(mode==='custom')}" onclick="S.logMode='custom';S.squadShareShown=false;renderMain()">CUSTOM SESSION</button>
+    <button style="${ts(mode==='plan')}" onclick="S.logMode='plan';renderMain()">PLAN</button>
+    <button style="${ts(mode==='custom')}" onclick="S.logMode='custom';S.squadShareShown=false;renderMain()">CUSTOM</button>
+    <button style="${ts(mode==='generate')}" onclick="S.logMode='generate';renderMain()">GENERATE</button>
   </div>`;
+  if(mode==='generate') return renderGenInLog(tabBar);
   return mode==='custom'?renderCustomLog(tabBar):renderPlanLog(tabBar);
 }
 function renderPlanExRow(ex){
@@ -4740,7 +4891,7 @@ function renderPlanExRow(ex){
     +setRows+'<button class="add-set-btn" onclick="addSet(\''+esc+'\')">+ ADD SET</button></div>';
 }
 function renderPlanLog(tabBar){
-  const ph=getPlanPhases()[S.logPhase]||getPlanPhases()[0],day=(ph.schedule||[])[S.logDay]||ph.schedule[0];const existing=getLogEntry(S.logDate);
+  const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0],day=(ph.schedule||[])[S.logDay]||ph.schedule[0];const existing=getLogEntry(S.logDate);
   return`<div class="fade-in" style="padding:18px 16px 30px">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
@@ -4816,8 +4967,8 @@ function renderCustomLog(tabBar){
      (S.libOpen?lib.map(w=>'<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent-border);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">'+
       '<div style="flex:1;min-width:0"><div style="font-family:var(--body);font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+w.name+'</div>'+
       '<div style="font-family:var(--display);font-size:13px;color:var(--text3);letter-spacing:.5px;margin-top:2px">'+w.exercises.length+' exercises · '+new Date(w.savedAt).toLocaleDateString()+'</div></div>'+
-      '<button onclick="loadFromLibrary('+JSON.stringify(w.id)+')" style="background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--accent);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:6px 10px;cursor:pointer;flex-shrink:0">USE</button>'+
-      '<button onclick="deleteFromLibrary('+JSON.stringify(w.id)+');renderMain()" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:0 4px">×</button>'+
+      '<button data-lid="'+(w.id||'')+' " onclick="loadFromLibrary(this.dataset.lid)" style="background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--accent);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:6px 12px;border-radius:var(--radius);cursor:pointer">USE</button>' +
+      '<button data-lid="'+(w.id||'')+' " onclick="deleteFromLibrary(this.dataset.lid);renderMain()" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:0 4px">×</button>' +
       '</div>').join(''):'')+
      '</div>';
   })()}
@@ -4838,7 +4989,7 @@ function renderCustomLog(tabBar){
  </div>`;
 }
 function initLogSets(pi,di){
-  const phases=getPlanPhases();
+  const phases=getActivePlanPhases();
   if(pi<0||pi>=phases.length)return;
   const day=(phases[pi].schedule||[])[di];
   if(!day)return;
@@ -4848,7 +4999,7 @@ function initLogSets(pi,di){
   S.logNotes='';
 }
 function changeLogDate(v){S.logDate=v;const ex=getLogEntry(v);if(ex&&ex.phaseId>=0){S.logPhase=ex.phaseId;S.logDay=ex.dayIdx;S.logSets=ex.sets;S.logNotes=ex.notes||'';}else{const pi=getPhaseForDate(v);const di=getDayIdxForDate(v,pi>=0?pi:0);if(pi>=0)S.logPhase=pi;if(di>=0)S.logDay=di;initLogSets(S.logPhase,S.logDay);}renderMain();}
-function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;if(S.logPhase<getPlanPhases().length){initLogSets(S.logPhase,S.logDay);}renderMain();}
+function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;if(S.logPhase<getActivePlanPhases().length){initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogDay(v){S.logDay=parseInt(v);initLogSets(S.logPhase,S.logDay);renderMain();}
 function saveWorkout(){announce('Workout saved');
   saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes,null);
@@ -4893,8 +5044,8 @@ function renderFuel(){
   <div class="food-grid">${FOODS.map((f,i)=>`<button class="food-tile" onclick="logFoodQuick(${i})"><div class="food-name">${f.n}</div><div class="food-portion">${f.p}</div><div class="food-grams">+${f.g}G</div></button>`).join('')}</div>
   <div class="fuel-section-label">CUSTOM ENTRY</div>
   <div class="custom-input-row">
-   <input type="text" class="custom-input" id="chow-custom-name" placeholder="Food name" value="${S.fuelCustom.name}" oninput="S.fuelCustom.name=this.value">
-   <input type="number" class="custom-input small" id="chow-custom-grams" placeholder="g" value="${S.fuelCustom.grams}" oninput="S.fuelCustom.grams=this.value" min="0" max="999">
+   <input type="text" class="custom-input" id="fuel-custom-name" placeholder="Food name" value="${S.fuelCustom.name}" oninput="S.fuelCustom.name=this.value">
+   <input type="number" class="custom-input small" id="fuel-custom-grams" placeholder="g" value="${S.fuelCustom.grams}" oninput="S.fuelCustom.grams=this.value" min="0" max="999">
    <button onclick="logFoodCustom()" style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:1px;padding:0 14px;border-radius:2px;cursor:pointer">ADD</button>
   </div>
   ${today.entries.length>0?`
@@ -5382,16 +5533,14 @@ function renderToday(){
    <div class="forge-hero-copy">Show up. Put in the work. We all get stronger together.</div>
    ${pi>=0?`<div style="margin-top:16px;font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)"><span class="phase-dot" style="background:${ph.color}"></span>PHASE ${pi+1} - ${ph.title}${isPregnancyMode()?' <span style="color:var(--accent)">- PREGNANCY SAFE</span>':''}</div>`:''}
   </div>
+  <div style="padding:0 16px;margin-bottom:12px">${renderCheckinStrip(dateStr,checkin)}</div>
   <div class="forge-grid">
    ${renderForgeScoreCard(metrics)}
-   <div class="forge-card"><div class="forge-card-inner"><div class="forge-card-label">Readiness</div><div class="forge-metric small">${metrics.readiness}%</div><div class="forge-card-note">Sleep, energy, and check-ins.</div></div></div>
+   <div class="forge-card"><div class="forge-card-inner"><div class="forge-card-label">Readiness</div><div class="forge-metric small">${metrics.readiness!=null?metrics.readiness+"%":"--"}</div>`+`<div class="forge-card-note">${metrics.readiness!=null?"Based on today's check-in.":"Check in to calculate."}</div>`+`</div></div>
    <div class="forge-card"><div class="forge-card-inner"><div class="forge-card-label">Weekly</div><div class="forge-metric small">${metrics.weekLogs}/5</div><div class="forge-card-note">Consistency this week.</div></div></div>
    ${renderForgeWorkoutCard(session,logged)}
    ${renderForgeRecentActivity()}
   </div>`;
-
-  // Check-in strip
-  html+=renderCheckinStrip(dateStr,checkin);
 
   // Goal strip
   html+=renderGoalStrip();
@@ -5412,43 +5561,48 @@ function renderToday(){
 
   return html;
 }
-function renderCheckinStrip(dateStr,checkin){
-  if(checkin&&checkin.sleep!==null){
-    const summary='SLEEP '+checkin.sleep+'h · ENERGY '+checkin.energy+' · BODY '+(checkin.pain==='ok'?'GOOD':'SORE');
-    if(S.checkinOpen){
-      return `<div class="checkin-strip" style="cursor:pointer" onclick="S.checkinOpen=false;renderMain()">
-       <div class="checkin-strip-header">
-        <span class="checkin-title">CHECK-IN</span>
-        <span class="checkin-summary">${summary}</span>
-        <span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">−</span>
-       </div>
+function renderCheckinStrip(dateStr, checkin) {
+  const hasData = checkin && checkin.sleep !== null;
+  const summary = hasData
+    ? `SLEEP ${checkin.sleep}h · ENERGY ${checkin.energy} · BODY ${checkin.pain === 'ok' ? 'GOOD' : 'SORE'}`
+    : null;
+
+  // Collapsed — has data, not open
+  if (hasData && !S.checkinOpen) {
+    return `<div class="forge-checkin-card" onclick="openCheckin()" role="button" aria-label="Edit check-in" tabindex="0">
+      <div class="forge-checkin-row">
+        <div>
+          <div class="forge-checkin-label">CHECK-IN</div>
+          <div class="forge-checkin-summary">${summary}</div>
+        </div>
+        <div class="forge-checkin-edit">EDIT</div>
       </div>
-      <div class="checkin-expanded">${renderCheckinForm(checkin,true)}</div>`;
-    }
-    return `<div class="checkin-strip" onclick="openCheckin()" style="cursor:pointer">
-     <div class="checkin-strip-header">
-      <span class="checkin-title">CHECK-IN</span>
-      <span class="checkin-summary">${summary}</span>
-      <span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span>
-     </div>
     </div>`;
   }
-  if(S.checkinOpen){
-    return `<div class="checkin-strip">
-     <div class="checkin-strip-header">
-      <span class="checkin-title">CHECK-IN</span>
-      <span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300;margin-left:auto" onclick="S.checkinOpen=false;renderMain()">−</span>
-     </div>
-    </div>
-    <div class="checkin-expanded">${renderCheckinForm(null,false)}</div>`;
+
+  // Expanded — editing
+  if (S.checkinOpen) {
+    return `<div class="forge-checkin-card expanded">
+      <div class="forge-checkin-row" onclick="S.checkinOpen=false;renderMain()" style="cursor:pointer;margin-bottom:16px">
+        <div class="forge-checkin-label">CHECK-IN</div>
+        <div class="forge-checkin-edit">DONE</div>
+      </div>
+      ${renderCheckinForm(checkin, hasData)}
+    </div>`;
   }
-  return `<div class="checkin-strip" onclick="openCheckin()" style="cursor:pointer">
-   <div class="checkin-strip-header">
-    <span class="checkin-title">CHECK-IN</span>
-    <span class="checkin-prompt">TAP TO LOG — 5 SEC</span>
-   </div>
+
+  // Empty — prompt to log
+  return `<div class="forge-checkin-card prompt" onclick="openCheckin()" role="button" aria-label="Log check-in" tabindex="0">
+    <div class="forge-checkin-row">
+      <div>
+        <div class="forge-checkin-label">CHECK-IN</div>
+        <div class="forge-checkin-prompt-text">How are you feeling today? · 5 sec</div>
+      </div>
+      <div class="forge-checkin-cta">LOG →</div>
+    </div>
   </div>`;
 }
+
 function renderCheckinForm(existing,editing){
   const d=S.checkinDraft;
   const sl=d.sleep!==null?d.sleep:(existing?existing.sleep:null);
@@ -5551,7 +5705,7 @@ function renderMain(){
     case'plan':m.innerHTML=renderPlan();break;
     case'log':m.innerHTML=renderLog();break;
     case'fuel':m.innerHTML=renderFuel();break;
-    case'gen':m.innerHTML=renderGen();break;
+    case'gen':S.tab='log';S.logMode='generate';m.innerHTML=renderLog();break;
     case'squad':m.innerHTML=renderSquad();break;
     case'stats':m.innerHTML=renderStats();break;
   }
@@ -5570,7 +5724,7 @@ function announce(msg) {
   requestAnimationFrame(() => { el.textContent = msg; });
 }
 function renderNav(){
-  ['today','plan','log','fuel','gen','squad','stats'].forEach(t=>{
+  ['today','plan','log','fuel','squad','stats'].forEach(t=>{
     const el=document.getElementById('nav-'+t);
     if(!el)return;
     el.classList.toggle('active',S.tab===t);
@@ -5579,8 +5733,22 @@ function renderNav(){
   });
 }
 function setTab(t){
+  // gen tab folded into log
+  if(t==='gen'){t='log';S.logMode='generate';}
+  // When switching to log tab, pre-load today's session from active goal plan
+  if(t==='log' && S.logMode!=='generate'){
+    var phases=getActivePlanPhases();
+    var pi=getPhaseForDate(todayStr());
+    var di=getDayIdxForDate(todayStr(),pi>=0?pi:0);
+    if(pi>=0 && di>=0){
+      S.logPhase=pi; S.logDay=di;
+      var existing=getLogEntry(todayStr());
+      if(existing){S.logSets=existing.sets;S.logNotes=existing.notes||'';}
+      else initLogSets(pi,di);
+    }
+  }
   S.tab=t;renderNav();renderMain();
-  const titles={'today':'Home — FORGE','plan':'Workout — FORGE','log':'Log — FORGE','fuel':'Fuel — FORGE','gen':'Build — FORGE','squad':'Group — FORGE','stats':'Stats — FORGE'};
+  const titles={'today':'Home — FORGE','plan':'Programs — FORGE','log':'Workout — FORGE','fuel':'Fuel — FORGE','squad':'Group — FORGE','stats':'Stats — FORGE'};
   document.title=titles[t]||'FORGE';
   const labels={'today':'Today tab','plan':'Plan tab','log':'Log tab','fuel':'Fuel tab','gen':'Build tab','squad':'Squad tab','stats':'Stats tab'};
   announce(labels[t]||t);
@@ -5685,7 +5853,7 @@ function updateSet(exName, idx, field, val){
 }
 function undoSkip(date){const s=getSkips();delete s[date];localStorage.setItem(SKIPS_KEY,JSON.stringify(s));const m=getMoves();const skipped=Object.entries(m).find(([k,v])=>v.originalDate===date);if(skipped){delete m[skipped[0]];localStorage.setItem(MOVES_KEY,JSON.stringify(m));}renderMain();}
 function initLogFromExercises(phaseIdx, dayIdx){
- const exercises = (getPlanPhases()[phaseIdx]||PHASES[phaseIdx]||{schedule:[]}).schedule[dayIdx]?.exercises;
+ const exercises = (getActivePlanPhases()[phaseIdx]||getPlanPhases()[phaseIdx]||PHASES[phaseIdx]||{schedule:[]}).schedule[dayIdx]?.exercises;
  const sets = {};
  const saved = getLogEntry(S.logDate);
  if(saved && saved.phaseId===phaseIdx && saved.dayIdx===dayIdx){
