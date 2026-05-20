@@ -16,51 +16,65 @@
 <style>
 /* ============================================================
    FORGE
-   Design: Ladder-inspired · Satoshi + Bebas Neue · Lime #A3E635
+   Design: Ladder-inspired · Satoshi + Bebas Neue · Forge Lime #A6CB2A
    ============================================================ */
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 :root{
+  /* FORGE brand palette */
+  --forge-bg:#080B0B;
+  --forge-elevated:#141714;
+  --forge-card:#1E2120;
+  --forge-lime:#A6CB2A;
+  --forge-glow:#B7F36B;
+  --forge-muted-lime:#80961F;
+  --forge-text:#FFFFFF;
+  --forge-text-secondary:#B8B8B8;
+  --forge-text-tertiary:#727272;
+  --forge-border:rgba(255,255,255,.06);
+  --success:#4ADE80;
+  --warning:#FBBF24;
+  --error:#EF4444;
   /* BACKGROUNDS — elevation via bg steps */
-  --bg:#0a0a0a;
-  --bg2:#141414;
-  --bg3:#1c1c1c;
-  --bg4:#242424;
+  --bg:var(--forge-bg);
+  --bg2:var(--forge-elevated);
+  --bg3:var(--forge-card);
+  --bg4:var(--forge-card);
   /* BORDERS */
-  --border:#282828;
-  --border2:#383838;
+  --border:var(--forge-border);
+  --border2:rgba(255,255,255,.1);
   /* TYPOGRAPHY */
-  --text:#ffffff;
-  --text2:#b4b4b4;
-  --text3:#858585;
-  --text4:#5a5a5a;
+  --text:var(--forge-text);
+  --text2:var(--forge-text-secondary);
+  --text3:var(--forge-text-tertiary);
+  --text4:var(--forge-text-tertiary);
   /* LIME — primary accent (10.1:1 contrast on bg) */
-  --accent:#A3E635;
-  --accent-bg:#1b2600;
-  --accent-border:#3d5500;
+  --accent:var(--forge-lime);
+  --accent-bg:rgba(166,203,42,.1);
+  --accent-border:rgba(166,203,42,.34);
   /* aliases for backward compat */
-  --amber:#A3E635;
-  --amber-bg:#1b2600;
-  --amber-border:#3d5500;
-  --gold:#A3E635;
-  --gold-dim:#3d5500;
+  --amber:var(--forge-lime);
+  --amber-bg:rgba(166,203,42,.1);
+  --amber-border:rgba(166,203,42,.34);
+  --gold:var(--forge-lime);
+  --gold-dim:var(--forge-muted-lime);
   /* GREEN — logged/success (8.7:1 contrast) */
-  --green:#22C55E;
-  --green-bg:#052010;
-  --green-border:#166534;
+  --green:var(--success);
+  --green-bg:rgba(74,222,128,.1);
+  --green-border:rgba(74,222,128,.28);
   /* RED — alert (5.3:1 contrast) */
-  --red:#EF4444;
-  --red-bg:#1a0505;
-  --red-border:#7f1d1d;
+  --red:var(--error);
+  --red-bg:rgba(239,68,68,.1);
+  --red-border:rgba(239,68,68,.34);
   /* BLUE — info */
-  --blue:#38BDF8;
-  --blue-bg:#0a1e2e;
-  --blue-border:#1a4a6a;
+  --blue:var(--forge-text-secondary);
+  --blue-bg:#141714;
+  --blue-border:rgba(255,255,255,.1);
   /* PURPLE */
-  --purple:#a78bfa;
-  --purple-bg:#1a0a2e;
-  --purple-border:#4c1d95;
+  --purple:var(--forge-muted-lime);
+  --purple-bg:rgba(166,203,42,.1);
+  --purple-border:rgba(166,203,42,.34);
   /* FONTS */
   --display:'Bebas Neue',cursive;  /* headers, titles, stats, badges */
   --body:'Satoshi',sans-serif;      /* UI, body, labels, inputs */
@@ -166,8 +180,8 @@ body{
 .ex-toggle.open{color:var(--text2)}
 .ex-desc{
   padding:12px 16px 14px 16px;
-  background:rgba(212,168,32,.04);
-  border-top:1px solid rgba(212,168,32,.15);
+  background:rgba(166,203,42,.04);
+  border-top:1px solid rgba(166,203,42,.14);
   animation:fadeIn 0.15s ease both;
 }
 .ex-desc-text{
@@ -219,7 +233,7 @@ body{
   cursor:pointer;transition:all 0.1s;margin-top:12px;
   text-transform:uppercase;font-weight:700;
 }
-.action-btn:active{background:#8bc424;border-color:#8bc424;}
+.action-btn:active{background:#80961F;border-color:#80961F;}
 .action-btn.secondary{background:none;border:1px solid var(--border2);color:var(--text2);font-weight:400;}
 .action-btn.secondary:active{background:var(--bg2);}
 .action-btn.amber{background:none;border:1px solid var(--accent-border);color:var(--accent);font-weight:400;}
@@ -335,7 +349,7 @@ body{
 }
 .briefing-card::before{display:none;}
 .briefing-head{
-  padding:10px 14px;background:rgba(212,168,32,.08);
+  padding:10px 14px;background:rgba(166,203,42,.08);
   cursor:pointer;display:flex;justify-content:space-between;align-items:center;
   border-bottom:1px solid var(--border);
   margin-top:3px;
@@ -352,7 +366,7 @@ body{
   font-family:var(--body);font-weight:500;font-size:18px;
   color:var(--text2);line-height:1.5;
   padding:7px 0 7px 18px;position:relative;
-  border-bottom:1px solid rgba(212,168,32,.1);
+  border-bottom:1px solid rgba(166,203,42,.1);
 }
 .briefing-bullet:last-child{border-bottom:none}
 .briefing-bullet::before{
@@ -503,13 +517,13 @@ body{
 }
 
 .day-tab.active{
-  color:#111;
+  color:#080B0B;
 
   background:
     linear-gradient(
       180deg,
       rgba(183,243,107,1),
-      rgba(167,230,90,1)
+      rgba(166,203,42,1)
     );
 
   border:1px solid rgba(255,255,255,.06);
@@ -551,7 +565,7 @@ body{
   -webkit-appearance:none;-moz-appearance:textfield;
 }
 .num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none}
-.num-input:focus{outline:none;border-color:var(--accent-border);background:#101408}
+.num-input:focus{outline:none;border-color:var(--accent-border);background:#141714}
 .check-btn{
   margin-left:auto;width:32px;height:32px;
   border:1px solid var(--border);background:none;
@@ -587,7 +601,7 @@ body{
   cursor:pointer;transition:all 0.1s;margin-top:16px;
   text-transform:uppercase;font-weight:700;
 }
-.save-btn:active,.save-btn.saved{background:#16a34a;border-color:#16a34a;}
+.save-btn:active,.save-btn.saved{background:#4ADE80;border-color:#4ADE80;}
 textarea.notes{
   width:100%;background:var(--bg2);
   border:1px solid var(--border);border-left:3px solid var(--border2);
@@ -892,7 +906,7 @@ button, [role="button"], a, input, select, textarea {
   top: -100%;
   left: 8px;
   background: var(--accent);
-  color: #111;
+  color: #080B0B;
   padding: 8px 16px;
   font-family: var(--display);
   font-size: 14px;
@@ -1098,14 +1112,14 @@ input::placeholder, textarea::placeholder {
   --radius:20px;
   --radius-lg:28px;
 
-  --bg2:#121212;
-  --bg3:#181818;
+  --bg2:var(--forge-elevated);
+  --bg3:var(--forge-card);
 
-  --border:#232323;
-  --border2:#2d2d2d;
+  --border:var(--forge-border);
+  --border2:rgba(255,255,255,.1);
 
   --accent:#B7F36B;
-  --accent-border:#587a20;
+  --accent-border:#80961F;
 
   --shadow-soft:
     0 8px 30px rgba(0,0,0,.28);
@@ -1209,7 +1223,7 @@ input::placeholder, textarea::placeholder {
 
   border:none;
 
-  background:rgba(20,20,20,.78);
+  background:rgba(20,23,20,.78);
 
   backdrop-filter:blur(12px);
 
@@ -1415,7 +1429,7 @@ textarea.notes,
   background:
     linear-gradient(
       90deg,
-      rgba(34,197,94,.08),
+      rgba(166,203,42,.08),
       transparent
     );
 
@@ -1428,7 +1442,7 @@ textarea.notes,
   border-radius:18px;
 
   box-shadow:
-    0 10px 30px rgba(34,197,94,.18);
+    0 10px 30px rgba(74,222,128,.18);
 }
 
 /* CLEANER TABS */
@@ -1472,12 +1486,12 @@ textarea.notes,
   background:linear-gradient(
     180deg,
     #B7F36B,
-    #9FE24A
+    #A6CB2A
   ) !important;
 
   border:none !important;
 
-  color:#111 !important;
+  color:#080B0B !important;
 
   border-radius:20px;
 
@@ -1496,8 +1510,8 @@ textarea.notes,
 .save-btn.saved{
   background:linear-gradient(
     180deg,
-    #A7E65A,
-    #92D93B
+    #B7F36B,
+    #A6CB2A
   ) !important;
 
   transform:scale(.985);
@@ -1511,7 +1525,7 @@ textarea.notes,
 
   border-color:var(--accent) !important;
 
-  color:#111 !important;
+  color:#080B0B !important;
 
   box-shadow:
     0 0 18px rgba(183,243,107,.18);
@@ -1548,7 +1562,7 @@ textarea.notes,
 
 :root{
   --green:#B7F36B;
-  --green-border:#587a20;
+  --green-border:#80961F;
   --green-bg:rgba(183,243,107,.08);
 }
 
@@ -1567,24 +1581,24 @@ textarea.notes,
    ============================================================ */
 
 :root{
-  --bg:#080B0B;
-  --bg2:#141714;
-  --bg3:#1E2120;
-  --bg4:#262A28;
-  --card:#1E2120;
-  --border:rgba(255,255,255,.06);
+  --bg:var(--forge-bg);
+  --bg2:var(--forge-elevated);
+  --bg3:var(--forge-card);
+  --bg4:#1E2120;
+  --card:var(--forge-card);
+  --border:var(--forge-border);
   --border2:rgba(255,255,255,.1);
-  --text:#FFFFFF;
-  --text2:#B8B8B8;
-  --text3:#727272;
-  --accent:#A6CB2A;
-  --accent-strong:#B7F36B;
+  --text:var(--forge-text);
+  --text2:var(--forge-text-secondary);
+  --text3:var(--forge-text-tertiary);
+  --accent:var(--forge-lime);
+  --accent-strong:var(--forge-glow);
   --accent-bg:rgba(166,203,42,.1);
   --accent-border:rgba(166,203,42,.34);
-  --green:#4ADE80;
+  --green:var(--success);
   --green-bg:rgba(74,222,128,.1);
   --green-border:rgba(74,222,128,.28);
-  --amber:#A6CB2A;
+  --amber:var(--forge-lime);
   --amber-bg:rgba(166,203,42,.1);
   --amber-border:rgba(166,203,42,.34);
   --radius:22px;
@@ -1663,7 +1677,7 @@ body{
 .action-btn,
 .save-btn{
   background:linear-gradient(135deg, var(--accent-strong), var(--accent)) !important;
-  color:#0B0D0B !important;
+  color:#080B0B !important;
   border:none !important;
   border-radius:18px !important;
   box-shadow:0 12px 36px rgba(166,203,42,.22) !important;
@@ -1721,7 +1735,7 @@ body{
 .day-tab.active,
 .intel-tab.active{
   background:linear-gradient(135deg, var(--accent-strong), var(--accent)) !important;
-  color:#0B0D0B !important;
+  color:#080B0B !important;
   box-shadow:0 0 24px rgba(166,203,42,.2) !important;
   margin-bottom:0 !important;
 }
@@ -1747,7 +1761,7 @@ body{
   border-radius:50%;
   display:grid;
   place-items:center;
-  color:#0B0D0B;
+  color:#080B0B;
   background:linear-gradient(135deg, var(--accent-strong), var(--accent));
   font-family:var(--display);
   font-size:18px;
@@ -1958,6 +1972,60 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   box-shadow:var(--shadow-soft) !important;
 }
 
+/* Strict brand lock: keep app chrome inside the approved FORGE palette. */
+:root{
+  --bg:#080B0B;
+  --bg2:#141714;
+  --bg3:#1E2120;
+  --bg4:#1E2120;
+  --card:#1E2120;
+  --accent:#A6CB2A;
+  --accent-strong:#B7F36B;
+  --accent-bg:rgba(166,203,42,.1);
+  --accent-border:rgba(166,203,42,.34);
+  --muted-lime:#80961F;
+  --text:#FFFFFF;
+  --text2:#B8B8B8;
+  --text3:#727272;
+  --text4:#727272;
+  --border:rgba(255,255,255,.06);
+  --border2:rgba(255,255,255,.1);
+  --green:#4ADE80;
+  --green-bg:rgba(74,222,128,.1);
+  --green-border:rgba(74,222,128,.28);
+  --amber:#A6CB2A;
+  --amber-bg:rgba(166,203,42,.1);
+  --amber-border:rgba(166,203,42,.34);
+  --gold:#A6CB2A;
+  --gold-dim:#80961F;
+  --blue:#B8B8B8;
+  --blue-bg:#141714;
+  --blue-border:rgba(255,255,255,.1);
+  --purple:#80961F;
+  --purple-bg:rgba(166,203,42,.1);
+  --purple-border:rgba(166,203,42,.34);
+  --red:#EF4444;
+  --red-bg:rgba(239,68,68,.1);
+  --red-border:rgba(239,68,68,.34);
+}
+
+.action-btn,
+.save-btn,
+.day-tab.active,
+.intel-tab.active,
+.forge-avatar,
+.forge-progress span{
+  background:linear-gradient(135deg,#B7F36B,#A6CB2A) !important;
+}
+
+.action-btn,
+.save-btn,
+.day-tab.active,
+.intel-tab.active,
+.forge-avatar{
+  color:#080B0B !important;
+}
+
 @media (max-width:380px){
   .forge-hero-title{font-size:42px}
   .forge-grid{gap:10px}
@@ -2068,7 +2136,7 @@ const PHASES=[
    {n:"Full Mobility Routine",d:"20 min",t:"mob",log:false},
   ]},
  ]},
- {id:2,title:"BUILD",short:"BUILD",weeks:"Wks 6–8",color:"#8bc424",tagline:"Load the bar. Raise the ceiling.",dowMap:{1:0,2:1,3:2,4:3,6:4},schedule:[
+ {id:2,title:"BUILD",short:"BUILD",weeks:"Wks 6–8",color:"#80961F",tagline:"Load the bar. Raise the ceiling.",dowMap:{1:0,2:1,3:2,4:3,6:4},schedule:[
   {day:"MON",label:"Upper Push — Heavy",tag:"HEAVY",exercises:[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
    {n:"Incline DB Bench Press",d:"4 × 8–10",t:"lift",log:true},
@@ -2104,7 +2172,7 @@ const PHASES=[
    {n:"Cool Down + Mobility",d:"15 min",t:"cool",log:false},
   ]},
  ]},
- {id:3,title:"PROVE IT",short:"PROVE",weeks:"Wks 9–10",color:"#E84040",tagline:"No excuses. No modifications. Just work.",dowMap:{1:0,2:1,3:2,4:3,5:4,6:5},schedule:[
+ {id:3,title:"PROVE IT",short:"PROVE",weeks:"Wks 9–10",color:"#EF4444",tagline:"No excuses. No modifications. Just work.",dowMap:{1:0,2:1,3:2,4:3,5:4,6:5},schedule:[
   {day:"MON",label:"Upper Push — Max",tag:"MAX EFFORT",exercises:[
    {n:"Incline DB Bench",d:"5 × 8",t:"lift",log:true},
    {n:"DB Shoulder Press",d:"4 × 8",t:"lift",log:true},
@@ -2179,13 +2247,13 @@ const PHASES=[
 
 const TM={
  warmup:{label:"WARMUP",bg:"var(--bg2)",c:"var(--green)"},
- bw:    {label:"B.W.",  bg:"#101408",c:"var(--accent)"},
+ bw:    {label:"B.W.",  bg:"#141714",c:"var(--accent)"},
  lift:  {label:"LIFT",  bg:"var(--bg3)",c:"var(--accent)"},
- circuit:{label:"CIRC.",bg:"#18100a",c:"#c04040"},
+ circuit:{label:"CIRC.",bg:"#141714",c:"#EF4444"},
  core:  {label:"CORE",  bg:"var(--bg3)",c:"var(--green)"},
- cardio:{label:"CARDIO",bg:"#181408",c:"var(--accent)"},
- mob:   {label:"MOB.",  bg:"#100e18",c:"#8a70c0"},
- cool:  {label:"COOL",  bg:"#101010",c:"#555555"},
+ cardio:{label:"CARDIO",bg:"#141714",c:"var(--accent)"},
+ mob:   {label:"MOB.",  bg:"#141714",c:"#80961F"},
+ cool:  {label:"COOL",  bg:"#141714",c:"#727272"},
 };
 
 // ============================================================
@@ -2454,7 +2522,7 @@ const USER_KEY = 'forge_user';
 function getUser(){try{return JSON.parse(localStorage.getItem(USER_KEY)||'null');}catch(e){return null;}}
 function saveUser(obj){localStorage.setItem(USER_KEY,JSON.stringify(obj));}
 function isPregnancyMode(){const u=getUser();return u&&u.mode==='pregnancy';}
-function getUserEmoji(){const u=getUser();return u&&u.gender==='female'?'🏋️‍♀️':'🏋🏻‍♂️';}
+function getUserEmoji(){return 'FORGE';}
 
 function getUserId(){
   const u=getUser();
@@ -2629,19 +2697,19 @@ function renderSetup(){
       <button id="setup-male" onclick="setupSelectGender('male')"
         style="flex:1;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
         background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer">
-        🏋🏻‍♂️ MALE
+        MALE
       </button>
       <button id="setup-female" onclick="setupSelectGender('female')"
         style="flex:1;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
         background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer">
-        🏋️‍♀️ FEMALE
+        FEMALE
       </button>
     </div>
     <div id="setup-pregnancy-row" style="display:none;margin-bottom:28px">
       <button id="setup-pregnancy-btn" onclick="setupTogglePregnancy()"
         style="width:100%;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
         background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;text-align:left">
-        🤰 PREGNANCY SAFE MODE — OFF
+        PREGNANCY SAFE MODE - OFF
       </button>
       <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px;line-height:1.5">Modifies exercises for pregnancy. Safe all trimesters.</div>
     </div>
@@ -2672,7 +2740,7 @@ function setupSelectGender(g){
 function setupTogglePregnancy(){
   setupPregnancy=!setupPregnancy;
   const btn=document.getElementById('setup-pregnancy-btn');
-  if(btn){btn.textContent='🤰 PREGNANCY SAFE MODE — '+(setupPregnancy?'ON':'OFF');btn.style.borderColor=setupPregnancy?'var(--accent-border)':'var(--border)';btn.style.color=setupPregnancy?'var(--accent)':'var(--text2)';}
+  if(btn){btn.textContent='PREGNANCY SAFE MODE - '+(setupPregnancy?'ON':'OFF');btn.style.borderColor=setupPregnancy?'var(--accent-border)':'var(--border)';btn.style.color=setupPregnancy?'var(--accent)':'var(--text2)';}
 }
 function setupSelectPlan(choice){
   setupPlanChoice=choice;
@@ -2757,7 +2825,7 @@ function renderSquad(){
     ${emptyFeed?'<div style="padding:40px 0;text-align:center;font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text3);line-height:2">NO ACTIVITY YET.<br>LOG A WORKOUT AND GET IT STARTED.</div>':
     squadFeed.map(entry=>{
       const isOpen=!!squadOpenRows[entry.id];
-      const emoji=entry.user_gender==='female'?'🏋️‍♀️':'🏋🏻‍♂️';
+      const emoji=(entry.user_name||'F').charAt(0).toUpperCase();
       const isMe=user&&user.name===entry.user_name;
       const exercises=entry.exercises?(typeof entry.exercises==='string'?JSON.parse(entry.exercises):entry.exercises):[];
       return `<div style="background:var(--bg2);border:1px solid var(--border);${isMe?'border-left:3px solid var(--accent)':''};margin-bottom:8px;overflow:hidden">
@@ -2780,9 +2848,9 @@ function renderSquad(){
 }
 
 function buildShareText(workoutTitle,phaseName,durationEst,notes){
-  const user=getUser();const emoji=user?getUserEmoji():'🏋🏻‍♂️';const name=user?user.name:'Someone';
+  const user=getUser();const emoji=user?getUserEmoji():'FORGE';const name=user?user.name:'Someone';
   const dur=durationEst?' · ~'+durationEst+' min':'';
-  let text=emoji+'✅ '+name+' logged '+workoutTitle;
+  let text=emoji+' - '+name+' logged '+workoutTitle;
   if(phaseName)text+='\n'+phaseName+dur;
   if(notes)text+='\n"'+notes+'"';
   text+='\n'+APP_URL;
@@ -3025,7 +3093,7 @@ function renderPromptModal() {
     'style="width:100%;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:var(--body);font-size:17px;padding:10px 12px;margin-bottom:16px;color-scheme:dark">' +
     '<div style="display:flex;gap:10px">' +
     '<button onclick="promptCancel()" style="flex:1;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer">CANCEL</button>' +
-    '<button onclick="promptSave()" style="flex:1;padding:12px;background:var(--accent);border:2px solid var(--accent);color:#0a0a0a;font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer;font-weight:700">SAVE</button>' +
+    '<button onclick="promptSave()" style="flex:1;padding:12px;background:var(--accent);border:2px solid var(--accent);color:#080B0B;font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer;font-weight:700">SAVE</button>' +
     '</div></div></div>';
 }
 function deleteGoal(id) {
@@ -4304,8 +4372,8 @@ function renderExRow(ex, prefix){
    <div class="ex-name">${name}</div>
    <div class="ex-detail">${detail}</div>
    ${note?`<div class="ex-note">${note}</div>`:''}
-   ${pregAvoid?`<div style="font-family:var(--display);font-size:13px;color:var(--red);letter-spacing:1px;margin-top:4px">⚠ SKIP — NOT SAFE IN PREGNANCY</div>`:''}
-   ${pregMod?`<div style="font-family:var(--display);font-size:13px;color:var(--accent);letter-spacing:1px;margin-top:4px">🤰 MODIFY: ${pregMod}</div>`:''}
+   ${pregAvoid?`<div style="font-family:var(--display);font-size:13px;color:var(--red);letter-spacing:1px;margin-top:4px">SKIP - NOT SAFE IN PREGNANCY</div>`:''}
+   ${pregMod?`<div style="font-family:var(--display);font-size:13px;color:var(--accent);letter-spacing:1px;margin-top:4px">MODIFY: ${pregMod}</div>`:''}
   </div>
   ${desc?`<span class="ex-toggle${isOpen?' open':''}">${isOpen?'−':'+'}</span>`:''}
  </div>
@@ -4426,7 +4494,7 @@ function renderPlanReview(){
 async function buildAIPlan_unused(){
   PB.loading=true;PB.error=null;PB.generatedPlan=null;renderMain();
   const a=PB.answers;
-  const prompt='Create a structured training plan. Requirements: Goal: '+a.goal+'. Days/week: '+a.days+'. Duration: '+a.duration+'. Equipment: '+a.equip+'. Level: '+a.level+'. Split: '+a.focus+'. Return ONLY valid JSON: {"title":"Plan name","summary":"One sentence","phases":[{"id":0,"title":"PHASE NAME","short":"SHORT","weeks":"Wks 1-4","durationDays":28,"color":"#7a8c5e","tagline":"Focus","dowMap":{"1":0,"3":1,"5":2},"schedule":[{"day":"MON","label":"Session name","tag":"TYPE","exercises":[{"n":"Exercise","d":"3 x 10 cue","t":"lift","log":true}]}]}]}. Rules: dowMap maps JS day-of-week (0=Sun) to schedule index. t values: warmup|bw|lift|circuit|core|cardio|mob|cool. Add log:true to loggable exercises, ro:true for reps-only. durationDays = weeks*7. Use only '+a.equip+' appropriate exercises. Scale to '+a.level+'.';
+  const prompt='Create a structured training plan. Requirements: Goal: '+a.goal+'. Days/week: '+a.days+'. Duration: '+a.duration+'. Equipment: '+a.equip+'. Level: '+a.level+'. Split: '+a.focus+'. Return ONLY valid JSON: {"title":"Plan name","summary":"One sentence","phases":[{"id":0,"title":"PHASE NAME","short":"SHORT","weeks":"Wks 1-4","durationDays":28,"color":"#80961F","tagline":"Focus","dowMap":{"1":0,"3":1,"5":2},"schedule":[{"day":"MON","label":"Session name","tag":"TYPE","exercises":[{"n":"Exercise","d":"3 x 10 cue","t":"lift","log":true}]}]}]}. Rules: dowMap maps JS day-of-week (0=Sun) to schedule index. t values: warmup|bw|lift|circuit|core|cardio|mob|cool. Add log:true to loggable exercises, ro:true for reps-only. durationDays = weeks*7. Use only '+a.equip+' appropriate exercises. Scale to '+a.level+'.';
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,system:'You are a fitness coach. Output ONLY valid JSON. No markdown, no explanation.',messages:[{role:'user',content:prompt}]})});
     if(!res.ok) throw new Error('API '+res.status);
@@ -4434,7 +4502,7 @@ async function buildAIPlan_unused(){
     const text=data.content?.find(b=>b.type==='text')?.text||'';
     const plan=JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'').trim());
     if(!plan.phases||!Array.isArray(plan.phases)) throw new Error('Invalid structure');
-    plan.phases.forEach((ph,i)=>{ph.id=i;ph.color=ph.color||['#7a8c5e','#8c7a4a','#8c5a3a','#8c3a3a','#5a3a8c'][i%5];ph.schedule=ph.schedule||[];});
+    plan.phases.forEach((ph,i)=>{ph.id=i;ph.color=ph.color||['#80961F','#80961F','#727272','#EF4444','#80961F'][i%5];ph.schedule=ph.schedule||[];});
     PB.generatedPlan=plan;PB.step='review';PB.loading=false;renderMain();
   }catch(e){
     PB.loading=false;PB.error='Could not generate. Check connection. ('+e.message+')';PB.step='questions';renderMain();
@@ -4471,7 +4539,7 @@ function renderPlan(){
     var goalTabs = '<div style="display:flex;overflow-x:auto;gap:0;border-bottom:2px solid var(--border);margin-bottom:0">' +
       appGoals.map(function(g){
         var active = S.planGoalId === g.id;
-        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--display);font-size:14px;letter-spacing:2px;background:'+(active?'var(--accent)':'none')+';color:'+(active?'#111':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--accent)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
+        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--display);font-size:14px;letter-spacing:2px;background:'+(active?'var(--accent)':'none')+';color:'+(active?'#080B0B':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--accent)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
       }).join('') + '</div>';
     html += goalTabs;
   } else if(appGoals.length === 1) {
@@ -4685,7 +4753,7 @@ function renderPlanLog(tabBar){
   ${day.exercises.filter(ex=>ex.log).map(renderPlanExRow).join('')}
   <textarea class="notes" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
   <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
-  ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">${getUserEmoji()}✅ SAVE + SEND TO SQUAD</button>`:''}
+  ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SEND TO GROUP</button>`:''}
   ${S.squadShareShown?'<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">'+(S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED')+'</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>':''}
   <div style="height:10px"></div>
  </div>`;
@@ -4860,7 +4928,7 @@ function renderGen(){
   case'start':return`<div class="fade-in" style="padding:24px 16px"><div class="section-label">WORKOUT GENERATOR</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:20px;line-height:1.5">Tell me where you are and I'll build a workout on the spot.</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">WHERE ARE YOU TRAINING?</div><button class="gen-option" onclick="G.location='home';G.step='focus';renderMain()">AT HOME<span class="gen-option-sub">Rower · Treadmill · Dumbbells 5–55lb · Incline bench</span></button><button class="gen-option" onclick="G.location='away';G.step='equipment';renderMain()">AWAY FROM HOME<span class="gen-option-sub">Hotel, travel, or somewhere else</span></button></div>`;
   case'equipment':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='start';renderMain()">← BACK</button><div class="section-label">STEP 1 OF 3 — EQUIPMENT</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What do you have access to?</div>${AWAY_EQUIP.map(e=>`<div class="equip-check ${G.equipment.includes(e.id)?'selected':''}" onclick="toggleEquip('${e.id}')"><div class="equip-check-box">${G.equipment.includes(e.id)?'✓':''}</div><div><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:1px;color:var(--text2)">${e.label}</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);margin-top:2px">${e.sub}</div></div></div>`).join('')}<button class="action-btn" style="margin-top:10px" onclick="if(G.equipment.length===0)G.equipment=['none'];G.step='focus';renderMain()">NEXT →</button></div>`;
   case'focus':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step=G.location==='away'?'equipment':'start';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 2 OF 3':'STEP 1 OF 2'} — FOCUS</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What are we training?</div>${FOCUS_OPTIONS.map(f=>`<button class="gen-option ${G.focus===f.id?'selected':''}" onclick="G.focus='${f.id}';renderMain()">${f.label}</button>`).join('')}${G.focus?`<button class="action-btn" style="margin-top:4px" onclick="G.step='duration';renderMain()">NEXT →</button>`:''}`;
-  case'duration':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='focus';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 3 OF 3':'STEP 2 OF 2'} — DURATION</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">How long do you have?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${DURATION_OPTIONS.map(d=>`<button class="gen-option ${G.duration===d?'selected':''}" onclick="G.duration=${d};renderMain()" style="text-align:center;padding:20px 8px"><span style="font-size:26px;font-family:var(--display);letter-spacing:2px;display:block">${d}</span><span style="font-size:18px;letter-spacing:2px;color:var(--text2)">MIN</span></button>`).join('')}</div>${G.duration?`<button class="action-btn amber" onclick="generateWorkout()">⚡ GENERATE WORKOUT</button>`:''}`;
+  case'duration':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='focus';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 3 OF 3':'STEP 2 OF 2'} — DURATION</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">How long do you have?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${DURATION_OPTIONS.map(d=>`<button class="gen-option ${G.duration===d?'selected':''}" onclick="G.duration=${d};renderMain()" style="text-align:center;padding:20px 8px"><span style="font-size:26px;font-family:var(--display);letter-spacing:2px;display:block">${d}</span><span style="font-size:18px;letter-spacing:2px;color:var(--text2)">MIN</span></button>`).join('')}</div>${G.duration?`<button class="action-btn amber" onclick="generateWorkout()">GENERATE WORKOUT</button>`:''}`;
  }
 }
 function toggleEquip(id){const i=G.equipment.indexOf(id);if(i>=0)G.equipment.splice(i,1);else G.equipment.push(id);renderMain();}
