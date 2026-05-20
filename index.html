@@ -1384,6 +1384,96 @@ textarea.notes,
     0 20px 60px rgba(0,0,0,.45);
 }
 
+/* ============================================================
+   FORGE COLOR SYSTEM OVERRIDES
+   ============================================================ */
+
+/* PRIMARY ACTION BUTTONS */
+
+.save-btn{
+  background:linear-gradient(
+    180deg,
+    #B7F36B,
+    #9FE24A
+  ) !important;
+
+  border:none !important;
+
+  color:#111 !important;
+
+  border-radius:20px;
+
+  box-shadow:
+    0 10px 30px rgba(183,243,107,.22);
+
+  letter-spacing:3px;
+
+  transition:
+    transform .14s ease,
+    opacity .14s ease,
+    box-shadow .14s ease;
+}
+
+.save-btn:active,
+.save-btn.saved{
+  background:linear-gradient(
+    180deg,
+    #A7E65A,
+    #92D93B
+  ) !important;
+
+  transform:scale(.985);
+}
+
+/* CHECKMARK BUTTONS */
+
+.check-btn.done,
+.big-check.done{
+  background:var(--accent) !important;
+
+  border-color:var(--accent) !important;
+
+  color:#111 !important;
+
+  box-shadow:
+    0 0 18px rgba(183,243,107,.18);
+}
+
+/* GREEN PANELS -> FORGE LIME */
+
+.checkin-strip{
+  border-left-color:var(--accent) !important;
+}
+
+/* GREEN TEXT REFINEMENT */
+
+.food-grams,
+.protein-current,
+.fuel-entry-grams{
+  color:var(--accent);
+}
+
+/* SUCCESS STATES */
+
+.logged-pill{
+  background:rgba(183,243,107,.14);
+
+  border:1px solid rgba(183,243,107,.35);
+
+  color:var(--accent);
+
+  box-shadow:
+    0 0 16px rgba(183,243,107,.08);
+}
+
+/* REMOVE OLD HARSH GREEN */
+
+:root{
+  --green:#B7F36B;
+  --green-border:#587a20;
+  --green-bg:rgba(183,243,107,.08);
+}
+
 </style>
 </head>
 <body>
