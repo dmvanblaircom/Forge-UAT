@@ -32,8 +32,8 @@
   /* TYPOGRAPHY */
   --text:#ffffff;
   --text2:#b0b0b0;
-  --text3:#555555;
-  --text4:#333333;
+  --text3:#8a8078;
+  --text4:#5a5550;
   /* YELLOW — primary action */
   --amber:#F5C518;
   --amber-bg:#1a1600;
@@ -786,20 +786,114 @@ textarea.notes::placeholder{color:var(--text3)}
 .tab-safe{padding-top:var(--safe-t)}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .slide-down{animation:slideDown 0.2s ease both}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Focus rings — visible keyboard focus, hidden on mouse/touch */
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Touch targets — all interactive elements min 44×44px */
+button, [role="button"], a, input, select, textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+/* Override for inline/small buttons where min-height would break layout */
+.pill, .num-pill, .pain-pill, .intel-tab, .nav-btn, .check-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-btn {
+  min-height: 56px; /* nav taller on mobile */
+}
+
+/* Skip navigation link */
+.skip-nav {
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  background: var(--amber);
+  color: #111;
+  padding: 8px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+  z-index: 9999;
+  border-radius: 0 0 4px 4px;
+  text-decoration: none;
+  font-weight: 700;
+}
+.skip-nav:focus {
+  top: 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .fade-in { animation: none; }
+  .spinner { animation: none; border: 3px solid var(--amber); }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  :root {
+    --amber: ButtonText;
+    --green: ButtonText;
+    --red: ButtonText;
+    --bg: Canvas;
+    --text: CanvasText;
+  }
+  button { border: 1px solid ButtonText; }
+}
+
+/* Input styling for accessibility */
+input, textarea, select {
+  font-size: 16px; /* prevent iOS zoom on focus */
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text3);
+  opacity: 1; /* Firefox */
+}
+
+/* Error states */
+[aria-invalid="true"] {
+  border-color: var(--red) !important;
+  outline: 2px solid var(--red);
+}
+
+/* Announce dynamic content */
+[aria-live] {
+  position: relative;
+}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="safe-top"></div>
-  <main id="main"></main>
-  <nav id="nav">
-    <button class="nav-btn" id="nav-today" onclick="setTab('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>TODAY</button>
-    <button class="nav-btn" id="nav-plan" onclick="setTab('plan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>PLAN</button>
-    <button class="nav-btn" id="nav-log" onclick="setTab('log')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>LOG</button>
-    <button class="nav-btn" id="nav-fuel" onclick="setTab('fuel')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10h18M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M5 10v8a2 2 0 002 2h10a2 2 0 002-2v-8"/><path d="M8 14h8"/></svg>FUEL</button>
-    <button class="nav-btn" id="nav-gen" onclick="setTab('gen')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>BUILD</button>
-    <button class="nav-btn" id="nav-squad" onclick="setTab('squad')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>SQUAD</button>
-    <button class="nav-btn" id="nav-stats" onclick="setTab('stats')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>STATS</button>
+  <a href="#main" class="skip-nav">SKIP TO CONTENT</a>
+<div id="safe-top"></div>
+  <main id="main"><div id="a11y-announce" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0"></div>
+</main>
+  <nav id="nav" aria-label="Main navigation" role="navigation">
+    <button class="nav-btn" id="nav-today" onclick="setTab('today')" aria-label="Today" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>TODAY</button>
+    <button class="nav-btn" id="nav-plan" onclick="setTab('plan')" aria-label="Plan" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>PLAN</button>
+    <button class="nav-btn" id="nav-log" onclick="setTab('log')" aria-label="Log" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>LOG</button>
+    <button class="nav-btn" id="nav-fuel" onclick="setTab('fuel')" aria-label="Fuel" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10h18M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M5 10v8a2 2 0 002 2h10a2 2 0 002-2v-8"/><path d="M8 14h8"/></svg>FUEL</button>
+    <button class="nav-btn" id="nav-gen" onclick="setTab('gen')" aria-label="Build" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>BUILD</button>
+    <button class="nav-btn" id="nav-squad" onclick="setTab('squad')" aria-label="Squad" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>SQUAD</button>
+    <button class="nav-btn" id="nav-stats" onclick="setTab('stats')" aria-label="Stats" role="tab" aria-selected="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>STATS</button>
   </nav>
 </div>
 <script>
@@ -1233,7 +1327,8 @@ function getDayEst(label){return DAY_DURATIONS[label]||null}
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
-const SUPABASE_URL = 'https://gqlzrfsjwjnujmrzxunn.supabase.co';
+const SUPABASE_URL = 'https://gqlzrfsjwjnujmrzxunn.supabase.co
+';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxbHpyZnNqd2pudWptcnp4dW5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MTQ0MjUsImV4cCI6MjA5NDQ5MDQyNX0.Gh4lbX_LYtg4DZlc9NbbDzPJS-CDpLbBa2zrW0ALajw';
 const APP_URL = 'https://dmvanblaircom.github.io/Grind-app/';
 
@@ -1438,7 +1533,7 @@ function renderSquad(){
         </div>
         ${isOpen?`<div style="border-top:1px solid var(--border);padding:10px 16px 14px">
           ${entry.notes?`<div style="font-family:var(--body);font-size:13px;color:var(--text2);font-style:italic;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">"${entry.notes}"</div>`:''}
-          ${exercises.length>0?exercises.map(ex=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111111"><div style="font-family:var(--body);font-size:13px;color:var(--text2)">${ex.name||ex.n||''}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${ex.summary||''}</div></div>`).join(''):'<div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px">NO EXERCISE DETAILS</div>'}
+          ${exercises.length>0?exercises.map(ex=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #111111"><div style="font-family:var(--body);font-size:13px;color:var(--text2)">${ex.name||ex.n||''}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${ex.detail||ex.summary||''}</div></div>`).join(''):'<div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px">NO EXERCISE DETAILS</div>'}
         </div>`:''}
       </div>`;
     }).join('')}
@@ -1454,21 +1549,45 @@ function buildShareText(workoutTitle,phaseName,durationEst,notes){
   text+='\n'+APP_URL;
   return text;
 }
-async function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
+async function buildExSummary(exercises){
+  return exercises.map(([name,sets])=>{
+    const done=sets.filter(s=>s.done);
+    if(!done.length) return null;
+    const isCardio=/run|ride|row|swim|walk|cardio|easy|tempo|long/i.test(name);
+    const isTimed=/tabata|emom|amrap|circuit|wod|for time|interval/i.test(name);
+    if(isCardio||isTimed){
+      const f=done[0];
+      const parts=[];
+      if(f.reps) parts.push(f.reps+' min');
+      if(f.weight&&f.weight!=='0') parts.push(f.weight+' mi');
+      return {name, detail:parts.join(' · ')||'Completed', type:isTimed?'time':'cardio'};
+    }
+    const setLines=done.map(s=>{
+      const r=s.reps||'—';
+      const w=(s.weight&&s.weight!=='0')?s.weight+'lb':null;
+      return w?r+' @ '+w:r+' reps';
+    });
+    const allSame=setLines.every(l=>l===setLines[0]);
+    const detail=allSame
+      ?done.length+' × '+setLines[0]
+      :setLines.map((l,i)=>'S'+(i+1)+': '+l).join(' · ');
+    return {name, detail, type:'strength'};
+  }).filter(Boolean);
+}
+function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
   const user=getUser();if(!user)return;
-  const exSummary=exercises.map(([name,sets])=>({name,summary:sets.filter(s=>s.done).length+'/'+sets.length+' sets'+(sets.find(s=>s.done&&s.weight&&s.weight!=='0')?' · '+sets.filter(s=>s.done&&s.weight).map(s=>s.weight+'lb').filter((v,i,a)=>a.indexOf(v)===i).join(', '):'')}));
-  const payload={user_name:user.name,user_gender:user.gender,workout_title:workoutTitle,phase_name:phaseName||null,duration_est:durationEst||null,exercises:JSON.stringify(exSummary),notes:notes||null};
-  const ok=await postWorkoutToSquad(payload);
-  try{await navigator.clipboard.writeText(buildShareText(workoutTitle,phaseName,durationEst,notes));S.squadShareCopied=true;}
-  catch(e){S.squadShareCopied=false;}
-  S.squadShareOk=ok;S.squadShareShown=true;renderMain();
+  const exSummary=buildExSummary(exercises);
+  const payload={
+    user_name:user.name,user_gender:user.gender,
+    workout_title:workoutTitle,phase_name:phaseName||null,
+    duration_est:durationEst||null,
+    exercises:JSON.stringify(exSummary),
+    notes:notes||null,
+  };
+  supaFetch('workouts',{method:'POST',prefer:'return=minimal',body:JSON.stringify(payload)})
+    .catch(e=>console.warn('Squad sync failed:',e));
 }
 
-
-
-// ============================================================
-// GOAL STRIP — shown at top of TODAY tab
-// ============================================================
 function renderGoalStrip() {
   var goals = getActiveGoals();
   var user = getUser();
@@ -1607,6 +1726,15 @@ function showConfirm(msg, onYes, yesLabel, yesStyle) {
   S.confirmPending = {msg: msg, onYes: onYes, yesLabel: yesLabel||'YES', yesStyle: yesStyle||'red'};
   renderMain();
 }
+function trapFocus(modalId) {
+  requestAnimationFrame(() => {
+    const modal = document.querySelector('[role="dialog"]');
+    if (modal) {
+      const first = modal.querySelector('button, input, [tabindex]');
+      if (first) first.focus();
+    }
+  });
+}
 function confirmYes() {
   if (S.confirmPending && S.confirmPending.onYes) {
     var fn = S.confirmPending.onYes;
@@ -1623,9 +1751,9 @@ function renderConfirmModal() {
   var p = S.confirmPending;
   var btnColor = p.yesStyle === 'red' ? 'var(--red)' : p.yesStyle === 'green' ? 'var(--green)' : 'var(--amber)';
   var btnBorder = p.yesStyle === 'red' ? 'var(--red-border)' : p.yesStyle === 'green' ? 'var(--green-border)' : 'var(--amber-border)';
-  return '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
+  return '<div role="dialog" aria-modal="true" aria-labelledby="modal-title" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
     '<div style="background:var(--bg2);border:1px solid var(--border);border-top:3px solid '+btnColor+';padding:24px;width:100%;max-width:340px">' +
-    '<div style="font-family:var(--body);font-size:16px;color:var(--text);margin-bottom:20px;line-height:1.5">' + p.msg + '</div>' +
+    '<div id="modal-title" style="font-family:var(--body);font-size:16px;color:var(--text);margin-bottom:20px;line-height:1.5">' + p.msg + '</div>' +
     '<div style="display:flex;gap:10px">' +
     '<button onclick="confirmNo()" style="flex:1;padding:12px;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer">CANCEL</button>' +
     '<button onclick="confirmYes()" style="flex:1;padding:12px;background:none;border:1px solid '+btnBorder+';color:'+btnColor+';font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer">'+p.yesLabel+'</button>' +
@@ -1651,7 +1779,7 @@ function promptCancel() {
 function renderPromptModal() {
   if (!S.promptPending) return '';
   var p = S.promptPending;
-  return '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
+  return '<div role="dialog" aria-modal="true" aria-labelledby="modal-title" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;pointer-events:auto">' +
     '<div style="background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--amber);padding:24px;width:100%;max-width:340px">' +
     '<div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:12px">' + p.msg + '</div>' +
     '<input id="prompt-input" type="text" value="' + (p.val||'').replace(/"/g,'&quot;') + '" ' +
@@ -2060,7 +2188,7 @@ function renderGoalCreator() {
   const d = GB.draft;
   const step = GB.step;
   const backBtn = step > 0 ? '<button onclick="gbBack()" style="background:none;border:none;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text3);cursor:pointer;padding:0">← BACK</button>' : '';
-  const cancelX = '<button onclick="gbCancel()" style="background:none;border:none;font-family:var(--mono);font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1">×</button>';
+  const cancelX = '<button onclick="gbCancel()" aria-label="Cancel goal creation" style="background:none;border:none;font-family:var(--mono);font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;flex-shrink:0;line-height:1">×</button>';
   const hdr = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">' + backBtn +
     '<div style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);flex:1;text-align:' + (step > 0 ? 'center' : 'left') + '">' + (GB.editingId ? 'EDIT GOAL' : 'NEW GOAL') + '</div>' + cancelX + '</div>';
 
@@ -2216,6 +2344,7 @@ function gbSaveGoal() {
     if (planData) saveSettings({startDate: todayStr()});
 
     GB.loading = false;
+    announce('Goal saved');
     gbReset();
     S.showGoalCreator = false;
     S.activeGoalId = id;
@@ -2984,9 +3113,12 @@ function pbStartQuestions(){PB.step='questions';PB.answers={};renderMain();}
 function pbRegenerate(){buildAIPlan();}
 function pbChangeAnswers(){PB.step='questions';PB.generatedPlan=null;renderMain();}
 function pbClickImport(){document.getElementById("import-plan-file").click();}
-function pbResetProfile(){if(confirm("Reset profile? Your data stays intact.")){localStorage.removeItem(USER_KEY);location.reload();}}
-function pbDeletePlan(){if(confirm('Delete your current plan? Logs stay intact.')){deletePlan();S.planMode='myplan';renderMain();}}
+function pbResetProfile(){showConfirm("Reset profile? Your data stays intact.", function(){localStorage.removeItem(USER_KEY);location.reload();}, "RESET", "red")}
+function pbDeletePlan(){showConfirm('Delete your current plan? Logs stay intact.',function(){deletePlan();S.planMode='myplan';renderMain();},'DELETE','red');}
 function pbSetAnswer(k,v){PB.answers[k]=v;renderMain();}
+function ptDeleteConfirm(date){showConfirm('Delete this PT test?',function(){deletePT(date);},'DELETE','red');}
+function metricDeleteConfirm(date){showConfirm('Delete this entry?',function(){delMetric(date);},'DELETE','red');}
+function pbAnswerBtn(btn){pbSetAnswer(btn.dataset.pbk, decodeURIComponent(btn.dataset.pbv));}
 function pbBack(){const keys=Object.keys(PB.answers);if(keys.length){delete PB.answers[keys[keys.length-1]];}else{S.planMode='myplan';}renderMain();}
 function pbClearError(){PB.error=null;PB.step='questions';renderMain();}
 function renderPlanBuilder(){
@@ -3011,7 +3143,7 @@ function renderPlanBuilder(){
       '<button onclick="pbBack()" style="background:none;border:none;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text3);cursor:pointer">← BACK</button></div>'+
       '<div style="height:3px;background:var(--bg3);margin-bottom:20px"><div style="width:'+progress+'%;height:100%;background:var(--amber);transition:width .3s"></div></div>'+
       '<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:16px">'+current.label+'</div>'+
-      current.opts.map(function(opt){return '<button class="gen-option" onclick="pbSetAnswer('+JSON.stringify(current.id)+','+JSON.stringify(opt)+')">'+ opt +'</button>';}).join('')+
+      current.opts.map(function(opt){return '<button class="gen-option" data-pbk="'+current.id+'" data-pbv="'+encodeURIComponent(opt)+'" onclick="pbAnswerBtn(this)">'+opt+'</button>';}).join('')+
       '</div>';
   }
 
@@ -3384,7 +3516,7 @@ function renderCustomLog(tabBar){
   })()}
   <div style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--amber);margin-bottom:8px">ADD EXERCISES</div>
   <div style="display:flex;gap:6px;margin-bottom:${results.length>0?'0':'14px'}">
-   <input type="text" id="custom-search" placeholder="Search or type any exercise..." value="${q}" oninput="S.custom.search=this.value;customSearch(this.value)" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--amber-border);color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">
+   <input type="text" id="custom-search" aria-label="Search exercises" role="combobox" aria-autocomplete="list" placeholder="Search or type any exercise..." value="${q}" oninput="S.custom.search=this.value;customSearch(this.value)" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--amber-border);color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">
    ${q.trim().length>0?`<button onclick="customAddFreeform()" style="flex-shrink:0;padding:0 14px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer">ADD</button>`:''}
   </div>
   ${results.length>0?`<div style="background:var(--bg3);border:1px solid var(--border);border-top:none;margin-bottom:14px">${resultItems}</div>`:''}
@@ -3411,7 +3543,7 @@ function initLogSets(pi,di){
 function changeLogDate(v){S.logDate=v;const ex=getLogEntry(v);if(ex&&ex.phaseId>=0){S.logPhase=ex.phaseId;S.logDay=ex.dayIdx;S.logSets=ex.sets;S.logNotes=ex.notes||'';}else{const pi=getPhaseForDate(v);const di=getDayIdxForDate(v,pi>=0?pi:0);if(pi>=0)S.logPhase=pi;if(di>=0)S.logDay=di;initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;if(S.logPhase<getPlanPhases().length){initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogDay(v){S.logDay=parseInt(v);initLogSets(S.logPhase,S.logDay);renderMain();}
-function saveWorkout(){
+function saveWorkout(){announce('Workout saved');
   saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes,null);
   S.squadShareShown=false;S.squadShareOk=false;S.squadShareCopied=false;
   const btn=document.getElementById('save-btn');
@@ -3830,7 +3962,7 @@ function renderPTBlock(){
    <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — conditions, how it felt, context" oninput="S.ptDraft.notes=this.value">${d.notes}</textarea>
    <button class="action-btn" onclick="savePT()">SAVE PT TEST</button>
   </div>
-  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,t])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="if(confirm('Delete this PT test?')){deletePT('${date}')}" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${t.pushups?`<div>PUSH-UPS: <span style="color:var(--text)">${t.pushups}</span></div>`:''}${t.row2k?`<div>ROW 2K: <span style="color:var(--text)">${t.row2k}</span></div>`:''}${t.mile?`<div>1 MILE: <span style="color:var(--text)">${t.mile}</span></div>`:''}${t.plank?`<div>PLANK: <span style="color:var(--text)">${t.plank}s</span></div>`:''}</div>${t.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${t.notes}"</div>`:''}</div>`).join('')}`:''}
+  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,t])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="ptDeleteConfirm('${date}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${t.pushups?`<div>PUSH-UPS: <span style="color:var(--text)">${t.pushups}</span></div>`:''}${t.row2k?`<div>ROW 2K: <span style="color:var(--text)">${t.row2k}</span></div>`:''}${t.mile?`<div>1 MILE: <span style="color:var(--text)">${t.mile}</span></div>`:''}${t.plank?`<div>PLANK: <span style="color:var(--text)">${t.plank}s</span></div>`:''}</div>${t.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${t.notes}"</div>`:''}</div>`).join('')}`:''}
  </div>`;
 }
 function savePT(){const d=S.ptDraft;const data={};if(d.pushups)data.pushups=d.pushups;if(d.row2k)data.row2k=d.row2k;if(d.mile)data.mile=d.mile;if(d.plank)data.plank=d.plank;if(d.notes)data.notes=d.notes;if(Object.keys(data).length===0)return;savePTTest(todayStr(),data);S.ptDraft={pushups:'',row2k:'',mile:'',plank:'',notes:''};renderMain();}
@@ -3854,7 +3986,7 @@ function renderMetricsBlock(){
    <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — measurement conditions" oninput="S.metricDraft.notes=this.value">${d.notes}</textarea>
    <button class="action-btn" onclick="saveMetricNow()">SAVE METRICS</button>
   </div>
-  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,m])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="if(confirm('Delete this entry?')){delMetric('${date}')}" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${m.weight?`<div>WEIGHT: <span style="color:var(--text)">${m.weight} lbs</span></div>`:''}${m.bodyFat?`<div>BF: <span style="color:var(--text)">${m.bodyFat}%</span></div>`:''}${m.waist?`<div>WAIST: <span style="color:var(--text)">${m.waist}"</span></div>`:''}${m.chest?`<div>CHEST: <span style="color:var(--text)">${m.chest}"</span></div>`:''}${m.arms?`<div>ARM: <span style="color:var(--text)">${m.arms}"</span></div>`:''}</div>${m.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${m.notes}"</div>`:''}</div>`).join('')}`:''}
+  ${all.length>0?`<div style="font-family:var(--mono);font-size:17px;letter-spacing:2px;color:var(--text2);margin-bottom:10px">HISTORY (${all.length})</div>${all.map(([date,m])=>`<div class="pt-record"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div class="pt-record-date">${fmtDate(date).short}</div><button onclick="metricDeleteConfirm('${date}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button></div><div class="pt-record-data">${m.weight?`<div>WEIGHT: <span style="color:var(--text)">${m.weight} lbs</span></div>`:''}${m.bodyFat?`<div>BF: <span style="color:var(--text)">${m.bodyFat}%</span></div>`:''}${m.waist?`<div>WAIST: <span style="color:var(--text)">${m.waist}"</span></div>`:''}${m.chest?`<div>CHEST: <span style="color:var(--text)">${m.chest}"</span></div>`:''}${m.arms?`<div>ARM: <span style="color:var(--text)">${m.arms}"</span></div>`:''}</div>${m.notes?`<div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-top:6px;font-style:italic">"${m.notes}"</div>`:''}</div>`).join('')}`:''}
  </div>`;
 }
 function saveMetricNow(){const d=S.metricDraft;const data={};if(d.weight)data.weight=d.weight;if(d.bodyFat)data.bodyFat=d.bodyFat;if(d.waist)data.waist=d.waist;if(d.chest)data.chest=d.chest;if(d.arms)data.arms=d.arms;if(d.notes)data.notes=d.notes;if(Object.keys(data).length===0)return;saveMetric(todayStr(),data);S.metricDraft={weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''};renderMain();}
@@ -4001,17 +4133,17 @@ function renderCheckinForm(existing,editing){
   const pa=d.pain!==null?d.pain:(existing?existing.pain:null);
   return `<div class="checkin-row">
    <div class="checkin-row-label">SLEEP (HRS)</div>
-   <div class="num-pills">${[4,5,6,7,8,9].map(n=>`<button class="num-pill${sl===n?' selected':''}" onclick="setCheckinVal('sleep',${n})">${n}</button>`).join('')}</div>
+   <div class="num-pills" role="group" aria-label="Sleep hours">${[4,5,6,7,8,9].map(n=>`<button class="num-pill${sl===n?' selected':''}" onclick="setCheckinVal('sleep',${n})" aria-pressed="${sl===n}" aria-label="${n} hours">${n}</button>`).join('')}</div>
   </div>
   <div class="checkin-row">
    <div class="checkin-row-label">ENERGY LEVEL</div>
-   <div class="num-pills">${[1,2,3,4,5].map(n=>`<button class="num-pill${en===n?' selected':''}" onclick="setCheckinVal('energy',${n})">${n}</button>`).join('')}</div>
+   <div class="num-pills" role="group" aria-label="Energy level">${[1,2,3,4,5].map(n=>`<button class="num-pill${en===n?' selected':''}" onclick="setCheckinVal('energy',${n})" aria-pressed="${en===n}" aria-label="${n} out of 5">${n}</button>`).join('')}</div>
   </div>
   <div class="checkin-row">
    <div class="checkin-row-label">BODY</div>
    <div class="pain-pills">
-    <button class="pain-pill${pa==='ok'?' selected-ok':''}" onclick="setCheckinVal('pain','ok')">GOOD TO GO</button>
-    <button class="pain-pill${pa==='bad'?' selected-bad':''}" onclick="setCheckinVal('pain','bad')">SORE / TIGHT</button>
+    <button class="pain-pill${pa==='ok'?' selected-ok':''}" onclick="setCheckinVal('pain','ok')" aria-pressed="${pa==='ok'}">GOOD TO GO</button>
+    <button class="pain-pill${pa==='bad'?' selected-bad':''}" onclick="setCheckinVal('pain','bad')" aria-pressed="${pa==='bad'}">SORE / TIGHT</button>
    </div>
   </div>
   <button class="action-btn" onclick="saveCheckinNow()" ${sl!==null&&en!==null&&pa!==null?'':' disabled style="opacity:0.4;cursor:not-allowed"'}> SAVE CHECK-IN</button>`;
@@ -4047,7 +4179,7 @@ function renderSettingsPanel(settings,phases){
   return`<div style="margin:14px 16px 0;background:var(--bg2);border:1px solid var(--border);padding:14px">
    <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:10px">PROGRAM SETTINGS</div>
    <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text2);margin-bottom:6px">PROGRAM START DATE</div>
-   <input type="date" value="${settings.startDate||''}" onchange="saveSettings({startDate:this.value});renderMain()" class="date-input" style="width:100%;margin-bottom:14px">
+   <input type="date" value="${settings.startDate||''}" onchange="saveSettings({startDate:this.value});renderMain()" aria-label="Program start date" class="date-input" style="width:100%;margin-bottom:14px">
    <div style="margin-top:10px">${phases.map((p,i)=>`<div style="font-family:var(--mono);font-size:11px;color:var(--text2);margin-bottom:3px"><span style="color:${p.color}">PH${i+1}</span> ${getPhaseDates(i)}</div>`).join('')}</div>
    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
     <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">PROFILE — ${user?user.name:'NOT SET'}</div>
@@ -4061,7 +4193,7 @@ function getCheckin(dateStr){
   try{const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');return all[dateStr]||null;}
   catch(e){return null;}
 }
-function saveCheckinNow(){
+function saveCheckinNow(){announce('Check-in saved');
   const d=S.checkinDraft;
   if(d.sleep===null||d.energy===null||d.pain===null)return;
   const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');
@@ -4101,13 +4233,34 @@ function renderMain(){
     case'stats':m.innerHTML=renderStats();break;
   }
   // Inject modals — prepend to main content
-  if(S.confirmPending||S.promptPending){
+  const _hadModal = S.confirmPending||S.promptPending;
+  if(_hadModal){
     m.innerHTML=renderConfirmModal()+renderPromptModal()+m.innerHTML;
+    if(_hadModal) trapFocus('modal');
   }
 }
-function renderNav(){['today','plan','log','fuel','gen','squad','stats'].forEach(t=>document.getElementById('nav-'+t)?.classList.toggle('active',S.tab===t));}
+
+function announce(msg) {
+  const el = document.getElementById('a11y-announce');
+  if (!el) return;
+  el.textContent = '';
+  requestAnimationFrame(() => { el.textContent = msg; });
+}
+function renderNav(){
+  ['today','plan','log','fuel','gen','squad','stats'].forEach(t=>{
+    const el=document.getElementById('nav-'+t);
+    if(!el)return;
+    el.classList.toggle('active',S.tab===t);
+    el.setAttribute('aria-selected', S.tab===t ? 'true' : 'false');
+    el.setAttribute('aria-current', S.tab===t ? 'page' : 'false');
+  });
+}
 function setTab(t){
   S.tab=t;renderNav();renderMain();
+  const titles={'today':'Today — GRIND','plan':'Plan — GRIND','log':'Log — GRIND','fuel':'Fuel — GRIND','gen':'Build — GRIND','squad':'Squad — GRIND','stats':'Stats — GRIND'};
+  document.title=titles[t]||'GRIND';
+  const labels={'today':'Today tab','plan':'Plan tab','log':'Log tab','fuel':'Fuel tab','gen':'Build tab','squad':'Squad tab','stats':'Stats tab'};
+  announce(labels[t]||t);
   document.getElementById('main').scrollTo(0,0);
   if(t==='squad' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') loadSquadFeed();
 }
