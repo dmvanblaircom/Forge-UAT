@@ -1027,6 +1027,192 @@ input::placeholder, textarea::placeholder {
   letter-spacing: 1.5px;
 }
 
+/* ============================================================
+   FORGE REFINEMENT LAYER
+   ============================================================ */
+
+:root{
+  --radius:20px;
+  --radius-lg:28px;
+
+  --bg2:#121212;
+  --bg3:#181818;
+
+  --border:#232323;
+  --border2:#2d2d2d;
+
+  --accent:#B7F36B;
+  --accent-border:#587a20;
+
+  --shadow-soft:
+    0 8px 30px rgba(0,0,0,.28);
+
+  --shadow-glow:
+    0 0 30px rgba(183,243,107,.12);
+}
+
+/* PREMIUM SURFACES */
+
+.card,
+.phase-card,
+.log-ex,
+.food-tile,
+.stat-tile,
+.hist-entry,
+.timing-card,
+.protein-card,
+.briefing-card{
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-soft);
+  border:1px solid rgba(255,255,255,.05);
+}
+
+/* HERO FEEL */
+
+.today-head{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(183,243,107,.06),
+      transparent 60%
+    ),
+    var(--bg);
+
+  border-bottom:
+    1px solid rgba(183,243,107,.22);
+}
+
+/* BIG NUMBER REFINEMENT */
+
+.today-date,
+.fuel-big-number,
+.stat-value{
+  letter-spacing:.02em;
+  text-shadow:
+    0 0 24px rgba(255,255,255,.04);
+}
+
+/* CLEANER BUTTONS */
+
+.action-btn{
+  border-radius:18px;
+  border:none;
+  box-shadow:var(--shadow-glow);
+  transition:
+    transform .14s ease,
+    opacity .14s ease,
+    background .14s ease;
+}
+
+.action-btn:active{
+  transform:scale(.98);
+}
+
+/* PREMIUM SECONDARY BUTTONS */
+
+.action-btn.secondary,
+.action-btn.amber,
+.action-btn.red,
+.action-btn.blue{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+/* BETTER CARDS */
+
+.phase-card,
+.log-ex,
+.hist-entry{
+  overflow:hidden;
+}
+
+/* NAV UPGRADE */
+
+#nav{
+  margin:10px;
+  margin-bottom:calc(10px + var(--safe-b));
+
+  border:none;
+
+  background:rgba(20,20,20,.78);
+
+  backdrop-filter:blur(20px);
+
+  border-radius:26px;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.35);
+
+  overflow:hidden;
+}
+
+/* NAV ACTIVE */
+
+.nav-btn.active{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(183,243,107,.12),
+      transparent
+    );
+}
+
+/* INPUTS */
+
+.num-input,
+.custom-input,
+textarea.notes,
+.log-select,
+.date-input{
+  border-radius:14px;
+}
+
+/* FEED / PANEL DEPTH */
+
+.briefing-card,
+.protein-card,
+.timing-card{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.03),
+      rgba(255,255,255,.015)
+    );
+}
+
+/* SECTION SPACING */
+
+.section-label{
+  margin-bottom:16px;
+}
+
+/* LESS HARSH EDGES */
+
+.day-tab,
+.pill,
+.intel-tab,
+.move-alt-btn{
+  border-radius:12px;
+}
+
+/* SUBTLE PREMIUM MOTION */
+
+.card,
+.phase-card,
+.food-tile,
+.hist-entry,
+.stat-tile{
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease;
+}
+
+.card:active,
+.food-tile:active{
+  transform:scale(.985);
+}
+
 </style>
 </head>
 <body>
