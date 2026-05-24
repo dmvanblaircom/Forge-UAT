@@ -1,36 +1,36 @@
-# DEPLOY — GITHUB PAGES
+# FORGE — Deploy Guide
 
-## First deploy
+## Setup
 
-```
-1. github.com → Sign up / Log in
-2. + icon → New repository → name it "FORGE" → Public → Create
-3. Add file → Upload files → select ALL files in this folder
-4. Commit changes
-5. Settings → Pages → Source: Deploy from branch → main / root → Save
-6. Wait 1-2 min → your URL: https://YOURUSERNAME.github.io/Forge
-7. Open URL in Safari → Share → Add to Home Screen → FORGE
-```
+1. Generate a GitHub personal access token (repo scope) at github.com/settings/tokens
+2. Set it as an environment variable — never paste it into a file:
 
-## Redeploy after changes
+```cmd
+# Windows
+set GITHUB_TOKEN=ghp_yourtoken
 
-```
-1. github.com → your FORGE repo
-2. Click index.html → pencil (edit) → paste new content → Commit
-   OR: Add file → Upload files → select new index.html → Commit
+# Mac/Linux
+export GITHUB_TOKEN=ghp_yourtoken
 ```
 
-## Update home screen icon
+## Deploy
 
+```bash
+# UAT (test first)
+python deploy.py forge-uat "your message"
+
+# Production
+python deploy.py forge "your message"
 ```
-Remove old icon: hold → Remove App
-Re-add: Safari → your URL → Share → Add to Home Screen
-```
 
-## After deploy — connect GROUP
+## UAT URL
+https://dmvanblaircom.github.io/Forge-UAT/
 
-See SQUAD-SETUP.md for Supabase setup (10 min, free).
+## Production URL
+https://dmvanblaircom.github.io/Forge/
 
----
-
-Your URL: https://________________________.github.io/Forge
+## Notes
+- localStorage is scoped to origin — UAT and prod data never mix
+- Users need to close and reopen the app to get updates (service worker)
+- To force icon refresh: delete app from home screen and re-add
+- Service worker cache is versioned (forge-v4) — bumps force fresh fetches

@@ -1,6 +1,6 @@
-# Group SETUP GUIDE — FORGE
+# SQUAD SETUP GUIDE — FORGE
 
-This connects the app to a shared database so your Group can see each other's workouts.
+This connects the app to a shared database so your squad can see each other's workouts.
 Takes about 10 minutes. Free forever.
 
 ---
@@ -34,10 +34,10 @@ create table workouts (
   logged_at timestamptz default now()
 );
 
--- Allow anyone with the URL to read and write (your Group)
+-- Allow anyone with the URL to read and write (your squad)
 alter table workouts enable row level security;
-create policy "Group read" on workouts for select using (true);
-create policy "Group write" on workouts for insert with check (true);
+create policy "Squad read" on workouts for select using (true);
+create policy "Squad write" on workouts for insert with check (true);
 ```
 
 4. You should see "Success. No rows returned."
@@ -68,7 +68,7 @@ Replace them with your actual values:
 ```js
 const SUPABASE_URL = 'https://abcdefgh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIs...';
-const APP_URL = 'https://yourusername.github.io/Forge';
+const APP_URL = 'https://yourusername.github.io/forge';
 ```
 
 Save the file.
@@ -84,11 +84,11 @@ Save the file.
 
 ---
 
-## STEP 6 — Share with your Group
+## STEP 6 — Share with your squad
 
 Send them your GitHub Pages URL:
 ```
-https://yourusername.github.io/Forge
+https://yourusername.github.io/forge
 ```
 
 Each person opens it on their phone, creates their profile (name + gender), and they're in.
@@ -98,16 +98,16 @@ First launch shows the setup screen automatically.
 
 ## HOW THE SHARE TEXT WORKS
 
-After logging a workout, tap **SAVE + SEND TO Group**.
+After logging a workout, tap **SAVE + SEND TO SQUAD**.
 The app copies this to your clipboard:
 
 ```
 🏋🏻‍♂️✅ David logged Upper Push
 Foundation · Upper Push · ~45 min
-https://yourusername.github.io/Forge
+https://yourusername.github.io/forge
 ```
 
-Paste it into your Group chat. The link opens the app where they can see the Group feed.
+Paste it into your group chat. The link opens the app where they can see the Squad feed.
 
 ---
 
@@ -115,9 +115,9 @@ Paste it into your Group chat. The link opens the app where they can see the Gro
 
 | Problem | Fix |
 |---------|-----|
-| Group tab shows "SETUP REQUIRED" | You haven't updated the Supabase constants in index.html yet |
-| "Could not reach Group feed" | Check your Supabase URL and anon key are correct |
-| Workout posted but not appearing | Tap ↻ REFRESH on the Group tab |
+| Squad tab shows "SETUP REQUIRED" | You haven't updated the Supabase constants in index.html yet |
+| "Could not reach squad feed" | Check your Supabase URL and anon key are correct |
+| Workout posted but not appearing | Tap ↻ REFRESH on the Squad tab |
 | Someone can't see workouts | Make sure they're on the same URL |
 
 ---
@@ -129,15 +129,15 @@ Paste it into your Group chat. The link opens the app where they can see the Gro
 
 ## NEW TABLES ADDED (v3 update)
 
-If you already had Supabase set up, run this SQL to add the WORKOUT and library tables:
+If you already had Supabase set up, run this SQL to add the plan and library tables:
 
 ```sql
--- User training WORKOUTs
-create table if not exists user_WORKOUTs (
+-- User training plans
+create table if not exists user_plans (
   id uuid default gen_random_uuid() primary key,
   user_id text not null,
   user_name text,
-  WORKOUT_data jsonb not null,
+  plan_data jsonb not null,
   saved_at timestamptz default now()
 );
 
@@ -152,10 +152,10 @@ create table if not exists workout_library (
 );
 
 -- Row level security
-alter table user_WORKOUTs enable row level security;
-create policy "WORKOUT read" on user_WORKOUTs for select using (true);
-create policy "WORKOUT write" on user_WORKOUTs for insert with check (true);
-create policy "WORKOUT delete" on user_WORKOUTs for delete using (true);
+alter table user_plans enable row level security;
+create policy "Plan read" on user_plans for select using (true);
+create policy "Plan write" on user_plans for insert with check (true);
+create policy "Plan delete" on user_plans for delete using (true);
 
 alter table workout_library enable row level security;
 create policy "Library read" on workout_library for select using (true);
@@ -166,7 +166,7 @@ create policy "Library delete" on workout_library for delete using (true);
 ### Full SQL (first time setup — includes all 3 tables)
 
 ```sql
--- Group feed
+-- Squad feed
 create table if not exists workouts (
   id uuid default gen_random_uuid() primary key,
   user_name text not null,
@@ -179,12 +179,12 @@ create table if not exists workouts (
   logged_at timestamptz default now()
 );
 
--- User training WORKOUTs
-create table if not exists user_WORKOUTs (
+-- User training plans
+create table if not exists user_plans (
   id uuid default gen_random_uuid() primary key,
   user_id text not null,
   user_name text,
-  WORKOUT_data jsonb not null,
+  plan_data jsonb not null,
   saved_at timestamptz default now()
 );
 
@@ -200,13 +200,13 @@ create table if not exists workout_library (
 
 -- Row level security on all tables
 alter table workouts enable row level security;
-create policy "Group read" on workouts for select using (true);
-create policy "Group write" on workouts for insert with check (true);
+create policy "Squad read" on workouts for select using (true);
+create policy "Squad write" on workouts for insert with check (true);
 
-alter table user_WORKOUTs enable row level security;
-create policy "WORKOUT read" on user_WORKOUTs for select using (true);
-create policy "WORKOUT write" on user_WORKOUTs for insert with check (true);
-create policy "WORKOUT delete" on user_WORKOUTs for delete using (true);
+alter table user_plans enable row level security;
+create policy "Plan read" on user_plans for select using (true);
+create policy "Plan write" on user_plans for insert with check (true);
+create policy "Plan delete" on user_plans for delete using (true);
 
 alter table workout_library enable row level security;
 create policy "Library read" on workout_library for select using (true);
@@ -231,8 +231,8 @@ create table if not exists goals (
   activity text,
   goal_type text,
   target_date date,
-  WORKOUT_type text,
-  WORKOUT_data jsonb,
+  plan_type text,
+  plan_data jsonb,
   cross_training jsonb,
   status text default 'active',
   created_at timestamptz default now(),

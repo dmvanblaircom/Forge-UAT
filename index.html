@@ -2573,7 +2573,7 @@ let S={
  squadShareShown:false,squadShareOk:false,squadShareCopied:false,
  planSubTab:'myplan',
 };
-let G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};
+let G={step:'start',location:null,equipment:(getUser()&&getUser().equipment)||[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};
 
 
 
@@ -2641,15 +2641,34 @@ function getUser(){
     return {
       daysPerWeek: 4, sessionLength: 45, experience: 'intermediate',
       age: '', height: '', currentWeight: '', goalWeight: '',
+      equipment: [],
       ...u
     };
   } catch(e) { return null; }
 }
 function saveUser(obj){localStorage.setItem(USER_KEY,JSON.stringify(obj));}
+
+function toggleEquipment(item) {
+  const u = getUser() || {};
+  const eq = Array.isArray(u.equipment) ? [...u.equipment] : [];
+  const idx = eq.indexOf(item);
+  if (idx >= 0) eq.splice(idx, 1);
+  else eq.push(item);
+  saveUser({...u, equipment: eq});
+  renderMain(); // Re-render needed for visual toggle state
+}
+
 function updateProfile(fields) {
+  // Saves and re-renders — use for pill selectors (visual state changes)
   const u = getUser() || {};
   saveUser({...u, ...fields});
   renderMain();
+}
+
+function updateProfileField(fields) {
+  // Saves only, NO re-render — use for text/number inputs to preserve focus
+  const u = getUser() || {};
+  saveUser({...u, ...fields});
 }
 function isPregnancyMode(){const u=getUser();return u&&u.mode==='pregnancy';}
 function getUserEmoji(){return 'FORGE';}
@@ -2982,6 +3001,16 @@ function renderSetup(){
       ${pills('sessionLength',[[30,'30m'],[45,'45m'],[60,'60m'],[75,'75m'],[90,'90m']])}
       <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">EXPERIENCE</div>
       ${pills('experience',[['beginner','Beginner'],['intermediate','Intermediate'],['advanced','Advanced']])}
+
+      <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">HOME EQUIPMENT <span style="font-family:var(--body);font-size:11px;letter-spacing:0;color:var(--text3);text-transform:none">(optional)</span></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px">
+        ${[['dumbbells','Dumbbells'],['bands','Resistance Bands'],['pullup_bar','Pull-up Bar'],['kettlebell','Kettlebell'],['bench','Bench'],['barbell','Barbell']].map(([v,l])=>`
+          <button onclick="setupPrefs.equipment=setupPrefs.equipment||[];const i=setupPrefs.equipment.indexOf('${v}');i>=0?setupPrefs.equipment.splice(i,1):setupPrefs.equipment.push('${v}');renderMain()"
+            style="font-family:var(--body);font-size:13px;padding:7px 12px;border-radius:100px;cursor:pointer;
+            border:1px solid ${(setupPrefs.equipment||[]).includes(v)?'var(--accent)':'rgba(255,255,255,.1)'};
+            background:${(setupPrefs.equipment||[]).includes(v)?'var(--accent-bg)':'rgba(255,255,255,.04)'};
+            color:${(setupPrefs.equipment||[]).includes(v)?'var(--accent)':'var(--text3)'}">${l}</button>`).join('')}
+      </div>
       <button class="action-btn" onclick="setupStep=5;renderMain()" style="max-width:300px;margin-top:8px">CONTINUE →</button>
       ${back(3)}`);
   }
@@ -3031,6 +3060,7 @@ function _finishSetupSaveUser(){
     height: setupProfile.height || '',
     currentWeight: setupProfile.currentWeight || '',
     goalWeight: setupProfile.goalWeight || '',
+    equipment: setupPrefs.equipment || [],
     createdAt: new Date().toISOString(),
   };
   saveUser(userObj);
@@ -3089,6 +3119,7 @@ function setupComplete(){
     height: setupProfile.height || '',
     currentWeight: setupProfile.currentWeight || '',
     goalWeight: setupProfile.goalWeight || '',
+    equipment: setupPrefs.equipment || [],
     createdAt: new Date().toISOString(),
   };
   saveUser(userObj);
@@ -3824,7 +3855,17 @@ function gbReset() {
 }
 
 function gbNext() { GB.step++; renderMain(); }
-function gbLabelNext(){if(GB.draft.label.trim()){gbNext();}else{const el=document.getElementById("gb-label");if(el)el.style.borderBottomColor="var(--red)";}}
+function gbLabelNext(){
+  if(GB.draft.label.trim()){
+    // Check for existing programs to potentially reuse
+    const ep = getActivePrograms();
+    if(ep.length > 0 && !GB.editingId) GB.reusePrompt = true;
+    gbNext();
+  } else {
+    const el=document.getElementById("gb-label");
+    if(el) el.style.borderBottomColor="var(--red)";
+  }
+}
 function gbBack() { if(GB.step > 0) GB.step--; renderMain(); }
 function gbSetDisc(d) { GB.draft.discipline = d; GB.draft.activity = null; GB.draft.goalType = null; GB.draft.crossTraining = []; gbNext(); }
 function gbSetActivity(a) { GB.draft.activity = a; gbNext(); }
@@ -3919,6 +3960,27 @@ function renderGoalCreator() {
   }
 
   if (step === 1) {
+    // Reuse prompt — show before date picker if user has existing programs
+    if (GB.reusePrompt && !GB.draft.programId) {
+      const existingProgs = getActivePrograms();
+      if (existingProgs.length > 0) {
+        return '<div class="fade-in" style="padding:24px 16px">' + hdr +
+          '<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:8px">USE AN EXISTING PROGRAM?</div>' +
+          '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:20px">You already have a program. Link this goal to it — workouts log once across goals.</div>' +
+          existingProgs.map(function(p){
+            return '<button onclick="gbReuseProgram(\'' + p.id + '\')" style="display:block;width:100%;padding:16px;margin-bottom:10px;background:var(--bg2);border:1px solid var(--accent);border-radius:12px;color:var(--text);text-align:left;cursor:pointer">' +
+              '<div style="font-family:var(--display);font-size:18px;letter-spacing:1px;color:var(--accent)">' + p.name + '</div>' +
+              '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:4px">Link this goal to the existing program</div>' +
+            '</button>';
+          }).join('') +
+          '<button onclick="GB.reusePrompt=false;GB.draft.programId=null;renderMain()" style="display:block;width:100%;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text2);text-align:left;cursor:pointer">' +
+            '<div style="font-family:var(--display);font-size:18px;letter-spacing:1px">BUILD A NEW PROGRAM</div>' +
+            '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:4px">Create a fresh program for this goal</div>' +
+          '</button>' +
+        '</div>';
+      }
+      GB.reusePrompt = false;
+    }
     return '<div class="fade-in" style="padding:24px 16px">' + hdr +
       '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:8px">TARGET DATE?</div>' +
       '<div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:20px">Optional — adds a countdown to your goal card.</div>' +
@@ -3932,7 +3994,7 @@ function renderGoalCreator() {
       '<div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:20px">PRIMARY DISCIPLINE</div>' +
       DISCIPLINES.map(function(disc) {
         var on = d.discipline === disc.id;
-        return '<button data-disc="' + disc.id + '" onclick="gbSetDisc(this.dataset.disc)" style="display:block;width:100%;padding:14=6px 16px;margin-bottom:12px;background:' + (on?'var(--bg4)':'var(--bg2)') + ';border:1px solid ' + (on?'var(--accent-border)':'var(--border)') + ';border-left:3px solid ' + (on?'var(--accent)':'var(--border2)') + ';color:var(--text);text-align:left;cursor:pointer">' +
+        return '<button data-disc="' + disc.id + '" onclick="gbSetDisc(this.dataset.disc)" style="display:block;width:100%;padding:14px 16px;margin-bottom:10px;border-radius:12px;background:' + (on?'var(--bg4)':'var(--bg2)') + ';border:1px solid ' + (on?'var(--accent-border)':'var(--border)') + ';border-left:3px solid ' + (on?'var(--accent)':'var(--border2)') + ';color:var(--text);text-align:left;cursor:pointer">' +
           '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px;color:' + (on?'var(--accent)':'var(--text)') + '">' + disc.label + '</div>' +
           '<div style="font-family:var(--body);font-size:13px;color:var(--text2);margin-top:3px">' + disc.desc + '</div></button>';
       }).join('') + '</div>';
@@ -4981,10 +5043,11 @@ function renderPlan(){
     }
   }
   if(appGoals.length > 1) {
-    var goalTabs = '<div style="display:flex;overflow-x:auto;gap:0;border-bottom:2px solid var(--border);margin-bottom:0">' +
+    // Bug 5: more prominent goal switcher — card pills with padding
+    var goalTabs = '<div style="display:flex;gap:8px;overflow-x:auto;padding:0 16px 16px;margin-top:4px">' +
       appGoals.map(function(g){
         var active = S.planGoalId === g.id;
-        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 14px;font-family:var(--display);font-size:14px;letter-spacing:2px;background:'+(active?'var(--accent)':'none')+';color:'+(active?'#0B0D0B':'var(--text3)')+';border:none;border-bottom:'+(active?'2px solid var(--accent)':'2px solid transparent')+';cursor:pointer;white-space:nowrap">'+g.label+'</button>';
+        return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 18px;font-family:var(--display);font-size:14px;letter-spacing:2px;border-radius:100px;cursor:pointer;transition:all .15s;background:'+(active?'var(--accent)':'var(--bg2)')+';color:'+(active?'#0B0D0B':'var(--text2)')+';border:1px solid '+(active?'var(--accent)':'var(--border)')+'">'+g.label+'</button>';
       }).join('') + '</div>';
     html += goalTabs;
   } else if(appGoals.length === 1) {
@@ -5227,7 +5290,7 @@ function renderGenInLog(tabBar) {
         <button class="action-btn" style="margin-top:20px" onclick="loadGenIntoCustomLog()">
           START &amp; LOG THIS WORKOUT →
         </button>
-        <button class="action-btn secondary" style="margin-top:8px" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">
+        <button class="action-btn secondary" style="margin-top:8px" onclick="G={step:'start',location:null,equipment:(getUser()&&getUser().equipment)||[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">
           GENERATE ANOTHER
         </button>
       </div>
@@ -5313,7 +5376,7 @@ function renderPlanLog(tabBar){
   <textarea class="notes" enterkeyhint="done" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
   <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
     <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
-    ${[0,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+    ${[0,30,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
   <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
   ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SEND TO GROUP</button>`:''}
@@ -5425,7 +5488,7 @@ function renderCustomLog(tabBar){
   ${exs.length>0?`<textarea class="notes" enterkeyhint="done" placeholder="How did it go? Any PRs?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
    <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
     <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
-    ${[0,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+    ${[0,30,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
  <button class="save-btn" id="save-btn-custom" onclick="saveCustomWorkout()">SAVE WORKOUT</button>
   <button class="action-btn secondary" style="margin-top:6px;font-size:10px" onclick="(function(){const exs=S.custom.exercises;if(!exs.length)return;const name=S.custom.workoutTitle||'Custom Workout';saveToLibrary(name,'CUSTOM',exs.map(e=>({n:e.name,d:e.sets.length+' sets',t:e.type})),'custom');announce('Saved to library');})()">+ SAVE TO LIBRARY</button>
@@ -5588,7 +5651,7 @@ function renderGen(){
 function toggleEquip(id){const i=G.equipment.indexOf(id);if(i>=0)G.equipment.splice(i,1);else G.equipment.push(id);renderMain();}
 function renderGenResult(){
  const w=G.result;
- return`<div class="fade-in" style="padding:20px 16px 30px"><div class="section-label">GENERATED WORKOUT</div><div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:4px">${w.title}</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px">${G.location==='home'?'HOME':'AWAY'} · ${G.focus.toUpperCase()} · ${G.duration} MIN</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);font-style:italic;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">${w.coachNote}</div><div class="ex-list" style="margin-bottom:16px">${(w.exercises||[]).map(ex=>renderExRow(ex,'gen-')).join('')}</div><button class="action-btn" onclick="logGeneratedWorkout()">LOG THIS WORKOUT</button><button class="action-btn secondary" onclick="generateWorkout()">REGENERATE</button><button class="action-btn secondary" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">START OVER</button></div>`;
+ return`<div class="fade-in" style="padding:20px 16px 30px"><div class="section-label">GENERATED WORKOUT</div><div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:4px">${w.title}</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px">${G.location==='home'?'HOME':'AWAY'} · ${G.focus.toUpperCase()} · ${G.duration} MIN</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);font-style:italic;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">${w.coachNote}</div><div class="ex-list" style="margin-bottom:16px">${(w.exercises||[]).map(ex=>renderExRow(ex,'gen-')).join('')}</div><button class="action-btn" onclick="logGeneratedWorkout()">LOG THIS WORKOUT</button><button class="action-btn secondary" onclick="generateWorkout()">REGENERATE</button><button class="action-btn secondary" onclick="G={step:'start',location:null,equipment:(getUser()&&getUser().equipment)||[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">START OVER</button></div>`;
 }
 // ============================================================
 // OFFLINE WORKOUT GENERATOR — EXERCISE LIBRARY
@@ -6216,7 +6279,7 @@ function renderProfilePanel() {
   const inp = (field, val, type='text', placeholder='') =>
     `<input type="${type}" value="${val||''}" placeholder="${placeholder}"
       inputmode="${type==='number'?'decimal':'text'}"
-      oninput="updateProfile({'${field}':this.value.trim()})"
+      oninput="updateProfileField({'${field}':this.value.trim()})"
       style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;
       color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;
       color-scheme:dark">`;
@@ -6241,11 +6304,17 @@ function renderProfilePanel() {
           <div style="font-family:var(--display);font-size:28px;letter-spacing:2px;color:var(--text);line-height:1">${user.name||'FORGE USER'}</div>
           <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:3px;text-transform:capitalize">${user.gender||''}</div>
         </div>
-        <button onclick="pbResetProfile()"
-          style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;
-          color:var(--text3);background:rgba(255,255,255,.05);
-          border:1px solid var(--border);border-radius:8px;
-          padding:7px 12px;cursor:pointer">RESET</button>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          <button onclick="S.showProfile=false;renderMain()" aria-label="Close profile"
+            style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);
+            border:1px solid var(--border);color:var(--text3);font-size:16px;cursor:pointer;
+            display:grid;place-items:center;line-height:1">×</button>
+          <button onclick="pbResetProfile()"
+            style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;
+            color:var(--text3);background:rgba(255,255,255,.05);
+            border:1px solid var(--border);border-radius:8px;
+            padding:7px 12px;cursor:pointer">RESET</button>
+        </div>
       </div>
 
       <!-- BODY — scrollable sections -->
@@ -6325,17 +6394,36 @@ function renderProfilePanel() {
 
         <div style="height:1px;background:var(--border);margin:14px 0 18px"></div>
 
-        <!-- 5. APP SETTINGS -->
+        <!-- 5. HOME EQUIPMENT -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">HOME EQUIPMENT</div>
+        <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-bottom:12px">What do you have available at home? Used to tailor generated workouts.</div>
+        ${(()=>{
+          const EQ_OPTIONS = [
+            ['dumbbells','Dumbbells'],['barbell','Barbell'],['kettlebell','Kettlebell'],
+            ['bands','Resistance Bands'],['pullup_bar','Pull-up Bar'],['bench','Bench'],
+            ['rings','Rings / TRX'],['jump_rope','Jump Rope'],['cables','Cable Machine'],
+          ];
+          const userEq = user.equipment || [];
+          return '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px">' +
+            EQ_OPTIONS.map(([v,l]) => {
+              const has = userEq.includes(v);
+              return '<button onclick="toggleEquipment(\'' + v + '\')" style="font-family:var(--body);font-size:13px;padding:7px 12px;border-radius:100px;border:1px solid ' + (has?'var(--accent)':'rgba(255,255,255,.1)') + ';background:' + (has?'var(--accent-bg)':'rgba(255,255,255,.04)') + ';color:' + (has?'var(--accent)':'var(--text3)') + ';cursor:pointer">' + l + '</button>';
+            }).join('') +
+          '</div>';
+        })()}
+        <div style="height:1px;background:var(--border);margin:14px 0 18px"></div>
+
+        <!-- 6. APP SETTINGS -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">APP</div>
         ${row('REST TIMER DEFAULT',
           `<div style="display:flex;gap:6px;flex-wrap:wrap">
-            ${[0,60,90,120,180].map(s =>
+            ${[0,30,60,90,120,180].map(s =>
               `<button onclick="saveRestDuration(${s})"
                 style="font-family:var(--display);font-size:12px;letter-spacing:1px;
                 padding:7px 12px;border-radius:8px;border:none;cursor:pointer;
                 background:${restDur===s?'var(--accent)':'rgba(255,255,255,.06)'};
                 color:${restDur===s?'#0B0D0B':'var(--text3)'}"
-              >${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`
+              >${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`
             ).join('')}
           </div>`
         )}
@@ -7101,66 +7189,58 @@ function renderLanding() {
     padding:0 24px;text-align:center">
 
     <!-- Hero -->
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:380px;padding:60px 0 40px">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:360px;padding:60px 0 32px">
 
-      <!-- F-mark icon -->
-      <div style="width:88px;height:88px;border-radius:22px;background:var(--bg2);
-        border:1px solid var(--border);display:grid;place-items:center;margin-bottom:28px;
-        box-shadow:0 0 60px rgba(166,203,42,.15)">
-        <svg width="52" height="52" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-          <path d="M22 28 H98 L90 40 H30 Z" fill="#A6C82A"/>
-          <path d="M34 46 H86 L79 57 H41 Z" fill="#A6C82A"/>
-          <rect x="54" y="52" width="12" height="9" fill="#A6C82A"/>
-          <path d="M41 50 H79 L73 59 H47 Z" fill="#A6C82A"/>
-          <path d="M40 66 L60 56 L80 66 L74 66 L60 60 L46 66 Z" fill="#A6C82A"/>
-          <path d="M45 74 L60 65 L75 74 L69 74 L60 69 L51 74 Z" fill="#A6C82A"/>
-          <path d="M50 82 L60 74 L70 82 L65 82 L60 78 L55 82 Z" fill="#A6C82A"/>
-        </svg>
+      <!-- Brand mark -->
+      <div style="margin-bottom:24px">
+        ${renderForgeMark(80)}
       </div>
 
-      <div style="font-family:var(--display);font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:8px">FORGE</div>
-      <div style="font-family:var(--display);font-size:15px;letter-spacing:5px;color:var(--accent);margin-bottom:28px">STAY SHARP</div>
+      <!-- Wordmark -->
+      <div style="font-family:var(--display);font-size:56px;letter-spacing:8px;color:var(--text);line-height:1;margin-bottom:6px">FORGE</div>
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:6px;color:var(--accent);margin-bottom:32px">STAY SHARP.</div>
 
-      <div style="font-family:var(--body);font-size:17px;color:var(--text2);line-height:1.6;margin-bottom:8px">
-        Train with intent. Track every session.<br>Stay accountable to your squad.
+      <!-- Brand copy -->
+      <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);line-height:1.3;margin-bottom:12px">
+        FORGE DISCIPLINE.<br>SHARPEN EACH OTHER.
       </div>
-      <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:36px;font-style:italic">
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:8px;font-style:italic">
         As iron sharpens iron, so one person sharpens another.
       </div>
+      <div style="font-family:var(--display);font-size:11px;letter-spacing:3px;color:var(--accent);margin-bottom:36px">PROVERBS 27:17</div>
 
       <!-- CTA -->
-      ${ios ? `
-      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:300px">
+      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:280px;width:100%">
         ENTER FORGE →
       </button>
-      <div style="margin-top:24px;padding:16px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:320px">
-        <div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">ADD TO HOME SCREEN</div>
-        <div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.6;text-align:left">
-          1. Tap the Share button <span style="opacity:.7">(square with arrow)</span><br>
-          2. Scroll and tap <strong style="color:var(--text)">Add to Home Screen</strong><br>
-          3. Open FORGE from your home screen
+
+      ${ios ? `
+      <!-- iOS install instructions -->
+      <div style="margin-top:28px;padding:18px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:320px;width:100%;text-align:left">
+        <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;text-align:center">ADD TO HOME SCREEN</div>
+        <div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.8">
+          1. Tap <strong style="color:var(--text)">Share</strong> <span style="opacity:.6">(the box with arrow)</span><br>
+          2. Tap <strong style="color:var(--text)">Add to Home Screen</strong><br>
+          3. Open <strong style="color:var(--accent)">FORGE</strong> from your home screen
         </div>
       </div>` : `
-      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:300px">
-        ENTER FORGE →
-      </button>
-      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:20px;max-width:300px">
-        Tip: Add this to your home screen for the full app experience and offline access.
+      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:20px;max-width:280px;line-height:1.6">
+        Add to your home screen for the full app experience and offline access.
       </div>`}
 
     </div>
 
     <!-- Feature strip -->
-    <div style="width:100%;max-width:380px;padding:0 0 40px">
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <div style="width:100%;max-width:360px;padding:0 0 48px">
+      <div style="display:flex;gap:8px;justify-content:center">
         ${[
-          ['Programs','Structured training phases'],
-          ['Squad','Shared accountability'],
-          ['Forge Score','Daily performance index'],
+          ['GOALS','Set intent. Build programs to match.'],
+          ['SQUAD','Share workouts. Stay sharp together.'],
+          ['SCORE','Your daily Forge Score. Earned daily.'],
         ].map(([t,d])=>`
-          <div style="flex:1;min-width:90px;padding:14px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px">
-            <div style="font-family:var(--display);font-size:14px;letter-spacing:1.5px;color:var(--accent);margin-bottom:4px">${t}</div>
-            <div style="font-family:var(--body);font-size:11px;color:var(--text3);line-height:1.4">${d}</div>
+          <div style="flex:1;padding:14px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
+            <div style="font-family:var(--display);font-size:13px;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px">${t}</div>
+            <div style="font-family:var(--body);font-size:11px;color:var(--text3);line-height:1.5">${d}</div>
           </div>`).join('')}
       </div>
     </div>
@@ -7173,7 +7253,15 @@ function dismissLanding() {
   if (el) {
     el.style.transition = 'opacity 0.3s';
     el.style.opacity = '0';
-    setTimeout(() => { el.remove(); }, 300);
+    setTimeout(() => {
+      el.remove();
+      // Re-render the app now that the landing is gone
+      renderNav();
+      renderMain();
+    }, 300);
+  } else {
+    renderNav();
+    renderMain();
   }
 }
 
