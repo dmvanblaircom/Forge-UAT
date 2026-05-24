@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FORGE">
 <meta name="theme-color" content="#0B0D0B">
-<link rel="apple-touch-icon" href="./apple-touch-icon.svg">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>FORGE</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2085,11 +2085,13 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
 </head>
 <body>
 <div id="app">
-  <a href="#main" class="skip-nav">SKIP TO CONTENT</a>
+  <div id="offline-bar" style="display:none;background:var(--red);color:#fff;text-align:center;font-family:var(--display);font-size:11px;letter-spacing:2px;padding:6px;position:sticky;top:0;z-index:100" role="alert">OFFLINE — SHOWING CACHED DATA</div>
+<a href="#main" class="skip-nav">SKIP TO CONTENT</a>
 <div id="safe-top"></div>
   <main id="main"><div id="a11y-announce" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0"></div>
 </main>
-  <nav id="nav" aria-label="Main navigation" role="navigation">
+  <div id="forge-timer-bar" style="display:none;margin:0 12px 0;padding:10px 14px;background:rgba(20,23,20,.95);backdrop-filter:blur(16px);border-radius:20px 20px 0 0;border:1px solid rgba(255,255,255,.08);border-bottom:none;align-items:center;gap:8px" role="timer" aria-live="off"></div>
+<nav id="nav" aria-label="Main navigation" role="navigation">
     <button class="nav-btn" id="nav-today" onclick="setTab('today')" aria-label="Today" role="tab" aria-selected="false">
       
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 22V12h6v10"/></svg>HOME</button>
@@ -2105,7 +2107,7 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>FUEL</button>
     <button class="nav-btn" id="nav-squad" onclick="setTab('squad')" aria-label="Squad" role="tab" aria-selected="false">
       
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>GROUP</button>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>SQUAD</button>
     <button class="nav-btn" id="nav-stats" onclick="setTab('stats')" aria-label="Stats" role="tab" aria-selected="false">
       
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="15" rx="1"/><rect x="17" y="9" width="4" height="12" rx="1"/></svg>STATS</button>
@@ -2120,9 +2122,9 @@ const PHASES=[
  {id:0,title:"REACTIVATION",short:"REACT.",weeks:"Wks 1–2",color:"var(--green)",tagline:"Wake the body up. Don't crush it.",dowMap:{1:0,2:1,4:2,6:3},schedule:[
   {day:"MON",label:"Upper Body",tag:"BODYWEIGHT",exercises:[
    {n:"Dynamic Warmup",d:"5 min — arm circles, cat-cow, hip circles",t:"warmup",log:false},
-   {n:"Push-Ups",d:"3 × 10",t:"bw",log:true,ro:true},
-   {n:"Pike Push-Ups",d:"3 × 8",t:"bw",log:true,ro:true},
-   {n:"Bench-Assisted Rows",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Push Ups",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Pike Push Ups",d:"3 × 8",t:"bw",log:true,ro:true},
+   {n:"Bench Assisted Rows",d:"3 × 10",t:"bw",log:true,ro:true},
    {n:"Plank",d:"3 × 30 sec",t:"core",log:true,ro:true},
    {n:"Dead Hang",d:"2 × 20 sec",t:"mob",log:false},
    {n:"Cool Down",d:"5 min — pec, lat, thoracic",t:"cool",log:false},
@@ -2156,7 +2158,7 @@ const PHASES=[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
    {n:"Incline DB Bench Press",d:"3 × 10–12",t:"lift",log:true},
    {n:"DB Shoulder Press",d:"3 × 10",t:"lift",log:true},
-   {n:"Push-Ups to Failure",d:"2 sets",t:"bw",log:true,ro:true},
+   {n:"Push Ups to Failure",d:"2 sets",t:"bw",log:true,ro:true},
    {n:"DB Lateral Raise",d:"3 × 12",t:"lift",log:true},
    {n:"Bench Tricep Dips",d:"3 × 12",t:"bw",log:true,ro:true},
    {n:"Plank",d:"3 × 45 sec",t:"core",log:true,ro:true},
@@ -2170,7 +2172,7 @@ const PHASES=[
   ]},
   {day:"THU",label:"Upper Pull + Arms",tag:"DUMBBELLS",exercises:[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
-   {n:"Single-Arm DB Row",d:"3 × 10–12 each",t:"lift",log:true},
+   {n:"Single Arm DB Row",d:"3 × 10–12 each",t:"lift",log:true},
    {n:"DB Hammer Curl",d:"3 × 12",t:"lift",log:true},
    {n:"DB Bicep Curl",d:"3 × 10",t:"lift",log:true},
    {n:"Reverse Fly",d:"3 × 12",t:"lift",log:true},
@@ -2180,7 +2182,7 @@ const PHASES=[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
    {n:"DB Squat",d:"3 × 12",t:"lift",log:true},
    {n:"DB RDL",d:"3 × 10",t:"lift",log:true},
-   {n:"Step-Ups on Bench",d:"3 × 10 each leg",t:"lift",log:true},
+   {n:"Step Ups on Bench",d:"3 × 10 each leg",t:"lift",log:true},
    {n:"Rower 8×250m",d:"8 intervals, rest 1 min",t:"cardio",log:true,ro:true},
   ]},
   {day:"SAT",label:"Run + Mobility",tag:"CARDIO",exercises:[
@@ -2194,8 +2196,8 @@ const PHASES=[
    {n:"Incline DB Bench Press",d:"4 × 8–10",t:"lift",log:true},
    {n:"DB Shoulder Press",d:"4 × 10",t:"lift",log:true},
    {n:"DB Lateral Raise",d:"3 × 15",t:"lift",log:true},
-   {n:"DB Close-Grip Floor Press",d:"3 × 10",t:"lift",log:true},
-   {n:"Push-Up Burnout",d:"Max reps, 2 sets",t:"bw",log:true,ro:true},
+   {n:"DB Close Grip Floor Press",d:"3 × 10",t:"lift",log:true},
+   {n:"Push Up Burnout",d:"Max reps, 2 sets",t:"bw",log:true,ro:true},
    {n:"Plank to Pike",d:"3 × 10",t:"core",log:true,ro:true},
   ]},
   {day:"TUE",label:"Legs — Heavy",tag:"HEAVY",exercises:[
@@ -2212,7 +2214,7 @@ const PHASES=[
   ]},
   {day:"THU",label:"Upper Pull + Arms",tag:"DUMBBELLS",exercises:[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
-   {n:"Single-Arm DB Row",d:"4 × 10–12",t:"lift",log:true},
+   {n:"Single Arm DB Row",d:"4 × 10–12",t:"lift",log:true},
    {n:"DB Curl",d:"3 × 12",t:"lift",log:true},
    {n:"Incline DB Curl",d:"3 × 10",t:"lift",log:true},
    {n:"Reverse Fly",d:"3 × 15",t:"lift",log:true},
@@ -2229,7 +2231,7 @@ const PHASES=[
    {n:"Incline DB Bench",d:"5 × 8",t:"lift",log:true},
    {n:"DB Shoulder Press",d:"4 × 8",t:"lift",log:true},
    {n:"DB Lateral Raise",d:"4 × 15",t:"lift",log:true},
-   {n:"Dips + Push-Up Superset",d:"4 rounds: Dips ×12 → Push-Ups to failure",t:"circuit",log:true,ro:true},
+   {n:"Dips + Push Up Superset",d:"4 rounds: Dips ×12 → Push-Ups to failure",t:"circuit",log:true,ro:true},
    {n:"Plank Circuit",d:"Standard + side + reverse — 45 sec each, 3 rounds",t:"core",log:true,ro:true},
   ]},
   {day:"TUE",label:"Legs — Max",tag:"MAX EFFORT",exercises:[
@@ -2244,7 +2246,7 @@ const PHASES=[
    {n:"Treadmill 20 min",d:"Sustained run — no walking",t:"cardio",log:true,ro:true},
   ]},
   {day:"THU",label:"Upper Pull — Max",tag:"MAX EFFORT",exercises:[
-   {n:"Single-Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
+   {n:"Single Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
    {n:"DB Curl Superset",d:"4 rounds: Curl ×10 → Hammer ×10",t:"lift",log:true},
    {n:"Reverse Fly",d:"4 × 15",t:"lift",log:true},
    {n:"Core Max",d:"3 rounds: Hollow 45s + V-up ×15 + Bicycle ×25 + Leg raise ×15",t:"core",log:true,ro:true},
@@ -2263,21 +2265,21 @@ const PHASES=[
    {n:"DB Shoulder Press",d:"4 × 8–10",t:"lift",log:true},
    {n:"DB Lateral Raise",d:"4 × 15",t:"lift",log:true},
    {n:"DB Fly",d:"3 × 12",t:"lift",log:true},
-   {n:"Dips + Push-Up Superset",d:"4 rounds to failure",t:"circuit",log:true,ro:true},
+   {n:"Dips + Push Up Superset",d:"4 rounds to failure",t:"circuit",log:true,ro:true},
    {n:"Plank Circuit",d:"45 sec each, 3 rounds",t:"core",log:true,ro:true},
   ]},
   {day:"TUE",label:"Legs (Ph4+)",tag:"CONTINUE",exercises:[
    {n:"Goblet Squat",d:"5 × 10",t:"lift",log:true},
    {n:"Romanian Deadlift",d:"5 × 10",t:"lift",log:true},
    {n:"Bulgarian Split Squat",d:"4 × 10 each",t:"lift",log:true},
-   {n:"Single-Leg RDL",d:"3 × 10 each",t:"lift",log:true},
+   {n:"Single Leg RDL",d:"3 × 10 each",t:"lift",log:true},
    {n:"Weighted Calf Raise",d:"4 × 20",t:"lift",log:true},
   ]},
   {day:"WED",label:"Run Day",tag:"CARDIO",exercises:[
    {n:"Treadmill Run",d:"40 min sustained",t:"cardio",log:true,ro:true},
   ]},
   {day:"THU",label:"Upper Pull (Ph4+)",tag:"CONTINUE",exercises:[
-   {n:"Single-Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
+   {n:"Single Arm DB Row",d:"5 × 10–12",t:"lift",log:true},
    {n:"DB Curl Superset",d:"4 rounds: Curl ×10 → Hammer ×10",t:"lift",log:true},
    {n:"Reverse Fly",d:"4 × 15",t:"lift",log:true},
    {n:"DB Pullover",d:"3 × 12",t:"lift",log:true},
@@ -2288,7 +2290,7 @@ const PHASES=[
    {n:"Treadmill HIIT",d:"10 × 30/30",t:"cardio",log:true,ro:true},
   ]},
   {day:"SAT — FINAL TEST",label:"End of July Test",tag:"BENCHMARK",exercises:[
-   {n:"Max Push-Ups",d:"One set, max reps — RECORD IT",t:"bw",log:true,ro:true},
+   {n:"Max Push Ups",d:"One set, max reps — RECORD IT",t:"bw",log:true,ro:true},
    {n:"Rower 2000m",d:"Beat Week 10 time",t:"cardio",log:true,ro:true},
    {n:"100 DB Thrusters for Time",d:"Moderate weight — RECORD TIME",t:"circuit",log:true,ro:true},
    {n:"1 Mile Run",d:"Treadmill — record time",t:"cardio",log:true,ro:true},
@@ -2368,8 +2370,58 @@ const METRICS_KEY='forge_metrics';
 function getSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')}catch(e){return{}}}
 function saveSettings(o){localStorage.setItem(SETTINGS_KEY,JSON.stringify({...getSettings(),...o}))}
 function getStartDate(){return getSettings().startDate||'2026-04-22'}
+
+// ============================================================
+// PROFILE ↔ METRICS WEIGHT BRIDGE
+// ============================================================
+function getLatestWeight() {
+  const sorted = getAllMetricsSorted();
+  for (const [date, data] of sorted) {
+    if (data.weight) return { weight: parseFloat(data.weight), date };
+  }
+  // Fall back to profile currentWeight
+  const u = getUser();
+  if (u && u.currentWeight) return { weight: parseFloat(u.currentWeight), date: null };
+  return null;
+}
+
+function getWeightProgress() {
+  const u = getUser();
+  if (!u || !u.goalWeight) return null;
+  const goal = parseFloat(u.goalWeight);
+  const latest = getLatestWeight();
+  if (!latest) return null;
+  const current = latest.weight;
+  // Starting weight = profile currentWeight, or earliest metric
+  let start = u.currentWeight ? parseFloat(u.currentWeight) : current;
+  const sorted = getAllMetricsSorted().filter(([d,data])=>data.weight);
+  if (sorted.length) start = parseFloat(sorted[sorted.length-1][1].weight);
+  const totalChange = goal - start;
+  const doneChange = current - start;
+  const pct = totalChange !== 0 ? Math.max(0, Math.min(100, Math.round((doneChange/totalChange)*100))) : 0;
+  const remaining = (goal - current).toFixed(1);
+  return { current, goal, start, pct, remaining, isLoss: goal < start };
+}
+function getCalorieTarget() { return getSettings().calorieTarget || null; }
+function getCalorieTotal(date) { const f = getFuel(date); return f.calories || 0; }
+function setCalorieTotal(date, kcal) {
+  const all = getAllFuel();
+  if (!all[date]) all[date] = { entries: [] };
+  all[date].calories = Number(kcal) || 0;
+  localStorage.setItem(FUEL_KEY, JSON.stringify(all));
+}
 function getProteinTarget(){return getSettings().proteinTarget||170}
 function loadStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
+
+function deleteLogEntry(date){
+  showConfirm('Delete this workout log?',function(){
+    const s=loadStore();
+    delete s[date];
+    localStorage.setItem(STORE_KEY,JSON.stringify(s));
+    if(S.lastSavedDate===date) S.lastSavedDate=null;
+    renderMain();
+  },'DELETE','red');
+}
 function saveLogEntry(date,phaseId,dayIdx,sets,notes){const s=loadStore();s[date]={phaseId,dayIdx,sets,notes,savedAt:new Date().toISOString()};localStorage.setItem(STORE_KEY,JSON.stringify(s));}
 function getLogEntry(date){return loadStore()[date]||null}
 function getAllLogs(){return Object.entries(loadStore()).sort((a,b)=>b[0].localeCompare(a[0]))}
@@ -2379,7 +2431,7 @@ function getMoves(){try{return JSON.parse(localStorage.getItem(MOVES_KEY)||'{}')
 function saveMoveEntry(targetDate,phaseId,dayIdx,originalDate){const m=getMoves();m[targetDate]={phaseId,dayIdx,originalDate,savedAt:new Date().toISOString()};localStorage.setItem(MOVES_KEY,JSON.stringify(m));}
 
 function getCheckins(){try{return JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}')}catch(e){return{}}}
-function getCheckin(date){return getCheckins()[date]||null}
+// getCheckin: see definition below
 function saveCheckin(date,data){const s=getCheckins();s[date]={...data,savedAt:new Date().toISOString()};localStorage.setItem(CHECKIN_KEY,JSON.stringify(s));}
 
 function getAllFuel(){try{return JSON.parse(localStorage.getItem(FUEL_KEY)||'{}')}catch(e){return{}}}
@@ -2502,7 +2554,7 @@ let S={
  tab:'today',
  planOpen:[true,false,false,false,false],planDayIdx:[0,0,0,0,0],
  planMove:{open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]},
- logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',
+ logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',lastSavedDate:null,showScoreBreakdown:false,showProfile:false,landingDismissed:false,showStreakModal:null,timer:null,restDuration:90,
  planMode:'myplan',
  showGoalCreator:false,
  activeGoalId:null,
@@ -2521,7 +2573,7 @@ let S={
  squadShareShown:false,squadShareOk:false,squadShareCopied:false,
  planSubTab:'myplan',
 };
-let G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};
+let G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};
 
 
 
@@ -2562,6 +2614,16 @@ async function postWorkoutToSquad(payload) {
   try { const r=await supaFetch('workouts',{method:'POST',prefer:'return=minimal',body:JSON.stringify(payload)});return r.ok; }
   catch(e){return false;}
 }
+let squadFeed=null, squadLoading=false, squadError=false;
+async function loadSquadFeed(){
+  squadLoading=true;squadError=false;renderMain();
+  const data=await fetchSquadFeed();
+  squadLoading=false;
+  if(data===null||data===undefined){squadError=true;squadFeed=[];}
+  else{squadFeed=data;}
+  renderMain();
+}
+
 async function fetchSquadFeed(limit=40) {
   try { const r=await supaFetch(`workouts?order=logged_at.desc&limit=${limit}`);if(!r.ok)return[];return await r.json(); }
   catch(e){return [];}
@@ -2571,8 +2633,24 @@ async function fetchSquadFeed(limit=40) {
 // USER PROFILE
 // ============================================================
 const USER_KEY = 'forge_user';
-function getUser(){try{return JSON.parse(localStorage.getItem(USER_KEY)||'null');}catch(e){return null;}}
+function getUser(){
+  try {
+    const u = JSON.parse(localStorage.getItem(USER_KEY)||'null');
+    if (!u) return null;
+    // Ensure defaults for extended profile fields
+    return {
+      daysPerWeek: 4, sessionLength: 45, experience: 'intermediate',
+      age: '', height: '', currentWeight: '', goalWeight: '',
+      ...u
+    };
+  } catch(e) { return null; }
+}
 function saveUser(obj){localStorage.setItem(USER_KEY,JSON.stringify(obj));}
+function updateProfile(fields) {
+  const u = getUser() || {};
+  saveUser({...u, ...fields});
+  renderMain();
+}
 function isPregnancyMode(){const u=getUser();return u&&u.mode==='pregnancy';}
 function getUserEmoji(){return 'FORGE';}
 
@@ -2584,14 +2662,14 @@ function getUserId(){
   return uuid;
 }
 
-const PREGNANCY_AVOID=['Jump Squat','Burpees','Star jumps','Squat jumps','Jumping jacks','High knees','Skater hops','Mountain Climbers','Rower 2000m Time Trial','Treadmill HIIT','Complex Circuit — 6 Rounds','DB Thrusters','Bulgarian Split Squat','Pistol Squat Progression','Pseudo-Planche Push-Up','V-Ups','Hollow Hold','Leg Raises'];
-const PREGNANCY_MODIFY={'Push-Ups':'Use incline push-ups (hands on bench) to reduce abdominal pressure','Plank':'Limit to 20-30 sec. Stop if you notice coning or doming','Dead Bug':'Keep range small. Stop if coning occurs','Romanian Deadlift':'Use lighter weight, wider stance','Goblet Squat':'Widen stance as pregnancy progresses','Single-Arm DB Row':'Supported position only — hand on bench','Incline DB Bench Press':'Keep incline steep (45+ degrees). Avoid flat pressing after first trimester','DB Shoulder Press':'Seated preferred. Reduce weight','Rower or Treadmill':'Low intensity only — RPE 4 max','Treadmill Run':'Walk or light jog only','Circuit — 4 Rounds':'Remove jumping. Reduce reps by 40%','Circuit — 5 Rounds':'Remove jumping. Reduce to 3 rounds max'};
+const PREGNANCY_AVOID=['Jump Squat','Burpees','Star jumps','Squat jumps','Jumping jacks','High knees','Skater hops','Mountain Climbers','Rower 2000m Time Trial','Treadmill HIIT','Complex Circuit — 6 Rounds','DB Thrusters','Bulgarian Split Squat','Pistol Squat Progression','Pseudo Planche Push Up','V Ups','Hollow Hold','Leg Raises'];
+const PREGNANCY_MODIFY={'Push Ups':'Use incline push-ups (hands on bench) to reduce abdominal pressure','Plank':'Limit to 20-30 sec. Stop if you notice coning or doming','Dead Bug':'Keep range small. Stop if coning occurs','Romanian Deadlift':'Use lighter weight, wider stance','Goblet Squat':'Widen stance as pregnancy progresses','Single Arm DB Row':'Supported position only — hand on bench','Incline DB Bench Press':'Keep incline steep (45+ degrees). Avoid flat pressing after first trimester','DB Shoulder Press':'Seated preferred. Reduce weight','Rower or Treadmill':'Low intensity only — RPE 4 max','Treadmill Run':'Walk or light jog only','Circuit — 4 Rounds':'Remove jumping. Reduce reps by 40%','Circuit — 5 Rounds':'Remove jumping. Reduce to 3 rounds max'};
 
 const PREGNANCY_EXERCISES={
-  warmup:[{n:"Cat-cow",d:"10 slow reps",t:"warmup"},{n:"Hip circles",d:"10 each direction",t:"warmup"},{n:"Leg swings",d:"10 each leg, hold wall",t:"warmup"},{n:"Shoulder rolls",d:"10 forward, 10 back",t:"warmup"},{n:"Deep squat hold",d:"30 sec, feet wide",t:"warmup"},{n:"Ankle circles",d:"10 each foot",t:"warmup"}],
-  upper:[{n:"Incline push-ups",d:"3 × 10-12 — hands on bench",t:"bw"},{n:"DB shoulder press (seated)",d:"3 × 10 — light weight",t:"lift"},{n:"DB lateral raise",d:"3 × 12",t:"lift"},{n:"Single-arm DB row",d:"3 × 10 each — supported",t:"lift"},{n:"Band pull-aparts",d:"3 × 15",t:"lift"},{n:"DB bicep curl",d:"3 × 12",t:"lift"}],
-  lower:[{n:"Bodyweight squat (wide stance)",d:"3 × 15",t:"bw"},{n:"Supported reverse lunge",d:"3 × 10 each — hold wall",t:"bw"},{n:"Glute bridge",d:"3 × 15",t:"bw"},{n:"Side-lying clamshells",d:"3 × 15 each",t:"bw"},{n:"Sumo squat",d:"3 × 12",t:"bw"},{n:"Seated calf raises",d:"3 × 20",t:"bw"}],
-  core:[{n:"Pelvic floor contractions",d:"3 × 10 sec hold — every session",t:"core"},{n:"Dead bug (modified)",d:"3 × 8 each — small range",t:"core"},{n:"Bird dog",d:"3 × 10 each",t:"core"},{n:"Side-lying hip abduction",d:"3 × 15 each",t:"core"},{n:"Seated pelvic tilts",d:"3 × 10",t:"core"}],
+  warmup:[{n:"Cat Cow",d:"10 slow reps",t:"warmup"},{n:"Hip circles",d:"10 each direction",t:"warmup"},{n:"Leg swings",d:"10 each leg, hold wall",t:"warmup"},{n:"Shoulder rolls",d:"10 forward, 10 back",t:"warmup"},{n:"Deep squat hold",d:"30 sec, feet wide",t:"warmup"},{n:"Ankle circles",d:"10 each foot",t:"warmup"}],
+  upper:[{n:"Incline Push Ups",d:"3 × 10-12 — hands on bench",t:"bw"},{n:"DB shoulder press (seated)",d:"3 × 10 — light weight",t:"lift"},{n:"DB lateral raise",d:"3 × 12",t:"lift"},{n:"Single Arm DB Row",d:"3 × 10 each — supported",t:"lift"},{n:"Band Pull Aparts",d:"3 × 15",t:"lift"},{n:"DB bicep curl",d:"3 × 12",t:"lift"}],
+  lower:[{n:"Bodyweight squat (wide stance)",d:"3 × 15",t:"bw"},{n:"Supported reverse lunge",d:"3 × 10 each — hold wall",t:"bw"},{n:"Glute bridge",d:"3 × 15",t:"bw"},{n:"Side Lying Clamshells",d:"3 × 15 each",t:"bw"},{n:"Sumo squat",d:"3 × 12",t:"bw"},{n:"Seated calf raises",d:"3 × 20",t:"bw"}],
+  core:[{n:"Pelvic floor contractions",d:"3 × 10 sec hold — every session",t:"core"},{n:"Dead bug (modified)",d:"3 × 8 each — small range",t:"core"},{n:"Bird dog",d:"3 × 10 each",t:"core"},{n:"Side Lying Hip Abduction",d:"3 × 15 each",t:"core"},{n:"Seated pelvic tilts",d:"3 × 10",t:"core"}],
   cardio:[{n:"Walking",d:"20-30 min — conversational pace",t:"cardio"},{n:"Stationary bike",d:"20-25 min — low resistance",t:"cardio"},{n:"Rower (easy)",d:"15 min — RPE 4 max",t:"cardio"},{n:"Prenatal yoga flow",d:"20 min",t:"mob"}],
   recovery:[{n:"Pigeon pose (supported)",d:"90 sec each side",t:"mob"},{n:"Figure 4 stretch",d:"60 sec each side",t:"mob"},{n:"Hip flexor stretch (kneeling)",d:"60 sec each side",t:"mob"},{n:"Thoracic rotation (seated)",d:"10 each side",t:"mob"},{n:"Child's pose (wide)",d:"60 sec",t:"mob"},{n:"Ankle pumps",d:"20 reps",t:"mob"}],
 };
@@ -2653,7 +2731,9 @@ function getForgeMetrics(){
   }).length;
 
   // Get planned workout days this week from active goal plan
-  let plannedDaysThisWeek=5; // fallback only if no plan exists
+  // Falls back to the user's profile training preference, then 5
+  const _u = getUser();
+  let plannedDaysThisWeek = (_u && _u.daysPerWeek) ? parseInt(_u.daysPerWeek) : 5;
   const phases=getActivePlanPhases();
   if(phases&&phases.length){
     const pi=getPhaseForDate(todayStr());
@@ -2700,7 +2780,51 @@ function getTodaySession(){
 }
 
 function renderForgeScoreCard(metrics){
-  return `<div class="forge-card forge-wide">
+  const breakdown = S.showScoreBreakdown;
+  const readinessStr = metrics.readiness!=null ? metrics.readiness+'%' : '--';
+  const consistencyStr = metrics.consistency+'%';
+  const plannedStr = metrics.plannedDaysThisWeek!=null
+    ? `${metrics.weekLogs}/${metrics.plannedDaysThisWeek} sessions`
+    : `${metrics.weekLogs} sessions`;
+
+  if(breakdown){
+    return `<div class="forge-card forge-wide" onclick="S.showScoreBreakdown=false;renderMain()" style="cursor:pointer">
+      <div class="forge-card-inner">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="forge-card-label" style="color:var(--accent)">HOW IT'S CALCULATED</div>
+          <div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--text3)">TAP TO CLOSE</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
+            <div>
+              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">CONSISTENCY</div>
+              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${plannedStr} this week · 48% weight</div>
+            </div>
+            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:var(--text)">${consistencyStr}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
+            <div>
+              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">READINESS</div>
+              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${metrics.readiness!=null?'From today\'s check-in · 32% weight':'Check in to unlock · 32% weight'}</div>
+            </div>
+            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:${metrics.readiness!=null?'var(--text)':'var(--text3)'}">${readinessStr}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
+            <div>
+              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">STREAK</div>
+              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">Consecutive days logged · no cap</div>
+            </div>
+            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:var(--text)">${metrics.streak}d</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;font-family:var(--body);font-size:12px;color:var(--text3);text-align:center;line-height:1.5">
+          Check in daily and hit your planned sessions to push this higher.
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="forge-card forge-wide" onclick="S.showScoreBreakdown=true;S.showProfile=false;renderMain()" style="cursor:pointer" role="button" aria-label="Forge Score ${metrics.score}%. Tap for breakdown.">
     <div class="forge-card-inner">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
         <div>
@@ -2713,7 +2837,10 @@ function renderForgeScoreCard(metrics){
         </div>
       </div>
       <div class="forge-progress"><span style="width:${metrics.score}%"></span></div>
-      <div class="forge-card-note">${metrics.streak>0?'Keep the streak alive.':'Start the streak today.'}</div>
+      <div class="forge-card-note" style="display:flex;justify-content:space-between;align-items:center">
+        <span>${metrics.streak>0?`${metrics.streak} day streak.`:'Start the streak today.'} ${plannedStr} this week.</span>
+        <span style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;color:var(--text3)">HOW? →</span>
+      </div>
     </div>
   </div>`;
 }
@@ -2767,76 +2894,182 @@ function renderForgeRecentActivity(){
 let setupGender=null,setupPregnancy=false,setupPlanChoice=null;
 
 function renderSetup(){
-  return `<div class="fade-in" style="min-height:100vh;padding:40px 24px 40px;display:flex;flex-direction:column;justify-content:center">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">${renderForgeMark(56)}<div><div class="forge-wordmark" style="font-size:42px">FORGE</div><div class="forge-kicker">STAY SHARP.</div></div></div>
-    <div style="font-family:var(--body);font-size:20px;line-height:1.35;color:var(--text);margin-bottom:8px">Forge discipline.<br>Sharpen each other.</div>
-    <div style="font-family:var(--body);font-size:14px;line-height:1.6;color:var(--text3);margin-bottom:34px">As iron sharpens iron, so one person sharpens another.</div>
-    <div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">YOUR NAME</div>
-    <input type="text" id="setup-name" placeholder="First name" maxlength="20"
-      style="background:var(--bg2);border:1px solid var(--border);border-bottom:2px solid var(--accent);
-      color:var(--text);font-family:var(--body);font-size:20px;font-weight:600;
-      padding:12px 14px;margin-bottom:28px;width:100%;color-scheme:dark;letter-spacing:1px">
-    <div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">I AM</div>
-    <div style="display:flex;gap:8px;margin-bottom:28px">
-      <button id="setup-male" onclick="setupSelectGender('male')"
-        style="flex:1;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
-        background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer">
-        MALE
-      </button>
-      <button id="setup-female" onclick="setupSelectGender('female')"
-        style="flex:1;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
-        background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer">
-        FEMALE
-      </button>
-    </div>
-    <div id="setup-pregnancy-row" style="display:none;margin-bottom:28px">
-      <button id="setup-pregnancy-btn" onclick="setupTogglePregnancy()"
-        style="width:100%;padding:14px;font-family:var(--display);font-size:16px;letter-spacing:2px;
-        background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;text-align:left">
-        PREGNANCY SAFE MODE - OFF
-      </button>
-      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px;line-height:1.5">Modifies exercises for pregnancy. Safe all trimesters.</div>
-    </div>
-    <div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">TO GET STARTED</div>
-    <button id="setup-plan-later" onclick="setupSelectPlan('later')"
-      style="width:100%;padding:12px;font-family:var(--display);font-size:15px;letter-spacing:2px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;text-align:left;margin-bottom:6px">
-      BUILD MY OWN PLAN IN THE APP
-    </button>
-    <button id="setup-plan-now" onclick="setupSelectPlan('now')"
-      style="width:100%;padding:12px;font-family:var(--display);font-size:15px;letter-spacing:2px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;text-align:left;margin-bottom:28px">
-      USE DEFAULT PLAN TO START NOW
-    </button>
-    <button onclick="setupComplete()"
-      style="width:100%;padding:18px;background:var(--forge-lime);border:none;
-      color:#0B0D0B;font-family:var(--display);font-size:22px;letter-spacing:4px;
-      cursor:pointer;border-radius:8px;">
-      ENTER FORGE
-  </div>`;
+  const TOTAL = 5;
+  const dots = [];
+  for (let n=1; n<=TOTAL; n++) {
+    dots.push(`<div style="width:${setupStep===n?'24px':'8px'};height:8px;border-radius:4px;
+      background:${setupStep>=n?'var(--accent)':'rgba(255,255,255,.15)'};transition:all .3s ease"></div>`);
+  }
+  const dotBar = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:32px">${dots.join('')}</div>`;
+  const brand = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:28px">
+      ${renderForgeMark(40)}
+      <div style="font-family:var(--display);font-size:36px;letter-spacing:4px;color:var(--text)">FORGE</div>
+    </div>`;
+  const back = (toStep) => `<button onclick="setupStep=${toStep};renderMain()"
+      style="background:none;border:none;color:var(--text3);font-family:var(--display);
+      font-size:13px;letter-spacing:2px;cursor:pointer;padding:16px 0;margin-top:4px">← BACK</button>`;
+  const wrap = (inner) => `<div class="fade-in" style="min-height:100vh;padding:48px 28px;display:flex;flex-direction:column;justify-content:center">${brand}${dotBar}${inner}</div>`;
+
+  // ── STEP 1: NAME ──
+  if (setupStep === 1) {
+    return wrap(`
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:12px">WHAT DO WE CALL YOU?</div>
+      <input id="setup-name" type="text" enterkeyhint="next" autocomplete="given-name"
+        oninput="setupName=this.value.trim()" placeholder="First name" maxlength="20" value="${setupName}"
+        style="width:100%;background:transparent;border:none;border-bottom:2px solid var(--accent);
+        color:var(--text);font-family:var(--display);font-size:36px;letter-spacing:3px;
+        padding:8px 0 12px;outline:none;margin-bottom:48px" autofocus>
+      <button class="action-btn" onclick="if(setupName.trim()){setupStep=2;renderMain();}else{const i=document.getElementById('setup-name');if(i){i.style.borderColor='var(--red)';i.focus();}}" style="max-width:300px">CONTINUE →</button>`);
+  }
+
+  // ── STEP 2: GENDER ──
+  if (setupStep === 2) {
+    const gBtn = (val,label) => `<button onclick="setupSelectGender('${val}')"
+      style="flex:1;padding:16px;font-family:var(--display);font-size:18px;letter-spacing:2px;
+      cursor:pointer;border-radius:12px;background:var(--bg2);transition:all .15s;
+      border:2px solid ${setupGender===val?'var(--accent)':'rgba(255,255,255,.1)'};
+      color:${setupGender===val?'var(--accent)':'var(--text2)'}">${label}</button>`;
+    return wrap(`
+      <div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:6px">Hey, ${setupName}.</div>
+      <div style="font-family:var(--body);font-size:15px;color:var(--text3);margin-bottom:32px">This helps us tailor your experience.</div>
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:12px">I AM</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">${gBtn('male','MALE')}${gBtn('female','FEMALE')}</div>
+      <div id="setup-pregnancy-row" style="display:${setupGender==='female'?'block':'none'};margin-bottom:16px">
+        <button onclick="setupTogglePregnancy()"
+          style="width:100%;padding:12px;font-family:var(--display);font-size:14px;letter-spacing:2px;
+          cursor:pointer;border-radius:12px;background:var(--bg2);transition:all .15s;
+          border:2px solid ${setupPregnancy?'var(--accent)':'rgba(255,255,255,.1)'};
+          color:${setupPregnancy?'var(--accent)':'var(--text2)'}">PREGNANCY SAFE MODE ${setupPregnancy?'✓':''}</button>
+      </div>
+      <button class="action-btn" onclick="if(setupGender){setupStep=3;renderMain();}" style="max-width:300px;margin-top:32px">CONTINUE →</button>
+      ${back(1)}`);
+  }
+
+  // ── STEP 3: BASICS (skippable) ──
+  if (setupStep === 3) {
+    const fld = (key,label,ph) => `<div style="margin-bottom:16px">
+      <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">${label}</div>
+      <input type="${key==='height'?'text':'number'}" inputmode="${key==='height'?'text':'decimal'}" enterkeyhint="next"
+        value="${setupProfile[key]||''}" placeholder="${ph}"
+        oninput="setupProfile['${key}']=this.value.trim()"
+        style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+        color:var(--text);font-family:var(--body);font-size:16px;padding:12px;color-scheme:dark"></div>`;
+    return wrap(`
+      <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">A bit about you</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Optional — powers weight tracking and tailored targets. Skip if you'd rather not.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${fld('age','AGE','—')}${fld('height','HEIGHT','ft or cm')}
+        ${fld('currentWeight','CURRENT WEIGHT','lbs')}${fld('goalWeight','GOAL WEIGHT','lbs')}
+      </div>
+      <button class="action-btn" onclick="setupStep=4;renderMain()" style="max-width:300px;margin-top:24px">CONTINUE →</button>
+      <button onclick="setupStep=4;renderMain()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;padding:14px 0;margin-top:2px">SKIP FOR NOW</button>
+      ${back(2)}`);
+  }
+
+  // ── STEP 4: TRAINING PREFERENCES (skippable → defaults) ──
+  if (setupStep === 4) {
+    const pills = (key, options) => `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px">
+      ${options.map(([v,l])=>`<button onclick="setupPrefs['${key}']=${typeof v==='string'?`'${v}'`:v};renderMain()"
+        style="font-family:var(--display);font-size:13px;letter-spacing:1px;padding:9px 14px;border-radius:9px;
+        border:none;cursor:pointer;background:${String(setupPrefs[key])===String(v)?'var(--accent)':'rgba(255,255,255,.06)'};
+        color:${String(setupPrefs[key])===String(v)?'#0B0D0B':'var(--text3)'}">${l}</button>`).join('')}</div>`;
+    return wrap(`
+      <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">How do you train?</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Sets your Forge Score targets and tailors generated workouts.</div>
+      <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">DAYS PER WEEK</div>
+      ${pills('daysPerWeek',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}
+      <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">SESSION LENGTH</div>
+      ${pills('sessionLength',[[30,'30m'],[45,'45m'],[60,'60m'],[75,'75m'],[90,'90m']])}
+      <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">EXPERIENCE</div>
+      ${pills('experience',[['beginner','Beginner'],['intermediate','Intermediate'],['advanced','Advanced']])}
+      <button class="action-btn" onclick="setupStep=5;renderMain()" style="max-width:300px;margin-top:8px">CONTINUE →</button>
+      ${back(3)}`);
+  }
+
+  // ── STEP 5: FIRST GOAL ──
+  if (setupStep === 5) {
+    const oBtn = (onclick,title,desc) => `<button onclick="${onclick}"
+      style="width:100%;padding:18px 16px;font-family:var(--display);font-size:16px;letter-spacing:2px;
+      cursor:pointer;border-radius:12px;background:var(--bg2);text-align:left;transition:all .15s;
+      border:2px solid rgba(255,255,255,.1);color:var(--text2)">${title}
+      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:4px;font-weight:400">${desc}</div></button>`;
+    return wrap(`
+      <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">What are you working toward?</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Set a goal, then build a program to reach it. You can add up to 3 goals anytime.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+        ${oBtn("finishSetupThenGoal()", 'SET MY FIRST GOAL', 'Define a goal, then build a program for it')}
+        ${oBtn("finishSetupWithDefault()", 'USE DEFAULT PROGRAM', 'Jump in with a ready-made 14-week program')}
+      </div>
+      <button onclick="finishSetupSkip()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;padding:14px 0">SKIP FOR NOW</button>
+      ${back(4)}`);
+  }
 }
 
 function setupSelectGender(g){
-  setupGender=g;
-  const mb=document.getElementById('setup-male');const fb=document.getElementById('setup-female');const pr=document.getElementById('setup-pregnancy-row');
-  if(mb){mb.style.borderColor=g==='male'?'var(--accent)':'var(--border)';mb.style.color=g==='male'?'var(--accent)':'var(--text2)';}
-  if(fb){fb.style.borderColor=g==='female'?'var(--accent)':'var(--border)';fb.style.color=g==='female'?'var(--accent)':'var(--text2)';}
-  if(pr) pr.style.display=g==='female'?'block':'none';
+  setupGender=g;renderMain();
 }
 function setupTogglePregnancy(){
   setupPregnancy=!setupPregnancy;
-  const btn=document.getElementById('setup-pregnancy-btn');
-  if(btn){btn.textContent='PREGNANCY SAFE MODE - '+(setupPregnancy?'ON':'OFF');btn.style.borderColor=setupPregnancy?'var(--accent-border)':'var(--border)';btn.style.color=setupPregnancy?'var(--accent)':'var(--text2)';}
+  renderMain();
 }
-function setupSelectPlan(choice){
-  setupPlanChoice=choice;
-  const lb=document.getElementById('setup-plan-later');const nb=document.getElementById('setup-plan-now');
-  if(lb){lb.style.borderColor=choice==='later'?'var(--accent-border)':'var(--border)';lb.style.color=choice==='later'?'var(--accent)':'var(--text2)';}
-  if(nb){nb.style.borderColor=choice==='now'?'var(--accent-border)':'var(--border)';nb.style.color=choice==='now'?'var(--accent)':'var(--text2)';}
+
+function setupSelectPlan(c){
+  setupPlanChoice=c;
+  renderMain();
 }
+
+
+function _finishSetupSaveUser(){
+  const userObj = {
+    name: setupName.trim(),
+    gender: setupGender,
+    mode: setupPregnancy ? 'pregnancy' : 'standard',
+    daysPerWeek: setupPrefs.daysPerWeek,
+    sessionLength: setupPrefs.sessionLength,
+    experience: setupPrefs.experience,
+    age: setupProfile.age || '',
+    height: setupProfile.height || '',
+    currentWeight: setupProfile.currentWeight || '',
+    goalWeight: setupProfile.goalWeight || '',
+    createdAt: new Date().toISOString(),
+  };
+  saveUser(userObj);
+  // Reset transient setup state
+  setupGender=null;setupPregnancy=false;setupName='';setupStep=1;
+  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
+  setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};
+  setupPlanChoice=null;
+}
+
+// Route A: set a goal → opens the goal builder (program-building follows inside it)
+function finishSetupThenGoal(){
+  _finishSetupSaveUser();
+  S.tab='today';
+  S.showGoalCreator=true;
+  gbReset();
+  renderNav();renderMain();
+}
+
+// Route B: use the built-in default program — no goal, default plan is the fallback
+function finishSetupWithDefault(){
+  _finishSetupSaveUser();
+  S.planMode='myplan';
+  S.tab='today';
+  renderNav();renderMain();
+}
+
+// Route C: skip everything — land on Today, empty state prompts later
+function finishSetupSkip(){
+  _finishSetupSaveUser();
+  S.tab='today';
+  renderNav();renderMain();
+}
+
 function setupComplete(){
-  const nameInput=document.getElementById('setup-name');
-  const name=nameInput?nameInput.value.trim():'';
-  if(!name){if(nameInput){nameInput.style.borderBottomColor='var(--red)';nameInput.focus();}return;}
-  if(!setupGender){const mb=document.getElementById('setup-male');if(mb)mb.style.borderColor='var(--red)';return;}
+  // Name was captured via setupName; gender via setupGender — both validated in steps
+  if(!setupName.trim()){setupStep=1;renderMain();return;}
+  if(!setupGender){setupStep=2;renderMain();return;}
+  // Plan choice — if none picked, flash the buttons
   if(!setupPlanChoice){
     const pb=document.getElementById('setup-plan-later');
     const nb=document.getElementById('setup-plan-now');
@@ -2844,23 +3077,36 @@ function setupComplete(){
     if(nb)nb.style.borderColor='var(--red)';
     return;
   }
-  saveUser({name,gender:setupGender,mode:setupPregnancy?'pregnancy':'standard',createdAt:new Date().toISOString()});
-  setupGender=null;setupPregnancy=false;
-  if(setupPlanChoice==='later'){S.planMode='buildplan';renderNav();renderMain();setTab('plan');}
-  else{S.planMode='myplan';renderNav();renderMain();}
-}
-
-// ============================================================
-// SQUAD TAB
-// ============================================================
-let squadFeed=[],squadLoading=false,squadError=false,squadOpenRows={};
-
-async function loadSquadFeed(){
-  squadLoading=true;squadError=false;renderMain();
-  const data=await fetchSquadFeed();
-  squadFeed=data;squadLoading=false;
-  if(data===null)squadError=true;
-  renderMain();
+  // Build the user object — merge name, gender, profile basics, and training prefs
+  const userObj = {
+    name: setupName.trim(),
+    gender: setupGender,
+    mode: setupPregnancy ? 'pregnancy' : 'standard',
+    daysPerWeek: setupPrefs.daysPerWeek,
+    sessionLength: setupPrefs.sessionLength,
+    experience: setupPrefs.experience,
+    age: setupProfile.age || '',
+    height: setupProfile.height || '',
+    currentWeight: setupProfile.currentWeight || '',
+    goalWeight: setupProfile.goalWeight || '',
+    createdAt: new Date().toISOString(),
+  };
+  saveUser(userObj);
+  // Reset transient setup state
+  const planChoice = setupPlanChoice;
+  setupGender=null;setupPregnancy=false;setupName='';setupStep=1;
+  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
+  setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};
+  setupPlanChoice=null;
+  // Route based on plan choice
+  if(planChoice==='now'){
+    // Default plan — no goal created, the built-in 14-week plan is the active fallback
+    S.tab='today';
+  } else {
+    // Build my own — land on Today, the empty state prompts goal/program creation
+    S.tab='today';
+  }
+  renderNav();renderMain();
 }
 function timeAgo(isoStr){
   const diff=(Date.now()-new Date(isoStr))/1000;
@@ -2875,7 +3121,8 @@ function renderSquad(){
   if(!configured) return `<div class="fade-in forge-group-hero">
     <div class="forge-topbar" style="margin-bottom:14px">
       <div style="width:34px"></div>
-      <div class="forge-wordmark" style="font-size:22px">GROUP</div>
+      <div class="forge-wordmark" style="font-size:22px">SQUAD</div>
+      <button onclick="loadSquadFeed()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer;padding:4px 8px;border-radius:8px">&#8635; SYNC</button>
       <button style="background:none;border:none;color:var(--text2);font-size:26px;line-height:1;cursor:pointer">+</button>
     </div>
     <div class="forge-tabs"><span class="active">SQUAD</span><span>CHALLENGES</span><span>LEADERBOARD</span></div>
@@ -2908,9 +3155,14 @@ function renderSquad(){
   if(squadLoading) return `<div class="fade-in" style="padding:60px 24px;text-align:center"><div class="spinner" style="margin-bottom:16px"></div><div style="font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text2)">LOADING SQUAD...</div></div>`;
   if(squadError||squadFeed===null) return `<div class="fade-in" style="padding:24px 16px"><div class="section-label">SQUAD</div><div style="font-family:var(--body);font-size:14px;color:var(--red);margin-bottom:12px">Could not reach squad feed.</div><button class="action-btn secondary" onclick="loadSquadFeed()">RETRY</button></div>`;
   const user=getUser();const emptyFeed=!squadFeed||!squadFeed.length;
+  if(!squadFeed.length) return `<div class="fade-in forge-group-hero" style="text-align:center;padding:60px 24px">
+    <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO ACTIVITY YET</div>
+    <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 24px">Log a workout and share it to the squad to get things started.</div>
+    <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
+  </div>`;
   return `<div class="fade-in" style="padding:18px 16px 30px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="section-label" style="margin-bottom:0">GROUP FEED</div>
+      <div class="section-label" style="margin-bottom:0">SQUAD FEED</div>
       <button onclick="loadSquadFeed()" style="background:none;border:none;font-family:var(--display);font-size:16px;letter-spacing:2px;color:var(--text3);cursor:pointer">↻ REFRESH</button>
     </div>
     ${emptyFeed?'<div style="padding:40px 0;text-align:center;font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text3);line-height:2">NO ACTIVITY YET.<br>LOG A WORKOUT AND GET IT STARTED.</div>':
@@ -2932,7 +3184,7 @@ function renderSquad(){
         ${isOpen?`<div style="border-top:1px solid var(--border);padding:10px 16px 14px">
           ${entry.notes?`<div style="font-family:var(--body);font-size:13px;color:var(--text2);font-style:italic;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">"${entry.notes}"</div>`:''}
           ${exercises.length>0?exercises.map(ex=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bg)"><div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--text2)">${ex.name||ex.n||''}</div><div style="font-family:var(--display);font-size:14px;color:var(--text3)">${ex.detail||ex.summary||''}</div></div>`).join(''):'<div style="font-family:var(--display);font-size:14px;color:var(--text3);letter-spacing:1px">NO EXERCISE DETAILS</div>'}
-        </div>`:''}
+        </div>` + '<div id="reactions-'+entry.id+'" style="display:flex;gap:8px;padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,.06)">'+renderReactionButtons(entry.id)+'</div>' : '<div id="reactions-'+entry.id+'" style="display:flex;gap:8px;padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,.06)">'+renderReactionButtons(entry.id)+'</div>'}
       </div>`;
     }).join('')}
   </div>`;
@@ -3073,7 +3325,7 @@ function renderGoalStrip() {
       // Goal management options
       html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
         '<button data-gid="'+goal.id+'" onclick="editGoalLabel(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">RENAME</button>'+'<button data-gid="'+goal.id+'" onclick="editGoalDate(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">EDIT DATE</button>'+'<button data-gid="'+goal.id+'" onclick="goalChangeDisc(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
-        (hasAppPlan ? '<button data-gid="'+goal.id+'" onclick="goalAdaptPlan(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PLAN</button>' : '') +
+        (hasAppPlan ? '<button data-gid="'+goal.id+'" onclick="goalAdaptPlan(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PROGRAM</button>' : '') +
         '<button data-gid="'+goal.id+'" onclick="goalArchiveConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>'+'<button data-gid="'+goal.id+'" onclick="deleteGoal(this.dataset.gid)" style="background:none;border:1px solid var(--red-border);color:var(--red);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">DELETE</button>' +
         '<button data-gid="'+goal.id+'" onclick="goalCompleteConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">COMPLETE</button>' +
         '</div>';
@@ -3092,7 +3344,7 @@ function renderGoalStrip() {
   return html;
 }
 
-function gotoLog(){setTab('log');}
+function gotoLog(){setTab('log');setTimeout(initLogSwipe,100);}
 function goPlan(){setTab('plan');}
 function openGenericLog(goalId){S.genericLog={open:true,goalId:goalId,activityType:'',duration:'',distance:'',intensity:3,notes:''};renderMain();}
 
@@ -3265,11 +3517,11 @@ function renderGenericLogger(goalId) {
     '<div style="display:flex;gap:8px;margin-bottom:10px">' +
     '<div style="flex:1">' +
     '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">DURATION (MIN)</div>' +
-    '<input type="number" placeholder="45" value="' + (gl.duration||'') + '" oninput="S.genericLog.duration=this.value" min="1" max="600" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
+    '<input type="number" inputmode="decimal" enterkeyhint="done" placeholder="45" value="' + (gl.duration||'') + '" oninput="S.genericLog.duration=this.value" min="1" max="600" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
     '</div>' +
     '<div style="flex:1">' +
     '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">DISTANCE (MI/KM)</div>' +
-    '<input type="number" placeholder="—" value="' + (gl.distance||'') + '" oninput="S.genericLog.distance=this.value" min="0" step="0.1" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
+    '<input type="number" inputmode="numeric" enterkeyhint="next" placeholder="—" value="' + (gl.distance||'') + '" oninput="S.genericLog.distance=this.value" min="0" step="0.1" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
     '</div>' +
     '</div>' +
     '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">EFFORT (1–5)</div>' +
@@ -3312,14 +3564,20 @@ function saveGenericLog(goalId) {
 // ============================================================
 
 function getActivePlanPhases() {
-  // If a specific goal plan is selected, use that goal's planData
+  // Try to get phases from the selected goal's linked program (Model B)
   if (S.planGoalId) {
     var goal = getGoals().find(function(g){ return g.id === S.planGoalId; });
-    if (goal && goal.planData && goal.planData.phases) {
-      return goal.planData.phases;
+    if (goal) {
+      // Model B: goal has a programId pointing to forge_programs
+      if (goal.programId) {
+        var prog = getProgramById(goal.programId);
+        if (prog && prog.phases && prog.phases.length) return prog.phases;
+      }
+      // Model A fallback: goal still has embedded planData (pre-migration)
+      if (goal.planData && goal.planData.phases) return goal.planData.phases;
     }
   }
-  // Fall back to built-in 14-week plan
+  // Last resort: built-in 14-week plan
   return getPlanPhases();
 }
 function getActivePlanStartDate() {
@@ -3374,6 +3632,53 @@ function renderConflictBanner(conflicts) {
 // GOAL SYSTEM
 // ============================================================
 const GOALS_KEY = 'forge_goals';
+
+// ============================================================
+// PROGRAMS — standalone entities (Model B)
+// ============================================================
+const PROGRAMS_KEY = 'forge_programs';
+
+function getPrograms() {
+  try { return JSON.parse(localStorage.getItem(PROGRAMS_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function savePrograms(programs) {
+  localStorage.setItem(PROGRAMS_KEY, JSON.stringify(programs));
+}
+
+function getProgramById(id) {
+  if (!id) return null;
+  return getPrograms()[id] || null;
+}
+
+function saveProgramEntry(program) {
+  const all = getPrograms();
+  all[program.id] = program;
+  savePrograms(all);
+  return program;
+}
+
+function deleteProgramEntry(id) {
+  const all = getPrograms();
+  delete all[id];
+  savePrograms(all);
+}
+
+function makeProgramId() {
+  return 'prog_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+}
+
+// Get all programs referenced by active goals
+function getActivePrograms() {
+  const progs = getPrograms();
+  const goals = getActiveGoals();
+  const seen = new Set();
+  return goals
+    .filter(g => g.programId && progs[g.programId])
+    .map(g => progs[g.programId])
+    .filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
+}
 
 function getGoals(status) {
   try {
@@ -3481,8 +3786,10 @@ let GB = {
     crossTraining: [],
     planType: null,
     planData: null,
+    programId: null,   // Model B: link to existing program (reuse)
     status: 'active',
   },
+  reusePrompt: false,   // showing the reuse-program prompt
   builderStep: 0,
   builderAnswers: {},
   editingId: null,   // set when editing existing goal
@@ -3493,9 +3800,23 @@ let GB = {
 
 function gbClearDate(){GB.draft.targetDate='';gbNext();}
 function gbPlanOwn(){gbSetPlanType('own');}
+
+function gbReuseProgram(programId) {
+  const prog = getProgramById(programId);
+  if (!prog) return;
+  GB.draft.programId = programId;
+  GB.draft.planType = 'app';
+  GB.reusePrompt = false;
+  // Skip plantype and builder — go straight to review
+  GB.step = 7;
+  renderMain();
+}
+
 function gbPlanApp(){gbSetPlanType('app');}
 function gbPlanUndecided(){gbSetPlanType('undecided');}
 function gbCancel(){gbReset();S.showGoalCreator=false;renderMain();}
+
+
 function gbReset() {
   GB.step = 0;
   GB.draft = {id:null,label:'',targetDate:'',discipline:null,activity:null,goalType:null,crossTraining:[],planType:null,planData:null,status:'active'};
@@ -3653,14 +3974,27 @@ function renderGoalCreator() {
   }
 
   if (step === 5) {
+    // Reuse prompt: show if user has existing programs and not editing
+    const existingProgs = getActivePrograms();
+    if (existingProgs.length > 0 && !GB.editingId && !GB.reusePrompt && !GB.draft.programId) {
+      GB.reusePrompt = true;
+    }
+    if (GB.reusePrompt && !GB.draft.programId) {
+      return '<div class="fade-in" style="padding:24px 16px">' + hdr +
+        '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:6px">USE AN EXISTING PROGRAM?</div>' +
+        '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:20px">You already have a program. Link this goal to it, or build a new one.</div>' +
+        existingProgs.map(function(p){ return '<button onclick="gbReuseProgram(\'' + p.id + '\')" style="display:block;width:100%;padding:16px;margin-bottom:10px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);color:var(--text);text-align:left;cursor:pointer;font-family:var(--display);font-size:18px;letter-spacing:1px">' + p.name + '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:4px;font-weight:400">Link this goal to the existing program — workouts log once</div></button>'; }).join('') +
+        '<button onclick="GB.reusePrompt=false;GB.draft.programId=null;renderMain()" style="display:block;width:100%;padding:16px;margin-bottom:10px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);text-align:left;cursor:pointer;font-family:var(--display);font-size:18px;letter-spacing:1px">BUILD A NEW PROGRAM<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:4px;font-weight:400">Create a fresh program just for this goal</div></button>' +
+        '</div>';
+    }
     return '<div class="fade-in" style="padding:24px 16px">' + hdr +
-      '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:6px">DO YOU HAVE A PLAN?</div>' +
+      '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:6px">DO YOU HAVE A PROGRAM?</div>' +
       '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:20px">The app can build one for you, or just track your own.</div>' +
       '<button onclick="gbPlanApp()" style="display:block;width:100%;padding:16px 16px;margin-bottom:12px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);color:var(--text);text-align:left;cursor:pointer">' +
-      '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px;color:var(--green)">BUILD A PLAN FOR ME</div>' +
+      '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px;color:var(--green)">BUILD A PROGRAM FOR ME</div>' +
       '<div style="font-family:var(--body);font-size:13px;color:var(--text2);margin-top:3px">Answer a few questions — app generates your schedule</div></button>' +
       '<button onclick="gbPlanOwn()" style="display:block;width:100%;padding:14px 16px;margin-bottom:8px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);color:var(--text);text-align:left;cursor:pointer">' +
-      '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px;color:var(--accent)">FOLLOWING MY OWN PLAN</div>' +
+      '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px;color:var(--accent)">FOLLOWING MY OWN PROGRAM</div>' +
       '<div style="font-family:var(--body);font-size:13px;color:var(--text2);margin-top:3px">Log workouts freely — app tracks goal, not sessions</div></button>' +
       '<button onclick="gbPlanUndecided()" style="display:block;width:100%;padding:14px 16px;margin-bottom:8px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--border2);color:var(--text2);text-align:left;cursor:pointer">' +
       '<div style="font-family:var(--display);font-size:17px;letter-spacing:2px">NOT YET — DECIDE LATER</div></button></div>';
@@ -3734,12 +4068,32 @@ function gbSaveGoal() {
       renderMain(); return;
     }
 
+    // Model B: save program as a standalone entity, link via programId
+    let programId = d.programId || null; // may already be linked (reuse case)
+    if (planData) {
+      const prog = {
+        id: programId || makeProgramId(),
+        name: d.label || 'Training Program',
+        phases: planData.phases,
+        planType: d.planType,
+        discipline: d.discipline || null,
+        goalType: d.goalType || null,
+        createdAt: new Date().toISOString(),
+        sourceGoalId: id,
+      };
+      saveProgramEntry(prog);
+      programId = prog.id;
+    }
+
     upsertGoal({id, label:d.label, targetDate:d.targetDate||null, discipline:d.discipline,
       activity:d.activity||null, goalType:d.goalType||null, crossTraining:d.crossTraining,
-      planType:d.planType, planData, status:'active'});
+      planType:d.planType,
+      programId: programId,   // Model B: link to program
+      planData: null,         // Model B: no longer embedded
+      status:'active'});
 
-    // If first goal with an app plan, set as active goal and update start date
-    if (planData) saveSettings({startDate: todayStr()});
+    // If goal has a program, set as active and update start date
+    if (programId) saveSettings({startDate: todayStr()});
 
     GB.loading = false;
     announce('Goal saved');
@@ -3859,8 +4213,8 @@ const EX = {
   ],
   // Upper push — bodyweight
   pushBW: [
-    {n:'Push-Ups',d:'3 × max — full lockout',t:'bw',log:true},
-    {n:'Pike Push-Ups',d:'3 × 10 — shoulder focus',t:'bw',log:true},
+    {n:'Push Ups',d:'3 × max — full lockout',t:'bw',log:true},
+    {n:'Pike Push Ups',d:'3 × 10 — shoulder focus',t:'bw',log:true},
     {n:'Bench Tricep Dips',d:'3 × 12',t:'bw',log:true},
   ],
   // Upper push — dumbbells
@@ -3872,7 +4226,7 @@ const EX = {
   ],
   // Upper pull
   pullDB: [
-    {n:'Single-Arm DB Row',d:'3 × 10 each — mid-back',t:'lift',log:true},
+    {n:'Single Arm DB Row',d:'3 × 10 each — mid-back',t:'lift',log:true},
     {n:'Reverse Fly',d:'3 × 12 — rear delts',t:'lift',log:true},
     {n:'DB Bicep Curl',d:'3 × 12',t:'lift',log:true},
     {n:'DB Hammer Curl',d:'3 × 10',t:'lift',log:true},
@@ -3900,7 +4254,7 @@ const EX = {
   // Full body
   fullBW: [
     {n:'Bodyweight Squat',d:'3 × 20',t:'bw',log:true},
-    {n:'Push-Ups',d:'3 × max',t:'bw',log:true},
+    {n:'Push Ups',d:'3 × max',t:'bw',log:true},
     {n:'Reverse Lunge',d:'3 × 12 each',t:'bw',log:true},
     {n:'Plank',d:'3 × 30 sec',t:'core',log:true,ro:true},
     {n:'Glute Bridge',d:'3 × 20',t:'bw',log:true},
@@ -4172,17 +4526,8 @@ const LIBRARY_KEY   = 'forge_library';
 const BACKUP_KEY    = 'forge_backup';
 
 // --- UUID ---
-function getUserId() {
-  const u = getUser();
-  if (u && u.uuid) return u.uuid;
-  // Generate one and persist it
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-  saveUser({...(u||{}), uuid});
-  return uuid;
-}
+// getUserId: see definition above
+
 
 // --- Plan storage ---
 function getStoredPlan() {
@@ -4284,6 +4629,9 @@ async function loadPlanFromSupabase() {
 // --- Export / Import ---
 function exportAllData() {
   const data = {
+    goals: localStorage.getItem(GOALS_KEY),
+    restDuration: localStorage.getItem('forge_rest_duration'),
+    streakAcked: localStorage.getItem('forge_streak_acked'),
     version: 2,
     exportedAt: new Date().toISOString(),
     user: getUser(),
@@ -4334,14 +4682,14 @@ function importData(jsonStr) {
 // EXERCISE DESCRIPTION DATABASE
 // ============================================================
 const EX_DESC = {
- "Push-Ups":"Starting position: hands just outside shoulder-width, body rigid from head to heel. Lower your chest all the way to the floor — no half reps. Drive through palms back to full lockout. Elbows at 45° from torso, not flared wide.\n★ chest and triceps on the way down, full contraction at top.",
- "Pike Push-Ups":"Start in downward-dog, hips high, hands shoulder-width. Bend elbows and lower the crown of your head toward the floor between your hands. Press back to start.\n★ front deltoids driving the press — shoulders, not chest.",
- "Bench-Assisted Rows":"Lie on your back under a bench. Grip the edge, pull your chest up to touch it — squeeze shoulder blades at the top. Lower with control.\n★ mid-back and rear shoulders. Biceps assist but shouldn't lead.",
+ "Push Ups":"Starting position: hands just outside shoulder-width, body rigid from head to heel. Lower your chest all the way to the floor — no half reps. Drive through palms back to full lockout. Elbows at 45° from torso, not flared wide.\n★ chest and triceps on the way down, full contraction at top.",
+ "Pike Push Ups":"Start in downward-dog, hips high, hands shoulder-width. Bend elbows and lower the crown of your head toward the floor between your hands. Press back to start.\n★ front deltoids driving the press — shoulders, not chest.",
+ "Bench Assisted Rows":"Lie on your back under a bench. Grip the edge, pull your chest up to touch it — squeeze shoulder blades at the top. Lower with control.\n★ mid-back and rear shoulders. Biceps assist but shouldn't lead.",
  "Plank":"Forearms flat, elbows under shoulders, body a straight line heel to head. Brace core, squeeze glutes. Don't sag or pike.\n★ deep abdominal wall. If lower back hurts — you're sagging. Reset.",
  "Plank to Pike":"Start in forearm plank. Drive hips up into a pike, then lower back to plank. Control both directions.\n★ core and shoulders integrated through full range.",
  "Dead Hang":"Grip bar with both hands, arms fully extended. Let your spine decompress. Engage shoulder blades slightly — don't fully disengage.\n★ lats stretching, spine lengthening. Active recovery.",
  "Bench Tricep Dips":"Hands on bench behind you, fingers forward. Lower until elbows hit 90°, press back up. Shoulders stay down.\n★ back of upper arm. If shoulder joint aches, move feet closer.",
- "Pseudo-Planche Push-Up":"Shift hands toward your hips — beside your lower ribs. Lean bodyweight forward before lowering. Elbows pinned to sides.\n★ intense shoulder and tricep load — harder than it looks.",
+ "Pseudo Planche Push Up":"Shift hands toward your hips — beside your lower ribs. Lean bodyweight forward before lowering. Elbows pinned to sides.\n★ intense shoulder and tricep load — harder than it looks.",
  "Wall Walks":"Feet against wall in push-up position. Walk feet up the wall as hands walk toward it until as vertical as possible. Walk back down with control.\n★ shoulders and core stability — go slow, this is skill work.",
  "Bodyweight Squat":"Feet shoulder-width, toes slightly out. Sit back and down, chest up, knees over toes. Full depth — hip crease below knees. Drive through heels.\n★ quads, glutes, hamstrings equally — not just your knees.",
  "Reverse Lunge":"Step one foot straight back, lower rear knee to just above the floor. Front shin stays vertical. Drive through front heel to return.\n★ front glute and quad — rear leg is just balance.",
@@ -4349,12 +4697,12 @@ const EX_DESC = {
  "Calf Raises":"Rise up onto toes as high as possible. Lower for 3 slow seconds. Full range every rep.\n★ calf belly burning on the descent. 3 seconds down is non-negotiable.",
  "Jump Squat":"Squat to full depth, explode upward off both feet. Land softly toes-to-heel, absorb the impact, straight into next rep.\n★ explosive glutes and quads. Land quiet — not heavy.",
  "Wall Sit":"Back flat on wall, thighs parallel to floor, shins vertical. Hold position. Don't let thighs rise above parallel.\n★ quads burning — breathe steadily.",
- "Step-Ups on Bench":"Step up with one foot, drive through that heel to stand tall on bench. Step down with control. All reps one side before switching.\n★ glute of the working leg. If you're pushing off the back foot — step higher.",
+ "Step Ups on Bench":"Step up with one foot, drive through that heel to stand tall on bench. Step down with control. All reps one side before switching.\n★ glute of the working leg. If you're pushing off the back foot — step higher.",
  "Cossack Squat":"Feet wide. Shift weight to one side, bend that knee into a deep squat, other leg stays straight. Return through center, shift sides.\n★ inner thigh and hip flexibility — only go as deep as mobility allows.",
  "Bird Dog":"On hands and knees, spine neutral. Extend opposite arm and leg simultaneously, hold 1-2 seconds, return. Don't let hips rotate.\n★ deep core stabilizers. If hips swing — slow down.",
  "Dead Bug":"On your back, arms straight up, knees bent at 90° in the air. Lower opposite arm and leg toward floor, keeping lower back pressed flat. Return.\n★ lower abs bracing. Lower back must stay on the floor.",
  "Hollow Hold":"Press lower back to floor. Raise shoulders and legs off floor into a dish shape. Arms overhead.\n★ entire anterior chain. If lower back lifts — raise legs higher or bend knees.",
- "V-Ups":"Lie flat. Simultaneously raise straight legs and upper body, reaching hands toward feet. Lower with control.\n★ full rectus abdominis. No momentum. Too hard — bend your knees.",
+ "V Ups":"Lie flat. Simultaneously raise straight legs and upper body, reaching hands toward feet. Lower with control.\n★ full rectus abdominis. No momentum. Too hard — bend your knees.",
  "Bicycle Crunches":"Hands behind head, knees raised. Alternate elbow to opposite knee while extending the other leg. Move slowly.\n★ obliques on each rotation. Rushing eliminates the benefit.",
  "Russian Twists":"Knees bent, feet off floor, torso at 45°. Rotate side to side, touching the floor at each hip. Add weight when easy.\n★ obliques and deep core — spine tall, don't collapse forward.",
  "Leg Raises":"Lie on back, hands under lower back. Raise straight legs to vertical, lower slowly. Stop just before heels touch the floor.\n★ lower abs. Slow descent. Lower back stays pressed down.",
@@ -4364,12 +4712,12 @@ const EX_DESC = {
  "Incline DB Bench Press":"Set bench to 30-45°. DBs at shoulder level, palms forward. Press up and slightly in. Lower with a 3-second count — feel the stretch at the bottom.\n★ upper chest and front shoulder. Don't fully lockout — keep tension.",
  "DB Shoulder Press":"DBs at ear height, palms forward. Press straight up. Don't lean back to assist — if you have to, the weight is too heavy.\n★ front and side deltoids. Core braced throughout.",
  "DB Lateral Raise":"DBs at sides. Raise out to shoulder height, slight elbow bend — like pouring water. Lower slowly. No swinging.\n★ lateral deltoid. Light weight done right beats heavy done wrong.",
- "DB Close-Grip Floor Press":"Lie on floor, DBs together at chest, elbows tucked close. Press up keeping elbows in. Floor limits range — intentional. Tricep exercise.\n★ back of the arm driving the press, not your chest.",
+ "DB Close Grip Floor Press":"Lie on floor, DBs together at chest, elbows tucked close. Press up keeping elbows in. Floor limits range — intentional. Tricep exercise.\n★ back of the arm driving the press, not your chest.",
  "DB Fly":"On incline bench. DBs above chest, palms facing. Lower in a wide arc — feel the deep chest stretch. Return in the same arc.\n★ pec stretch at the bottom. This is a fly, not a press.",
  "DB Tricep Extension":"Hold one DB overhead with both hands. Lower behind head by bending elbows, drive back up. Upper arms pinned in place.\n★ long head of the tricep — the stretch at the bottom is the point.",
- "Push-Ups to Failure":"After weighted work, push until you physically can't. Record the number every session — this number going up is one of your clearest progress markers.\n★ STANDARD: chest touches the floor on every rep. Partial reps don't count.",
- "Push-Up Burnout":"Same as push-ups to failure — go until you hit the floor.\n★ complete chest and tricep fatigue.",
- "Dips + Push-Up Superset":"Bench dips immediately into push-ups to failure — no rest between. This is a superset — the discomfort is the point.\n★ tricep and chest pump. Tight on dips, no flaring elbows.",
+ "Push Ups to Failure":"After weighted work, push until you physically can't. Record the number every session — this number going up is one of your clearest progress markers.\n★ STANDARD: chest touches the floor on every rep. Partial reps don't count.",
+ "Push Up Burnout":"Same as push-ups to failure — go until you hit the floor.\n★ complete chest and tricep fatigue.",
+ "Dips + Push Up Superset":"Bench dips immediately into push-ups to failure — no rest between. This is a superset — the discomfort is the point.\n★ tricep and chest pump. Tight on dips, no flaring elbows.",
  "Goblet Squat":"Hold DB vertically at chest. Squat down between your heels — elbows track inside knees at the bottom. Drive through heels.\n★ quads and glutes. The DB counterbalances — use it to squat deeper.",
  "Romanian Deadlift":"DBs at thighs. Hinge at hip, push hips back as DBs travel down your legs. Slight knee bend, flat back. Stop when you feel a strong hamstring stretch.\n★ hamstrings loading under stretch. If lower back hurts — you're rounding.",
  "Walking Lunge":"Step forward into a lunge, front shin vertical, rear knee lowers to just above the floor. Drive through front heel to bring rear foot forward.\n★ each glute independently — unilateral strength is the goal.",
@@ -4377,9 +4725,9 @@ const EX_DESC = {
  "DB RDL":"Same as Romanian Deadlift. On heavier weeks, increase weight from last session.\n★ hamstrings. If not feeling them — hinge more at the hip.",
  "DB Squat":"DBs at sides, feet shoulder-width. Squat to full depth.\n★ quads and glutes. Heavier weight means harder squeeze on the way up.",
  "Weighted Calf Raise":"DBs at sides. Full rise onto toes, then lower for 3 slow seconds. Full range every rep.\n★ calf belly burning on descent.",
- "Single-Leg RDL":"Balance on one foot. Hinge at hip, opposite leg extends behind as counterbalance. Keep back flat, hips square.\n★ hamstring of working leg plus balance challenge.",
+ "Single Leg RDL":"Balance on one foot. Hinge at hip, opposite leg extends behind as counterbalance. Keep back flat, hips square.\n★ hamstring of working leg plus balance challenge.",
  "DB Sumo Squat":"Feet wider than shoulder-width, toes out 45°. One DB held vertically at center. Squat between your feet.\n★ inner thighs and glutes — the wide stance shifts emphasis.",
- "Single-Arm DB Row":"Brace one hand and knee on the bench. Pull elbow back and up — DB comes to your hip, not armpit. Don't rotate torso to assist.\n★ mid-back and lat. If bicep is tired and back isn't — use more back.",
+ "Single Arm DB Row":"Brace one hand and knee on the bench. Pull elbow back and up — DB comes to your hip, not armpit. Don't rotate torso to assist.\n★ mid-back and lat. If bicep is tired and back isn't — use more back.",
  "DB Hammer Curl":"DBs at sides, palms facing each other. Curl without rotating wrists. Neutral grip throughout.\n★ brachialis — under the bicep. Builds arm thickness.",
  "DB Bicep Curl":"DBs at sides, palms forward. Full range — fully extended at bottom, fully contracted at top. No swinging.\n★ bicep peak contraction. Squeeze hard at top, lower 2-3 seconds.",
  "DB Curl":"Same as DB Bicep Curl. Heavier weeks — increase weight, slow the eccentric.\n★ full bicep — controlled, no momentum.",
@@ -4407,7 +4755,7 @@ const EX_DESC = {
  "Thoracic Rotation":"On your side, knees stacked, arms extended forward. Rotate top arm open toward ceiling. Return.\n★ WHY: locked thoracic spine affects every pressing and pulling movement. Especially if you sit at a desk.",
  "Hamstring Stretch":"Extend one leg, hinge forward from the hips — not by rounding your back. Feel stretch in back of thigh, not behind the knee.\n★ KEY: fold from the hip joint, not by rounding your spine.",
  "Foam Roll":"Sustained pressure on tight areas — glutes, IT band, upper back, calves. Hold on sore spots for 20-30 seconds.\n★ TECHNIQUE: hold, don't roll rapidly. Find the knot and breathe into it.",
- "Cat-Cow":"On hands and knees. Inhale, let belly drop and look up (cow). Exhale, round spine and tuck chin (cat). Slow and deliberate.\n★ PURPOSE: spinal mobility in both flexion and extension before loading.",
+ "Cat Cow":"On hands and knees. Inhale, let belly drop and look up (cow). Exhale, round spine and tuck chin (cat). Slow and deliberate.\n★ PURPOSE: spinal mobility in both flexion and extension before loading.",
  "Inchworm Walks":"Hinge to touch floor, walk hands to push-up position, walk feet back to hands, stand. Keep legs as straight as possible.\n★ hamstrings, lats, hip flexors all stretching in sequence.",
  "World's Greatest Stretch":"Step into a lunge, place same-side hand on floor inside front foot. Rotate opposite arm toward ceiling. Return and repeat.\n★ WHY: hip, thoracic, and hamstring mobility in one movement. Earns its name.",
  "Deep Squat Hold":"Hold a full squat position, heels down. Hold onto something if needed. Breathe deeply.\n★ GOAL: hip crease below parallel, chest up. Work toward 60 seconds.",
@@ -4420,7 +4768,7 @@ const EX_DESC = {
  "Band chest press":"Anchor band at chest height behind you. Hold both ends, press forward to full extension. Control the return.\n★ chest and anterior deltoid — use enough resistance to feel it working at 10-12 reps.",
  "Band rows":"Anchor band in front. Row both hands toward your lower ribs, elbows driven back. Squeeze shoulder blades.\n★ mid-back. Shoulders stay down — not shrugging up.",
  "Band overhead press":"Stand on the band, press overhead from shoulder height. Don't lean back.\n★ deltoids. Same mechanics as a DB press.",
- "Band pull-aparts":"Hold band at shoulder height with wide grip. Pull both ends apart, bringing hands to sides. Squeeze shoulder blades.\n★ rear delts and upper back — key for shoulder health.",
+ "Band Pull Aparts":"Hold band at shoulder height with wide grip. Pull both ends apart, bringing hands to sides. Squeeze shoulder blades.\n★ rear delts and upper back — key for shoulder health.",
  "Band curls":"Stand on the band, curl as you would with dumbbells. High reps compensate for lower resistance.\n★ bicep. Full range of motion.",
  "Band tricep pushdowns":"Anchor band high. Press down, elbows pinned to sides.\n★ tricep — no flaring, no leaning forward.",
  "Lateral band walks":"Band at ankles or knees. Slight squat. Step laterally keeping tension in band. Feet never come together.\n★ glute medius — the side of the glute. Key for knee stability.",
@@ -4511,7 +4859,10 @@ function pbStartQuestions(){PB.step='questions';PB.answers={};renderMain();}
 function pbRegenerate(){buildAIPlan();}
 function pbChangeAnswers(){PB.step='questions';PB.generatedPlan=null;renderMain();}
 function pbClickImport(){document.getElementById("import-plan-file").click();}
-function pbResetProfile(){showConfirm("Reset profile? Your data stays intact.", function(){localStorage.removeItem(USER_KEY);location.reload();}, "RESET", "red")}
+function pbResetProfile(){
+  setupStep=1;setupName="";setupGender=null;setupPlanChoice=null;setupPregnancy=false;
+  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
+  setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};showConfirm("Reset profile? Your data stays intact.", function(){localStorage.removeItem(USER_KEY);location.reload();}, "RESET", "red")}
 function pbDeletePlan(){showConfirm('Delete your current plan? Logs stay intact.',function(){deletePlan();S.planMode='myplan';renderMain();},'DELETE','red');}
 function pbSetAnswer(k,v){PB.answers[k]=v;renderMain();}
 function ptDeleteConfirm(date){showConfirm('Delete this PT test?',function(){deletePT(date);},'DELETE','red');}
@@ -4520,10 +4871,10 @@ function pbAnswerBtn(btn){pbSetAnswer(btn.dataset.pbk, decodeURIComponent(btn.da
 function pbBack(){const keys=Object.keys(PB.answers);if(keys.length){delete PB.answers[keys[keys.length-1]];}else{S.planMode='myplan';}renderMain();}
 function pbClearError(){PB.error=null;PB.step='questions';renderMain();}
 function renderPlanBuilder(){
-  if(PB.loading) return '<div style="padding:60px 24px;text-align:center"><div class="spinner" style="margin-bottom:16px"></div><div style="font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text2)">BUILDING YOUR PLAN...</div><div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px">This takes about 10 seconds</div></div>';
-  if(PB.error) return '<div style="padding:24px 16px"><div style="font-family:var(--display);font-size:15px;color:var(--red);margin-bottom:12px">COULD NOT BUILD PLAN</div><div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.5">'+PB.error+'</div><button class="action-btn secondary" onclick="pbClearError()">← TRY AGAIN</button></div>';
+  if(PB.loading) return '<div style="padding:60px 24px;text-align:center"><div class="spinner" style="margin-bottom:16px"></div><div style="font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text2)">BUILDING YOUR PROGRAM...</div><div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px">This takes about 10 seconds</div></div>';
+  if(PB.error) return '<div style="padding:24px 16px"><div style="font-family:var(--display);font-size:15px;color:var(--red);margin-bottom:12px">COULD NOT BUILD PROGRAM</div><div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.5">'+PB.error+'</div><button class="action-btn secondary" onclick="pbClearError()">← TRY AGAIN</button></div>';
   if(PB.step==='review'&&PB.generatedPlan) return renderPlanReview();
-  if(PB.step==='saved') return '<div style="padding:24px 16px;text-align:center"><div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--green);margin-bottom:8px">PLAN SAVED</div><div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:24px;line-height:1.6">Your plan is live. TODAY shows your scheduled sessions.</div><button class="action-btn" onclick="pbGoToday()">GO TO TODAY</button><button class="action-btn secondary" onclick="pbGoMyPlan()">VIEW MY PLAN</button></div>';
+  if(PB.step==='saved') return '<div style="padding:24px 16px;text-align:center"><div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--green);margin-bottom:8px">PROGRAM SAVED</div><div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:24px;line-height:1.6">Your program is live. TODAY shows your scheduled sessions.</div><button class="action-btn" onclick="pbGoToday()">GO TO TODAY</button><button class="action-btn secondary" onclick="pbGoMyPlan()">VIEW MY PROGRAM</button></div>';
 
   if(PB.step==='questions'){
     const answered=Object.keys(PB.answers).length;
@@ -4532,7 +4883,7 @@ function renderPlanBuilder(){
     if(!current){
       return '<div style="padding:24px 16px"><div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:16px">READY TO BUILD</div><div style="margin-bottom:16px">'+
         PB_QUESTIONS.map(q=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-family:var(--display);font-size:14px;color:var(--text3);letter-spacing:1px">'+q.label+'</div><div style="font-family:var(--body);font-size:13px;color:var(--text)">'+(PB.answers[q.id]||'—')+'</div></div>').join('')+
-        '</div><button class="action-btn amber" onclick="pbRegenerate()">BUILD MY PLAN</button><button class="action-btn secondary" onclick="PB.answers={};renderMain()">START OVER</button></div>';
+        '</div><button class="action-btn amber" onclick="pbRegenerate()">BUILD MY PROGRAM</button><button class="action-btn secondary" onclick="PB.answers={};renderMain()">START OVER</button></div>';
     }
     const progress=Math.round(answered/total*100);
     return '<div style="padding:24px 16px">'+
@@ -4548,10 +4899,10 @@ function renderPlanBuilder(){
   // step === start
   const hasPlan=hasCustomPlan();
   return '<div style="padding:24px 16px">'+
-    '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:6px">BUILD A PLAN</div>'+
-    '<div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:20px;line-height:1.5">Answer 6 quick questions. The app builds a custom training plan for you.</div>'+
-    '<button class="action-btn amber" onclick="pbStartQuestions()">START PLAN BUILDER</button>'+
-    (hasPlan?'<button class="action-btn red" style="margin-top:8px" onclick="pbDeletePlan()">DELETE CURRENT PLAN</button>':'')+
+    '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:6px">BUILD A PROGRAM</div>'+
+    '<div style="font-family:var(--body);font-size:15px;color:var(--text2);margin-bottom:20px;line-height:1.5">Answer 6 quick questions. The app builds a custom training program for you.</div>'+
+    '<button class="action-btn amber" onclick="pbStartQuestions()">START PROGRAM BUILDER</button>'+
+    (hasPlan?'<button class="action-btn red" style="margin-top:8px" onclick="pbDeletePlan()">DELETE CURRENT PROGRAM</button>':'')+
     '<button class="action-btn secondary" onclick="exportAllData()" style="margin-top:8px">EXPORT BACKUP</button>'+
     '<button class="action-btn secondary" onclick="pbClickImport()" style="margin-top:4px">IMPORT BACKUP</button>'+
     '<input type="file" id="import-plan-file" accept=".json" style="display:none" onchange="handleImportFile(this)">'+
@@ -4563,7 +4914,7 @@ function renderPlanReview(){
   if(!plan||!plan.phases) return '';
   const totalWeeks=plan.phases.reduce((s,p)=>s+(p.durationDays||14),0)/7;
   return '<div style="padding:20px 16px 30px">'+
-    '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:4px">'+(plan.title||'YOUR PLAN')+'</div>'+
+    '<div style="font-family:var(--display);font-size:26px;letter-spacing:2px;color:var(--text);margin-bottom:4px">'+(plan.title||'YOUR PROGRAM')+'</div>'+
     '<div style="font-family:var(--display);font-size:14px;color:var(--accent);letter-spacing:2px;margin-bottom:4px">'+plan.phases.length+' PHASES · '+totalWeeks+' WEEKS</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.5;font-style:italic">'+(plan.summary||'')+'</div>'+
     plan.phases.map((ph,pi)=>'<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);margin-bottom:10px;padding:12px 14px">'+
@@ -4575,8 +4926,8 @@ function renderPlanReview(){
       '</div>').join('')+
     '<div style="background:var(--accent-bg);border:1px solid var(--accent-border);padding:12px;margin-bottom:16px">'+
     '<div style="font-family:var(--display);font-size:14px;color:var(--accent);letter-spacing:2px;margin-bottom:4px">REVIEW BEFORE SAVING</div>'+
-    '<div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.5">This replaces your current plan. You can delete and rebuild anytime.</div></div>'+
-    '<button class="action-btn" onclick="saveGeneratedPlan()">SAVE THIS PLAN</button>'+
+    '<div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.5">This replaces your current program. You can delete and rebuild anytime.</div></div>'+
+    '<button class="action-btn" onclick="saveGeneratedPlan()">SAVE THIS PROGRAM</button>'+
     '<button class="action-btn secondary" onclick="pbRegenerate()">REGENERATE</button>'+
     '<button class="action-btn secondary" onclick="pbChangeAnswers()">CHANGE ANSWERS</button>'+
     '</div>';
@@ -4600,7 +4951,7 @@ async function buildAIPlan_unused(){
   }
 }
 
-function saveGeneratedPlan_legacy(){
+function saveGeneratedPlan(){
   if(!PB.generatedPlan) return;
   saveStoredPlan(PB.generatedPlan);
   saveSettings({startDate:todayStr()});
@@ -4612,7 +4963,7 @@ function saveGeneratedPlan_legacy(){
 function handleImportFile(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=e=>{const ok=importData(e.target.result);if(ok){alert('Backup restored!');location.reload();}else{alert('Import failed — invalid file.');}};
+  reader.onload=e=>{const ok=importData(e.target.result);if(ok){announce('Backup restored');setTimeout(()=>location.reload(),500);}else{showConfirm('Import failed — invalid file.',()=>{},'OK','red');}};
   reader.readAsText(file);
 }
 
@@ -4643,17 +4994,17 @@ function renderPlan(){
  // Plan builder mode
  if(mode==='buildplan') return `<div class="fade-in" style="padding:18px 16px 0">
   <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:0">
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.planMode='myplan';renderMain()">MY PLAN</button>
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='buildplan';renderMain()">BUILD A PLAN</button>
+   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.planMode='myplan';renderMain()">MY PROGRAM</button>
+   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='buildplan';renderMain()">BUILD A PROGRAM</button>
   </div>
   ${renderPlanBuilder()}
  </div>`;
  return html+`<div class="fade-in" style="padding:18px 0 20px">
   <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='myplan';renderMain()">MY PLAN</button>
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.showGoalCreator=true;gbReset();renderMain()">BUILD A PLAN</button>
+   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='myplan';renderMain()">MY PROGRAM</button>
+   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.showGoalCreator=true;gbReset();renderMain()">BUILD A PROGRAM</button>
   </div>
-  ${!hasCustomPlan()?'<div style="padding:0 16px 14px"><div class="section-label">DEFAULT PLAN</div></div>':'<div style="padding:0 16px 14px"><div class="section-label">MY PLAN</div></div>'}
+  ${!hasCustomPlan()?'<div style="padding:0 16px 14px"><div class="section-label">DEFAULT PROGRAM</div></div>':'<div style="padding:0 16px 14px"><div class="section-label">MY PROGRAM</div></div>'}
   ${getActivePlanPhases().map((ph,pi)=>{
    const open=S.planOpen[pi];const di=S.planDayIdx[pi]||0;const day=ph.schedule[di];
    const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
@@ -4725,10 +5076,31 @@ function getSearchableExercises(){
   return[...names].sort();
 }
 function customSearch(q){
-  if(!q||q.length<2){S.custom.searchResults=[];renderMain();return;}
+  S.custom.search=q;
+  if(!q||q.length<2){
+    S.custom.searchResults=[];
+    // Only update the results container, not the whole screen
+    const el=document.getElementById('custom-search-results');
+    if(el) el.innerHTML='';
+    return;
+  }
   const ql=q.toLowerCase();
   S.custom.searchResults=getSearchableExercises().filter(n=>n.toLowerCase().includes(ql)).slice(0,8);
-  renderMain();
+  // Surgically update only the results dropdown — preserve input focus
+  const el=document.getElementById('custom-search-results');
+  if(el){
+    el.innerHTML=S.custom.searchResults.map(name=>
+      `<button data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname)" style="width:100%;padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:none;border-left:none;border-right:none;text-align:left"><span>${name}</span><span style="color:var(--accent);font-size:14px">ADD +</span></button>`
+    ).join('');
+    // Show/hide freeform add option
+    const freeform=document.getElementById('custom-search-freeform');
+    if(freeform){
+      freeform.style.display=q.trim()&&!S.custom.searchResults.find(n=>n.toLowerCase()===q.toLowerCase())?'block':'none';
+    }
+  } else {
+    // Fallback if container not found — full render
+    renderMain();
+  }
 }
 function customAddExercise(name){
   if(S.custom.exercises.find(e=>e.name===name))return;
@@ -4755,7 +5127,30 @@ function customRemoveExercise(name){
 function customAddSet(name){const ex=S.custom.exercises.find(e=>e.name===name);if(ex){ex.sets.push({reps:'',weight:'',done:false});renderMain();}}
 function customRemoveSet(name,i){const ex=S.custom.exercises.find(e=>e.name===name);if(ex&&ex.sets.length>1){ex.sets.splice(i,1);renderMain();}}
 function customUpdateSet(name,i,f,v){const ex=S.custom.exercises.find(e=>e.name===name);if(ex)ex.sets[i][f]=v;}
-function customToggleDone(name,i){const ex=S.custom.exercises.find(e=>e.name===name);if(ex){ex.sets[i].done=!ex.sets[i].done;renderMain();}}
+function customToggleDone(name,i){
+  const ex=S.custom.exercises.find(e=>e.name===name);
+  if(!ex) return;
+  const wasDone = ex.sets[i].done;
+  ex.sets[i].done = !wasDone;
+  if(!wasDone) {
+    // Start workout stopwatch on first completion if not running
+    if(!S.timer || !S.timer.active || S.timer.mode !== 'stopwatch') {
+      if(!S.workoutTimerRunning) {
+        S.workoutTimerRunning = true;
+        S.workoutElapsed = 0;
+        if(!window._forgeStopwatch) {
+          window._forgeStopwatch = setInterval(()=>{S.workoutElapsed=(S.workoutElapsed||0)+1;},1000);
+        }
+      }
+    }
+    if(S.restDuration > 0) {
+      timerStart('rest', {duration: S.restDuration});
+    }
+  } else if(wasDone && S.timer && S.timer.active && S.timer.mode === 'rest') {
+    timerStop();
+  }
+  renderMain();
+}
 function customToggleDoneOnly(name){const ex=S.custom.exercises.find(e=>e.name===name);if(ex){ex.sets[0].done=!ex.sets[0].done;renderMain();}}
 
 function saveCurrentToLibrary(){
@@ -4763,7 +5158,7 @@ function saveCurrentToLibrary(){
   if(!exs.length) return;
   const name=S.custom.workoutTitle||('Workout '+new Date().toLocaleDateString());
   const id=saveToLibrary({name, exercises:exs.map(ex=>({name:ex.name,type:ex.type,repsOnly:ex.repsOnly}))});
-  alert('Saved to library as "'+name+'"');
+  announce('Saved to library');
   renderMain();
 }
 function loadFromLibrary(id){
@@ -4782,12 +5177,21 @@ function loadFromLibrary(id){
 function saveCustomWorkout(){
   if(!S.custom.exercises.length)return;
   const sets={};S.custom.exercises.forEach(ex=>{sets[ex.name]=ex.sets;});
+  // Check for streak milestone
+  const _metrics = getForgeMetrics();
+  const _hit = checkStreakMilestone(_metrics.streak);
+  if (_hit) { S.showStreakModal = _hit; }
+
+  // Stop stopwatch
+  if(window._forgeStopwatch){clearInterval(window._forgeStopwatch);window._forgeStopwatch=null;}
+  if(S.timer&&S.timer.active&&S.timer.mode==='rest') timerStop();
+  S.workoutTimerRunning=false;
   const title=S.custom.workoutTitle||'Custom Workout';
   saveLogEntry(S.logDate,-1,-1,sets,S.logNotes,title);
-  const btn=document.getElementById('save-btn-custom');
-  if(btn){btn.textContent='✓ SAVED';btn.classList.add('saved');}
-  setTimeout(()=>{if(btn){btn.textContent='SAVE WORKOUT';btn.classList.remove('saved');}},1800);
-  S.squadShareShown=false;S.squadShareOk=false;S.squadShareCopied=false;renderMain();
+  S.squadShareShown=false;S.squadShareOk=false;S.squadShareCopied=false;
+  S.lastSavedDate=S.logDate||todayStr();
+  announce('Workout saved');
+  renderMain();
 }
 function saveAndShareCustomWorkout(){
   if(!S.custom.exercises.length)return;
@@ -4823,7 +5227,7 @@ function renderGenInLog(tabBar) {
         <button class="action-btn" style="margin-top:20px" onclick="loadGenIntoCustomLog()">
           START &amp; LOG THIS WORKOUT →
         </button>
-        <button class="action-btn secondary" style="margin-top:8px" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};renderMain()">
+        <button class="action-btn secondary" style="margin-top:8px" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">
           GENERATE ANOTHER
         </button>
       </div>
@@ -4876,13 +5280,17 @@ function renderPlanExRow(ex){
     const chk=done0?'done':'';
     const sym=done0?'\u2713':'\u25cb';
     const comp=done0?'<div style="font-family:var(--display);font-size:15px;color:var(--green);margin-top:4px;letter-spacing:1px">COMPLETE</div>':'';
-    return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div><div class="done-only"><button class="big-check '+chk+'" onclick="toggleDoneOnly(\''+esc+'\')">'+sym+'</button><div><div style="font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'+comp+'</div></div></div>';
+    const durSecs=parseDuration(ex.d);
+    const isTabataEx=/tabata/i.test(ex.n);
+    const isEmom=/emom/i.test(ex.n);
+    const timerBtn=isTabataEx?'<button onclick="timerStart(\'tabata\',{work:20,rest:10,rounds:8})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;margin-left:auto">TABATA</button>':isEmom?'<button onclick="timerStart(\'emom\',{minutes:10})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">EMOM</button>':durSecs?'<button onclick="timerStart(\'work\',{duration:'+durSecs+',label:\''+ex.n.toUpperCase().slice(0,12)+'\'}); " style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">START TIMER</button>':'';
+    return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div><div class="done-only"><button class="big-check '+chk+'" onclick="toggleDoneOnly(\''+esc+'\')">'+sym+'</button><div><div style="font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'+comp+'</div>'+timerBtn+'</div></div></div>';
   }
   const setRows=sets.map(function(set,si){
     const dk=set.done?'done':'';const sym=set.done?'\u2713':'\u25cb';
     return '<div class="set-row"><span class="set-num">'+(si+1)+'</span>'
-      +'<input type="number" class="num-input" placeholder="\u2014" value="'+set.reps+'" oninput="updateSet(\''+esc+'\','+si+',\'reps\',this.value)" min="0" max="999">'
-      +'<input type="number" class="num-input" placeholder="0" value="'+set.weight+'" oninput="updateSet(\''+esc+'\','+si+',\'weight\',this.value)" min="0" max="999">'
+      +'<input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="\u2014" value="'+set.reps+'" oninput="updateSet(\''+esc+'\','+si+',\'reps\',this.value)" min="0" max="999">'
+      +'<input type="number" inputmode="decimal" enterkeyhint="done" class="num-input" placeholder="0" value="'+set.weight+'" oninput="updateSet(\''+esc+'\','+si+',\'weight\',this.value)" min="0" max="999">'
       +'<button class="check-btn '+dk+'" onclick="toggleDone(\''+esc+'\','+si+')">'+sym+'</button>'
       +'<button class="del-btn" onclick="removeSet(\''+esc+'\','+si+')">&#215;</button></div>';
   }).join('');
@@ -4902,7 +5310,11 @@ function renderPlanLog(tabBar){
   </div>
   ${existing&&existing.phaseId>=0?`<div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--green);margin-bottom:12px">\u2713 PREVIOUSLY LOGGED \u2014 UPDATING</div>`:''}
   ${day.exercises.filter(ex=>ex.log).map(renderPlanExRow).join('')}
-  <textarea class="notes" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
+  <textarea class="notes" enterkeyhint="done" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
+  <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
+    <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
+    ${[0,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+  </div>
   <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
   ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SEND TO GROUP</button>`:''}
   ${S.squadShareShown?'<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">'+(S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED')+'</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>':''}
@@ -4920,8 +5332,8 @@ function renderCustomExRow(ex){
     } else {
       const setRows=ex.sets.map((set,si)=>{
         return `<div class="set-row"><span class="set-num">${si+1}</span>`+
-          `<input type="number" class="num-input" placeholder="\u2014" value="${set.reps}" oninput="customUpdateSet('${esc}',${si},'reps',this.value)" min="0" max="999">`+
-          `<input type="number" class="num-input" placeholder="0" value="${set.weight}" oninput="customUpdateSet('${esc}',${si},'weight',this.value)" min="0" max="999">`+
+          `<input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="\u2014" value="${set.reps}" oninput="customUpdateSet('${esc}',${si},'reps',this.value)" min="0" max="999">`+
+          `<input type="number" inputmode="decimal" enterkeyhint="done" class="num-input" placeholder="0" value="${set.weight}" oninput="customUpdateSet('${esc}',${si},'weight',this.value)" min="0" max="999">`+
           `<button class="check-btn ${set.done?'done':''}" onclick="customToggleDone('${esc}',${si})">${set.done?'\u2713':'\u25cb'}</button>`+
           `<button class="del-btn" onclick="customRemoveSet('${esc}',${si})">\u00d7</button></div>`;
       }).join('');
@@ -4940,13 +5352,42 @@ function renderCustomExRow(ex){
   </div>`;
 }
 function renderCustomLog(tabBar){
+  // Show saved confirmation if this date was just saved
+  const justSaved = S.lastSavedDate && S.lastSavedDate===(S.logDate||todayStr());
+  const savedLog = justSaved ? getLogEntry(S.lastSavedDate) : null;
+  if(justSaved && savedLog){
+    const sets=Object.values(savedLog.sets||{}).flat();
+    const done=sets.filter(s=>s.done).length;
+    const exCount=Object.keys(savedLog.sets||{}).length;
+    const title=savedLog.title||'Custom Workout';
+    return `<div class="fade-in" style="padding:0 0 30px">
+      ${tabBar}
+      <div style="padding:0 16px">
+        <div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 48%,rgba(166,203,42,.04)),var(--card);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow-soft);padding:20px;margin-bottom:12px;text-align:center">
+          <div style="font-family:var(--display);font-size:48px;color:var(--accent);letter-spacing:2px;line-height:1">✓</div>
+          <div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--text);margin-top:8px">${title}</div>
+          <div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-top:6px">${exCount} exercises · ${done} sets logged${S.workoutElapsed>60?' · '+Math.round((S.workoutElapsed||0)/60)+' min':''}</div>
+          <div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-top:4px">${fmtDate(S.lastSavedDate).full}</div>
+        </div>
+        <button class="action-btn" onclick="S.lastSavedDate=null;S.custom={exercises:[],search:'',searchResults:[],workoutTitle:'',activeEx:null};renderMain()">
+          LOG ANOTHER WORKOUT
+        </button>
+        <button class="action-btn secondary" style="margin-top:8px" onclick="sendToSquad(savedLog&&savedLog.title||'Workout',null,null,Object.entries(savedLog&&savedLog.sets||{}),savedLog&&savedLog.notes||'')">
+          SHARE TO SQUAD →
+        </button>
+        <button class="action-btn red" style="margin-top:8px" onclick="deleteLogEntry('${S.lastSavedDate||todayStr()}')">
+          DELETE THIS LOG
+        </button>
+      </div>
+    </div>`;
+  }
   const exs=S.custom.exercises||[];
   const q=S.custom.search||'';
   const results=S.custom.searchResults||[];
   const title=S.custom.workoutTitle||'';
   const shareBlock=S.squadShareShown?`<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">${S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED'}</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>`:'';
   const squadBtn=SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareCustomWorkout()" style="margin-top:8px">${getUserEmoji()}\u2705 SAVE + SEND TO SQUAD</button>`:'';
-  const resultItems=results.map(name=>`<div onclick="customAddExercise('${name.replace(/'/g,"\\'")}');document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
+  const resultItems=results.map(name=>`<div data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname);document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
   return`<div class="fade-in" style="padding:18px 16px 30px">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
@@ -4974,19 +5415,50 @@ function renderCustomLog(tabBar){
   })()}
   <div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:8px">ADD EXERCISES</div>
   <div style="display:flex;gap:6px;margin-bottom:${results.length>0?'0':'14px'}">
-   <input type="text" id="custom-search" aria-label="Search exercises" role="combobox" aria-autocomplete="list" placeholder="Search or type any exercise..." value="${q}" oninput="S.custom.search=this.value;customSearch(this.value)" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--accent-border);color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">
+   <input type="text" id="custom-search" aria-label="Search exercises" enterkeyhint="search" autocomplete="off" role="combobox" aria-autocomplete="list" placeholder="Search or type any exercise..." value="${q}" oninput="S.custom.search=this.value;customSearch(this.value)" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-bottom:2px solid var(--accent-border);color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">
    ${q.trim().length>0?`<button onclick="customAddFreeform()" style="flex-shrink:0;padding:0 14px;background:var(--accent-bg);border:1px solid var(--accent-border);color:var(--accent);font-family:var(--display);font-size:16px;letter-spacing:1px;cursor:pointer">ADD</button>`:''}
   </div>
-  ${results.length>0?`<div style="background:var(--bg3);border:1px solid var(--border);border-top:none;margin-bottom:14px">${resultItems}</div>`:''}
+  ${results.length>0?`<div id="custom-search-results" style="background:var(--bg3);border:1px solid var(--border);border-top:none;margin-bottom:14px">${resultItems}</div>`:''}
   ${exs.length===0?`<div style="padding:28px 0;text-align:center;font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text3);line-height:2">SEARCH AN EXERCISE ABOVE<br>OR TYPE ANYTHING AND TAP ADD</div>`:''}
   ${exs.map(renderCustomExRow).join('')}
   ${exs.length>0?'<button class="action-btn secondary" onclick="saveCurrentToLibrary()" style="margin-bottom:8px">SAVE TO LIBRARY</button>':''}
-  ${exs.length>0?`<textarea class="notes" placeholder="How did it go? Any PRs?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
-  <button class="save-btn" id="save-btn-custom" onclick="saveCustomWorkout()">SAVE WORKOUT</button>
-  <button class="action-btn secondary" style="margin-top:6px;font-size:10px" onclick="(function(){const exs=S.custom.exercises;if(!exs.length)return;const name=S.custom.workoutTitle||'Custom Workout';saveToLibrary(name,'CUSTOM',exs.map(e=>({n:e.name,d:e.sets.length+' sets',t:e.type})),'custom');alert('Saved to library!');})()">+ SAVE TO LIBRARY</button>
+  ${exs.length>0?`<textarea class="notes" enterkeyhint="done" placeholder="How did it go? Any PRs?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
+   <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
+    <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
+    ${[0,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+  </div>
+ <button class="save-btn" id="save-btn-custom" onclick="saveCustomWorkout()">SAVE WORKOUT</button>
+  <button class="action-btn secondary" style="margin-top:6px;font-size:10px" onclick="(function(){const exs=S.custom.exercises;if(!exs.length)return;const name=S.custom.workoutTitle||'Custom Workout';saveToLibrary(name,'CUSTOM',exs.map(e=>({n:e.name,d:e.sets.length+' sets',t:e.type})),'custom');announce('Saved to library');})()">+ SAVE TO LIBRARY</button>
   ${squadBtn}${shareBlock}`:''}
   <div style="height:20px"></div>
  </div>`;
+}
+
+function getLastLoggedWeight(exName){
+  // Scan log history (newest first) for the last recorded weight for this exercise
+  const store = loadStore();
+  const dates = Object.keys(store).sort().reverse();
+  for(const date of dates){
+    const entry = store[date];
+    if(entry && entry.sets && entry.sets[exName]){
+      const doneSets = entry.sets[exName].filter(s => s.done && s.weight && s.weight !== '0' && s.weight !== '');
+      if(doneSets.length) return doneSets[doneSets.length-1].weight;
+    }
+  }
+  return '';
+}
+
+function getLastLoggedReps(exName){
+  const store = loadStore();
+  const dates = Object.keys(store).sort().reverse();
+  for(const date of dates){
+    const entry = store[date];
+    if(entry && entry.sets && entry.sets[exName]){
+      const doneSets = entry.sets[exName].filter(s => s.done && s.reps && s.reps !== '');
+      if(doneSets.length) return doneSets[0].reps; // first set reps as default
+    }
+  }
+  return '';
 }
 function initLogSets(pi,di){
   const phases=getActivePlanPhases();
@@ -4994,7 +5466,18 @@ function initLogSets(pi,di){
   const day=(phases[pi].schedule||[])[di];
   if(!day)return;
   const sets={};
-  (day.exercises||[]).forEach(ex=>{if(ex.log)sets[ex.n]=[{reps:'',weight:'',done:false}];});
+  (day.exercises||[]).forEach(ex=>{
+    if(!ex.log)return;
+    const lastWeight=getLastLoggedWeight(ex.n);
+    const lastReps=getLastLoggedReps(ex.n);
+    // Pre-fill all sets with last known weight (reps left blank — user should confirm)
+    const setCount=ex.sets||3;
+    sets[ex.n]=Array.from({length:setCount},()=>({
+      reps:lastReps||'',
+      weight:lastWeight,
+      done:false
+    }));
+  });
   S.logSets=sets;
   S.logNotes='';
 }
@@ -5002,7 +5485,16 @@ function changeLogDate(v){S.logDate=v;const ex=getLogEntry(v);if(ex&&ex.phaseId>
 function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;if(S.logPhase<getActivePlanPhases().length){initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogDay(v){S.logDay=parseInt(v);initLogSets(S.logPhase,S.logDay);renderMain();}
 function saveWorkout(){announce('Workout saved');
+  // Check for streak milestone
+  const _metrics = getForgeMetrics();
+  const _hit = checkStreakMilestone(_metrics.streak);
+  if (_hit) { S.showStreakModal = _hit; }
+
+  if(window._forgeStopwatch){clearInterval(window._forgeStopwatch);window._forgeStopwatch=null;}
+  if(S.timer&&S.timer.active&&S.timer.mode==='rest') timerStop();
+  S.workoutTimerRunning=false;
   saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes,null);
+  S.lastSavedDate=S.logDate||todayStr();
   S.squadShareShown=false;S.squadShareOk=false;S.squadShareCopied=false;
   const btn=document.getElementById('save-btn');
   if(btn){btn.textContent='✓ SAVED';btn.classList.add('saved');}
@@ -5040,12 +5532,23 @@ function renderFuel(){
    <div class="fuel-status">${status}</div>
    <div style="font-family:var(--display);font-size:22px;color:var(--text2);letter-spacing:1px;margin-top:8px">7-DAY AVG: ${weekAvg}G</div>
   </div>
+  ${(()=>{ const calTarget=getCalorieTarget(); if(!calTarget) return ''; const calTotal=getCalorieTotal(todayStr()); const calPct=Math.min(100,Math.round(calTotal/calTarget*100)); return `
+  <div class="card" style="padding:14px 16px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+      <div style="font-family:var(--display);font-size:16px;letter-spacing:2px;color:var(--text2)">CALORIES</div>
+      <div style="font-family:var(--display);font-size:14px;letter-spacing:1px;color:var(--text3)">${calTotal} / ${calTarget} KCAL</div>
+    </div>
+    <div class="fuel-bar" style="margin-bottom:10px"><div class="fuel-bar-fill" style="width:${calPct}%"></div></div>
+    <div class="custom-input-row">
+      <input type="number" inputmode="numeric" enterkeyhint="done" class="custom-input" placeholder="Log today's calories" value="${calTotal||''}" oninput="setCalorieTotal(todayStr(),this.value)" style="flex:1">
+    </div>
+  </div>` })()}
   <div class="fuel-section-label">QUICK ADD</div>
   <div class="food-grid">${FOODS.map((f,i)=>`<button class="food-tile" onclick="logFoodQuick(${i})"><div class="food-name">${f.n}</div><div class="food-portion">${f.p}</div><div class="food-grams">+${f.g}G</div></button>`).join('')}</div>
   <div class="fuel-section-label">CUSTOM ENTRY</div>
   <div class="custom-input-row">
-   <input type="text" class="custom-input" id="fuel-custom-name" placeholder="Food name" value="${S.fuelCustom.name}" oninput="S.fuelCustom.name=this.value">
-   <input type="number" class="custom-input small" id="fuel-custom-grams" placeholder="g" value="${S.fuelCustom.grams}" oninput="S.fuelCustom.grams=this.value" min="0" max="999">
+   <input type="text" class="custom-input" id="fuel-custom-name" enterkeyhint="next" autocomplete="off" placeholder="Food name" value="${S.fuelCustom.name}" oninput="S.fuelCustom.name=this.value">
+   <input type="number" inputmode="decimal" enterkeyhint="done" class="custom-input small" id="fuel-custom-grams" inputmode="decimal" enterkeyhint="done" placeholder="g" value="${S.fuelCustom.grams}" oninput="S.fuelCustom.grams=this.value" min="0" max="999">
    <button onclick="logFoodCustom()" style="background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:1px;padding:0 14px;border-radius:2px;cursor:pointer">ADD</button>
   </div>
   ${today.entries.length>0?`
@@ -5085,7 +5588,7 @@ function renderGen(){
 function toggleEquip(id){const i=G.equipment.indexOf(id);if(i>=0)G.equipment.splice(i,1);else G.equipment.push(id);renderMain();}
 function renderGenResult(){
  const w=G.result;
- return`<div class="fade-in" style="padding:20px 16px 30px"><div class="section-label">GENERATED WORKOUT</div><div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:4px">${w.title}</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px">${G.location==='home'?'HOME':'AWAY'} · ${G.focus.toUpperCase()} · ${G.duration} MIN</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);font-style:italic;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">${w.coachNote}</div><div class="ex-list" style="margin-bottom:16px">${(w.exercises||[]).map(ex=>renderExRow(ex,'gen-')).join('')}</div><button class="action-btn" onclick="logGeneratedWorkout()">LOG THIS WORKOUT</button><button class="action-btn secondary" onclick="generateWorkout()">REGENERATE</button><button class="action-btn secondary" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:null,result:null,error:null,loading:false};renderMain()">START OVER</button></div>`;
+ return`<div class="fade-in" style="padding:20px 16px 30px"><div class="section-label">GENERATED WORKOUT</div><div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:4px">${w.title}</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1.5px;color:var(--text2);margin-bottom:8px">${G.location==='home'?'HOME':'AWAY'} · ${G.focus.toUpperCase()} · ${G.duration} MIN</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);font-style:italic;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:4px">${w.coachNote}</div><div class="ex-list" style="margin-bottom:16px">${(w.exercises||[]).map(ex=>renderExRow(ex,'gen-')).join('')}</div><button class="action-btn" onclick="logGeneratedWorkout()">LOG THIS WORKOUT</button><button class="action-btn secondary" onclick="generateWorkout()">REGENERATE</button><button class="action-btn secondary" onclick="G={step:'start',location:null,equipment:[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};renderMain()">START OVER</button></div>`;
 }
 // ============================================================
 // OFFLINE WORKOUT GENERATOR — EXERCISE LIBRARY
@@ -5094,7 +5597,7 @@ function renderGenResult(){
 const EX_LIB = {
  warmup: [
   {n:"Arm circles + leg swings",d:"1 min each — wake up the joints",t:"warmup"},
-  {n:"Cat-cow",d:"10 slow reps — mobilize the spine",t:"warmup"},
+  {n:"Cat Cow",d:"10 slow reps — mobilize the spine",t:"warmup"},
   {n:"Inchworm walks",d:"5 reps — hamstrings and core",t:"warmup"},
   {n:"World's greatest stretch",d:"3 each side — hip and thoracic mobility",t:"warmup"},
   {n:"Hip circles",d:"10 each direction",t:"warmup"},
@@ -5103,22 +5606,22 @@ const EX_LIB = {
   {n:"Deep squat hold",d:"30 sec — opens hips",t:"warmup"},
  ],
  upper_bw: [
-  {n:"Push-ups",d:"3 × 10–15 — chest to floor, full range",t:"bw"},
-  {n:"Pike push-ups",d:"3 × 8 — hips high, press overhead",t:"bw"},
-  {n:"Diamond push-ups",d:"3 × 8 — hands close, tricep focus",t:"bw"},
-  {n:"Decline push-ups",d:"3 × 10 — feet on bed/chair",t:"bw"},
-  {n:"Wide push-ups",d:"3 × 10 — chest focus",t:"bw"},
+  {n:"Push Ups",d:"3 × 10–15 — chest to floor, full range",t:"bw"},
+  {n:"Pike Push Ups",d:"3 × 8 — hips high, press overhead",t:"bw"},
+  {n:"Diamond Push Ups",d:"3 × 8 — hands close, tricep focus",t:"bw"},
+  {n:"Decline Push Ups",d:"3 × 10 — feet on bed/chair",t:"bw"},
+  {n:"Wide Push Ups",d:"3 × 10 — chest focus",t:"bw"},
   {n:"Bench/chair tricep dips",d:"3 × 12 — hands on edge",t:"bw"},
   {n:"Inverted rows (under table)",d:"3 × 8 — pull chest to edge",t:"bw"},
   {n:"Superman holds",d:"3 × 15 sec — hold up position",t:"bw"},
-  {n:"Pseudo-planche push-up",d:"3 × 6 — hands by hips, lean forward",t:"bw"},
+  {n:"Pseudo Planche Push Up",d:"3 × 6 — hands by hips, lean forward",t:"bw"},
   {n:"Wall walks",d:"3 reps — walk feet up the wall",t:"bw"},
  ],
  upper_bands: [
   {n:"Band chest press",d:"3 × 12 — anchor band behind you",t:"lift"},
   {n:"Band rows",d:"3 × 12 — squeeze shoulder blades",t:"lift"},
   {n:"Band overhead press",d:"3 × 10 — stand on band",t:"lift"},
-  {n:"Band pull-aparts",d:"3 × 15 — upper back priority",t:"lift"},
+  {n:"Band Pull Aparts",d:"3 × 15 — upper back priority",t:"lift"},
   {n:"Band curls",d:"3 × 12 — stand on band",t:"lift"},
   {n:"Band tricep pushdowns",d:"3 × 12 — anchor high",t:"lift"},
   {n:"Band lateral raises",d:"3 × 12 — stand on band, arms out",t:"lift"},
@@ -5127,7 +5630,7 @@ const EX_LIB = {
  upper_db: [
   {n:"DB bench press",d:"4 × 8–10 — floor or bench",t:"lift"},
   {n:"DB shoulder press",d:"3 × 10 — strict, don't flare ribs",t:"lift"},
-  {n:"Single-arm DB row",d:"3 × 10 each — drive elbow back",t:"lift"},
+  {n:"Single Arm DB Row",d:"3 × 10 each — drive elbow back",t:"lift"},
   {n:"DB curl",d:"3 × 12 — strict form",t:"lift"},
   {n:"DB lateral raise",d:"3 × 12 — slow, controlled",t:"lift"},
   {n:"DB tricep extension",d:"3 × 12 — overhead",t:"lift"},
@@ -5141,11 +5644,11 @@ const EX_LIB = {
   {n:"Jump squat",d:"3 × 10 — explosive",t:"bw"},
   {n:"Bulgarian split squat",d:"3 × 10 each — rear foot on chair",t:"bw"},
   {n:"Glute bridge",d:"3 × 15 — squeeze at top",t:"bw"},
-  {n:"Single-leg glute bridge",d:"3 × 10 each",t:"bw"},
+  {n:"Single Leg Glute Bridge",d:"3 × 10 each",t:"bw"},
   {n:"Cossack squat",d:"3 × 8 each side — lateral mobility",t:"bw"},
   {n:"Calf raises",d:"3 × 20 — slow down",t:"bw"},
   {n:"Wall sit",d:"3 × 45 sec — 90 degree knees",t:"bw"},
-  {n:"Step-ups on chair",d:"3 × 10 each leg",t:"bw"},
+  {n:"Step Ups on Chair",d:"3 × 10 each leg",t:"bw"},
   {n:"Pistol squat progression",d:"3 × 5 each — use support if needed",t:"bw"},
  ],
  lower_bands: [
@@ -5161,7 +5664,7 @@ const EX_LIB = {
   {n:"DB Romanian deadlift",d:"4 × 10 — hinge at hip",t:"lift"},
   {n:"DB reverse lunge",d:"3 × 10 each — DBs at sides",t:"lift"},
   {n:"DB Bulgarian split squat",d:"3 × 10 each",t:"lift"},
-  {n:"DB step-up",d:"3 × 10 each leg",t:"lift"},
+  {n:"DB Step Up",d:"3 × 10 each leg",t:"lift"},
   {n:"DB sumo squat",d:"3 × 12 — wide stance",t:"lift"},
   {n:"DB walking lunge",d:"3 × 12 each leg",t:"lift"},
   {n:"DB calf raise",d:"3 × 15 — hold DBs at sides",t:"lift"},
@@ -5170,7 +5673,7 @@ const EX_LIB = {
   {n:"Plank",d:"3 × 45 sec — brace everything",t:"core"},
   {n:"Side plank",d:"3 × 30 sec each side",t:"core"},
   {n:"Hollow hold",d:"3 × 30 sec — low back pressed down",t:"core"},
-  {n:"V-ups",d:"3 × 12 — touch toes",t:"core"},
+  {n:"V Ups",d:"3 × 12 — touch toes",t:"core"},
   {n:"Bicycle crunches",d:"3 × 20 — slow and controlled",t:"core"},
   {n:"Dead bug",d:"3 × 10 each side",t:"core"},
   {n:"Bird dog",d:"3 × 10 each side",t:"core"},
@@ -5202,7 +5705,7 @@ const EX_LIB = {
   {n:"Hamstring stretch",d:"2 × 60 sec each leg",t:"mob"},
   {n:"Deep squat hold",d:"3 × 60 sec",t:"mob"},
   {n:"Thoracic rotation",d:"2 × 10 each side",t:"mob"},
-  {n:"Cat-cow slow",d:"20 reps — breathe deeply",t:"mob"},
+  {n:"Cat Cow Slow",d:"20 reps — breathe deeply",t:"mob"},
   {n:"Child's pose",d:"2 × 90 sec — breathe",t:"mob"},
   {n:"90/90 hip switch",d:"10 each side",t:"mob"},
   {n:"Spinal twist (lying)",d:"2 × 60 sec each side",t:"mob"},
@@ -5223,7 +5726,8 @@ function pickN(arr, n) {
  return shuffled.slice(0, Math.min(n, arr.length));
 }
 
-function buildWorkout(location, equipment, focus, duration) {
+function buildWorkout(location, equipment, focus, duration, experience) {
+ experience = experience || 'intermediate';
  const hasDB = location === 'home' || equipment.includes('dumbbells') || equipment.includes('hotel');
  const hasBands = equipment.includes('bands') || equipment.includes('hotel');
  const hasMachines = location === 'home' || equipment.includes('hotel');
@@ -5236,6 +5740,10 @@ function buildWorkout(location, equipment, focus, duration) {
   45: { warmup: 3, main: 8, finisher: 2, cool: 2 },
   60: { warmup: 4, main: 10, finisher: 2, cool: 3 },
  }[duration];
+
+ // Scale by experience level
+ if (experience === 'beginner') { counts.finisher = Math.max(0, counts.finisher - 1); counts.main = Math.max(3, counts.main - 1); }
+ else if (experience === 'advanced') { counts.finisher = counts.finisher + 1; counts.main = counts.main + 1; }
 
  let exercises = [];
  let title = '';
@@ -5250,7 +5758,7 @@ function buildWorkout(location, equipment, focus, duration) {
    ...pickN(EX_LIB.recovery, counts.main + 2),
    ...pickN(EX_LIB.cooldown, 1),
   ];
-  return { title, coachNote, exercises };
+  return { title, coachNote, exercises, experience };
  }
 
  // Warmup
@@ -5319,7 +5827,7 @@ function generateWorkout() {
    if (isPregnancyMode()) {
      G.result = buildPregnancyWorkout(G.focus, G.duration);
    } else {
-     G.result = buildWorkout(G.location, G.equipment, G.focus, G.duration);
+     G.result = buildWorkout(G.location, G.equipment, G.focus, G.duration, (getUser()&&getUser().experience)||'intermediate');
    }
    G.loading = false;
    renderMain();
@@ -5334,7 +5842,7 @@ function logGeneratedWorkout(){
  if(!G.result)return;
  const sets={};(G.result.exercises||[]).forEach(ex=>{if(ex.t!=='warmup'&&ex.t!=='cool'&&ex.t!=='mob')sets[ex.n]=[{reps:'',weight:'',done:false}];});
  S.logDate=todayStr();S.logPhase=Math.max(0,getPhaseForDate(todayStr()));S.logDay=0;S.logSets=sets;S.logNotes=`Generated: ${G.result.title} (${G.location==='home'?'home':'away'}, ${G.focus}, ${G.duration}min)`;
- setTab('log');
+ setTab('log');setTimeout(initLogSwipe,100);
 }
 
 // ============================================================
@@ -5342,6 +5850,17 @@ function logGeneratedWorkout(){
 // ============================================================
 function renderStats(){
  const totalLogs=Object.keys(loadStore()).length;
+ // Empty state — no workouts logged yet
+ if(totalLogs===0){
+   return `<div class="fade-in" style="padding:60px 24px;text-align:center">
+     <div style="font-family:var(--display);font-size:64px;color:var(--text3);line-height:1;margin-bottom:16px">📊</div>
+     <div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO DATA YET</div>
+     <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 32px">
+       Log your first workout and your stats, history, and progress will appear here.
+     </div>
+     <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
+   </div>`;
+ }
  const totalSkips=Object.values(getSkips()).filter(s=>s.type==='skipped').length;
  const totalMoves=Object.values(getSkips()).filter(s=>s.type==='moved').length;
  // Compute completion rate
@@ -5397,11 +5916,14 @@ function renderHistoryBlock(){
     <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${ph?ph.short:''} — ${day?day.label:''} · ${done}/${allSets.length} sets${move?` <span class="moved-pill">MOVED IN</span>`:''}</div></div>
     <div class="hist-chevron ${isOpen?'open':''}">▼</div>
    </div>
-   <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<button class="action-btn secondary" style="margin-top:8px;padding:8px;font-size:17px" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button></div>
+   <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<div style="display:flex;gap:8px;margin-top:8px">
+      <button class="action-btn secondary" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button>
+      <button class="action-btn red" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="deleteLogEntry('${date}')">DELETE</button>
+    </div></div>
   </div>`;
  }).join('');
 }
-function editLog(date,pi,di){S.logDate=date;S.logPhase=pi;S.logDay=di;const e=getLogEntry(date);S.logSets=e?e.sets:{};S.logNotes=e?e.notes||'':'';setTab('log');}
+function editLog(date,pi,di){S.logDate=date;S.logPhase=pi;S.logDay=di;const e=getLogEntry(date);S.logSets=e?e.sets:{};S.logNotes=e?e.notes||'':'';setTab('log');setTimeout(initLogSwipe,100);}
 
 // ============================================================
 // PT TEST
@@ -5413,10 +5935,10 @@ function renderPTBlock(){
   <div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);line-height:1.5;margin-bottom:16px">Log a baseline now. Retest at weeks 5, 10, and 14. These are your proof.</div>
   <div class="card" style="padding:12px 14px;margin-bottom:16px">
    <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">NEW PT TEST — ${fmtDate(todayStr()).short}</div>
-   <div class="pt-input-row"><div class="pt-input-label">Max Push-Ups</div><input type="number" class="num-input" placeholder="0" value="${d.pushups}" oninput="S.ptDraft.pushups=this.value"><span class="pt-input-unit">REPS</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Max Push-Ups</div><input type="number" inputmode="decimal" enterkeyhint="done" class="num-input" placeholder="0" value="${d.pushups}" oninput="S.ptDraft.pushups=this.value"><span class="pt-input-unit">REPS</span></div>
    <div class="pt-input-row"><div class="pt-input-label">Rower 2000m</div><input type="text" class="num-input" style="width:72px" placeholder="9:15" value="${d.row2k}" oninput="S.ptDraft.row2k=this.value"><span class="pt-input-unit">TIME</span></div>
    <div class="pt-input-row"><div class="pt-input-label">1-Mile Run</div><input type="text" class="num-input" style="width:72px" placeholder="8:45" value="${d.mile}" oninput="S.ptDraft.mile=this.value"><span class="pt-input-unit">TIME</span></div>
-   <div class="pt-input-row"><div class="pt-input-label">Max Plank Hold</div><input type="number" class="num-input" placeholder="60" value="${d.plank}" oninput="S.ptDraft.plank=this.value"><span class="pt-input-unit">SEC</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Max Plank Hold</div><input type="number" inputmode="decimal" enterkeyhint="done" class="num-input" placeholder="60" value="${d.plank}" oninput="S.ptDraft.plank=this.value"><span class="pt-input-unit">SEC</span></div>
    <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — conditions, how it felt, context" oninput="S.ptDraft.notes=this.value">${d.notes}</textarea>
    <button class="action-btn" onclick="savePT()">SAVE PT TEST</button>
   </div>
@@ -5436,11 +5958,11 @@ function renderMetricsBlock(){
   <div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);line-height:1.5;margin-bottom:16px">Log weekly. The scale lies sometimes — the tape measure doesn't. Iron-in Apple Health manually if you track there too.</div>
   <div class="card" style="padding:12px 14px;margin-bottom:16px">
    <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">NEW ENTRY — ${fmtDate(todayStr()).short}</div>
-   <div class="pt-input-row"><div class="pt-input-label">Weight</div><input type="number" class="num-input" placeholder="0" value="${d.weight}" oninput="S.metricDraft.weight=this.value" step="0.1"><span class="pt-input-unit">LBS</span></div>
-   <div class="pt-input-row"><div class="pt-input-label">Body Fat (optional)</div><input type="number" class="num-input" placeholder="—" value="${d.bodyFat}" oninput="S.metricDraft.bodyFat=this.value" step="0.1"><span class="pt-input-unit">%</span></div>
-   <div class="pt-input-row"><div class="pt-input-label">Waist</div><input type="number" class="num-input" placeholder="—" value="${d.waist}" oninput="S.metricDraft.waist=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
-   <div class="pt-input-row"><div class="pt-input-label">Chest</div><input type="number" class="num-input" placeholder="—" value="${d.chest}" oninput="S.metricDraft.chest=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
-   <div class="pt-input-row"><div class="pt-input-label">Arm (flexed)</div><input type="number" class="num-input" placeholder="—" value="${d.arms}" oninput="S.metricDraft.arms=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Weight</div><input type="number" inputmode="decimal" enterkeyhint="done" class="num-input" placeholder="0" value="${d.weight}" oninput="S.metricDraft.weight=this.value" step="0.1"><span class="pt-input-unit">LBS</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Body Fat (optional)</div><input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="—" value="${d.bodyFat}" oninput="S.metricDraft.bodyFat=this.value" step="0.1"><span class="pt-input-unit">%</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Waist</div><input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="—" value="${d.waist}" oninput="S.metricDraft.waist=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Chest</div><input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="—" value="${d.chest}" oninput="S.metricDraft.chest=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
+   <div class="pt-input-row"><div class="pt-input-label">Arm (flexed)</div><input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="—" value="${d.arms}" oninput="S.metricDraft.arms=this.value" step="0.25"><span class="pt-input-unit">IN</span></div>
    <textarea class="notes" style="margin-top:10px;height:50px" placeholder="Notes — measurement conditions" oninput="S.metricDraft.notes=this.value">${d.notes}</textarea>
    <button class="action-btn" onclick="saveMetricNow()">SAVE METRICS</button>
   </div>
@@ -5478,7 +6000,7 @@ function renderDataBlock(){
     '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">CURRENT STORAGE</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+logsCount+' workout sessions logged</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+libCount+' workouts in library</div>'+
-    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">'+(hasPlan?'Custom plan saved':'Using default plan')+'</div>'+
+    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">'+(hasPlan?'Custom program saved':'Using default program')+'</div>'+
     '</div>'+
     '<button class="action-btn" onclick="exportAllData()">EXPORT BACKUP TO PHONE</button>'+
     '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px;margin-bottom:16px;line-height:1.5">Saves a .json file to your phone. Use it to restore if you clear browser data or switch devices.</div>'+
@@ -5507,10 +6029,30 @@ function formatDateDisplay(ds){
 }
 function renderToday(){
   if(S.showGoalCreator) return '<div class="fade-in">'+renderGoalCreator()+'</div>';
+
+  // Empty state — no goals and no plan
+  const activeGoals = getActiveGoals();
+  const planPhases  = getActivePlanPhases();
+  if(!activeGoals.length && !planPhases.length){
+    return `<div class="fade-in" style="padding:40px 24px;text-align:center">
+      <div style="font-family:var(--display);font-size:48px;color:var(--accent);line-height:1;margin-bottom:20px">⊕</div>
+      <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">READY TO FORGE?</div>
+      <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:280px;margin:0 auto 32px">
+        Set a goal and build your program to get your daily sessions, Forge Score, and progress tracking started.
+      </div>
+      <button class="action-btn" onclick="S.showGoalCreator=true;renderMain()">
+        CREATE YOUR FIRST GOAL
+      </button>
+      <button class="action-btn secondary" style="margin-top:10px" onclick="setTab('plan')">
+        BROWSE PROGRAMS
+      </button>
+    </div>`;
+  }
+
   const dateStr=todayStr();
   const {dow,full}=formatDateDisplay(dateStr);
   const phaseIdx=getPhaseForDate(dateStr);
-  const phases=getPlanPhases();
+  const phases=getActivePlanPhases();
   const pi=phaseIdx>=0?phaseIdx:-1;
   const ph=pi>=0?phases[pi]:null;
   const logged=getLogEntry(dateStr);
@@ -5526,13 +6068,19 @@ function renderToday(){
    <div class="forge-topbar">
     <div class="forge-avatar">${(getUser()?.name||'F').charAt(0).toUpperCase()}</div>
     <div class="forge-wordmark" style="font-size:24px">FORGE</div>
-    ${renderForgeMark(34)}
+    <button onclick="S.showProfile=!S.showProfile;renderMain()" 
+      aria-label="Profile and settings" 
+      style="width:34px;height:34px;border-radius:50%;background:${S.showProfile?'var(--accent-bg)':' rgba(255,255,255,.06)'};border:1px solid ${S.showProfile?'var(--accent-border)':' var(--border)'};display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:all 0.15s;color:${S.showProfile?'var(--accent)':' currentColor'}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </button>
    </div>
    <div class="forge-hero-label">TODAY</div>
    <div class="forge-hero-title">BUILT TODAY.<br><span>SHARPENED FOREVER.</span></div>
    <div class="forge-hero-copy">Show up. Put in the work. We all get stronger together.</div>
    ${pi>=0?`<div style="margin-top:16px;font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)"><span class="phase-dot" style="background:${ph.color}"></span>PHASE ${pi+1} - ${ph.title}${isPregnancyMode()?' <span style="color:var(--accent)">- PREGNANCY SAFE</span>':''}</div>`:''}
   </div>
+  ${S.showProfile ? `
+  <div style="padding:0 0 4px">${renderProfilePanel()}</div>` : ''}
   <div style="padding:0 16px;margin-bottom:12px">${renderCheckinStrip(dateStr,checkin)}</div>
   <div class="forge-grid">
    ${renderForgeScoreCard(metrics)}
@@ -5651,6 +6199,161 @@ function renderBriefing(pi,ph){
    </div>
   </div>`;
 }
+
+function renderProfilePanel() {
+  const user = getUser();
+  const settings = getSettings();
+  const phases = getActivePlanPhases();
+  const restDur = S.restDuration || 90;
+  if (!user) return '';
+
+  const initial = (user.name || 'F').charAt(0).toUpperCase();
+  const row = (label, content) =>
+    `<div style="margin-bottom:14px">
+      <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">${label}</div>
+      ${content}
+    </div>`;
+  const inp = (field, val, type='text', placeholder='') =>
+    `<input type="${type}" value="${val||''}" placeholder="${placeholder}"
+      inputmode="${type==='number'?'decimal':'text'}"
+      oninput="updateProfile({'${field}':this.value.trim()})"
+      style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+      color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;
+      color-scheme:dark">`;
+  const pills = (field, val, options) =>
+    `<div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${options.map(([v,l]) =>
+        `<button onclick="updateProfile({'${field}':'${v}'})"
+          style="font-family:var(--display);font-size:12px;letter-spacing:1px;
+          padding:6px 12px;border-radius:8px;border:none;cursor:pointer;
+          background:${val===v?'var(--accent)':'rgba(255,255,255,.06)'};
+          color:${val===v?'#0B0D0B':'var(--text3)'}">${l}</button>`
+      ).join('')}
+    </div>`;
+
+  return `<div style="margin:0 0 16px">
+    <div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 48%,rgba(166,203,42,.04)),var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-soft)">
+
+      <!-- HEADER -->
+      <div style="padding:20px 20px 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)">
+        <div class="forge-avatar" style="width:56px;height:56px;font-size:26px;flex-shrink:0">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--display);font-size:28px;letter-spacing:2px;color:var(--text);line-height:1">${user.name||'FORGE USER'}</div>
+          <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:3px;text-transform:capitalize">${user.gender||''}</div>
+        </div>
+        <button onclick="pbResetProfile()"
+          style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;
+          color:var(--text3);background:rgba(255,255,255,.05);
+          border:1px solid var(--border);border-radius:8px;
+          padding:7px 12px;cursor:pointer">RESET</button>
+      </div>
+
+      <!-- BODY — scrollable sections -->
+      <div style="padding:18px 20px">
+
+        <!-- 1. ABOUT ME -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">ABOUT ME</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          ${row('AGE', inp('age', user.age, 'number', '—'))}
+          ${row('HEIGHT', inp('height', user.height, 'text', 'height'))}
+          ${row('CURRENT WEIGHT', inp('currentWeight', user.currentWeight, 'number', 'lbs'))}
+          ${row('GOAL WEIGHT', inp('goalWeight', user.goalWeight, 'number', 'lbs'))}
+        </div>
+        ${(()=>{ const wp=getWeightProgress(); if(!wp) return ''; return `
+        <div style="background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+            <div style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;color:var(--text3)">PROGRESS TO GOAL</div>
+            <div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--accent)">${wp.remaining>0?wp.remaining:Math.abs(wp.remaining)} lbs ${wp.isLoss?'to lose':'to go'}</div>
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${wp.pct}%;background:var(--accent);border-radius:3px;transition:width .3s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:var(--body);font-size:11px;color:var(--text3)">
+            <span>${wp.current} lbs now</span>
+            <span>${wp.goal} lbs goal</span>
+          </div>
+          <div style="font-family:var(--body);font-size:11px;color:var(--text3);margin-top:6px;text-align:center">Log weight in Stats → Metrics to update</div>
+        </div>` })()}
+
+        <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+        <!-- 2. TRAINING PREFERENCES -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">TRAINING</div>
+        ${row('DAYS PER WEEK', pills('daysPerWeek', String(user.daysPerWeek||4),
+          [['2','2'],['3','3'],['4','4'],['5','5'],['6','6']]))}
+        ${row('SESSION LENGTH', pills('sessionLength', String(user.sessionLength||45),
+          [['30','30m'],['45','45m'],['60','60m'],['75','75m'],['90','90m']]))}
+        ${row('EXPERIENCE', pills('experience', user.experience||'intermediate',
+          [['beginner','Beginner'],['intermediate','Intermediate'],['advanced','Advanced']]))}
+
+        <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+        <!-- 3. NUTRITION GOALS -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">NUTRITION</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+          ${row('DAILY PROTEIN (G)',
+            `<input type="number" inputmode="decimal" value="${settings.proteinTarget||170}" placeholder="170"
+              oninput="saveSettings({proteinTarget:parseInt(this.value)||170})"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+              color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">`
+          )}
+          ${row('DAILY CALORIES (KCAL)',
+            `<input type="number" inputmode="decimal" value="${settings.calorieTarget||''}" placeholder="optional"
+              oninput="saveSettings({calorieTarget:parseInt(this.value)||null})"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+              color:var(--text);font-family:var(--body);font-size:15px;padding:10px 12px;color-scheme:dark">`
+          )}
+        </div>
+
+        <div style="height:1px;background:var(--border);margin:14px 0 18px"></div>
+
+        <!-- 4. PROGRAM -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">PROGRAM</div>
+        ${row('START DATE',
+          `<input type="date" value="${settings.startDate||''}"
+            onchange="saveSettings({startDate:this.value});renderMain()"
+            aria-label="Program start date"
+            class="date-input" style="width:100%">`
+        )}
+        ${phases.length ? `<div style="margin-bottom:4px">
+          ${phases.map((p,i) =>
+            `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+              <div style="font-family:var(--display);font-size:14px;letter-spacing:1px;color:var(--accent)">PH${i+1} ${p.name||''}</div>
+              <div style="font-family:var(--body);font-size:13px;color:var(--text3)">${getPhaseDates(i)}</div>
+            </div>`).join('')}
+        </div>` : ''}
+
+        <div style="height:1px;background:var(--border);margin:14px 0 18px"></div>
+
+        <!-- 5. APP SETTINGS -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">APP</div>
+        ${row('REST TIMER DEFAULT',
+          `<div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${[0,60,90,120,180].map(s =>
+              `<button onclick="saveRestDuration(${s})"
+                style="font-family:var(--display);font-size:12px;letter-spacing:1px;
+                padding:7px 12px;border-radius:8px;border:none;cursor:pointer;
+                background:${restDur===s?'var(--accent)':'rgba(255,255,255,.06)'};
+                color:${restDur===s?'#0B0D0B':'var(--text3)'}"
+              >${s===0?'OFF':s<60?s+'s':Math.floor(s/60)+'m'}</button>`
+            ).join('')}
+          </div>`
+        )}
+
+        <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+        <!-- 6. DATA -->
+        <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">DATA</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="exportAllData()" class="action-btn secondary" style="margin-top:0;flex:1">EXPORT</button>
+          <button onclick="pbClickImport()" class="action-btn secondary" style="margin-top:0;flex:1">IMPORT</button>
+        </div>
+
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderSettingsPanel(settings,phases){
   const user=getUser();
   return`<div style="margin:14px 16px 0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
@@ -5670,7 +6373,7 @@ function getCheckin(dateStr){
   try{const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');return all[dateStr]||null;}
   catch(e){return null;}
 }
-function saveCheckinNow(){announce('Check-in saved');
+function saveCheckinNow(){S.checkinOpen=false;announce('Check-in saved');
   const d=S.checkinDraft;
   if(d.sleep===null||d.energy===null||d.pain===null)return;
   const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');
@@ -5703,11 +6406,23 @@ function renderMain(){
   switch(S.tab){
     case'today':m.innerHTML=renderToday();break;
     case'plan':m.innerHTML=renderPlan();break;
-    case'log':m.innerHTML=renderLog();break;
+    case'log':m.innerHTML=renderLog();setTimeout(()=>{initLogSwipe();if(main._ptrAttached)main._ptrAttached=false;main._swipeAttached=false;initLogSwipe();},0);break;
     case'fuel':m.innerHTML=renderFuel();break;
     case'gen':S.tab='log';S.logMode='generate';m.innerHTML=renderLog();break;
-    case'squad':m.innerHTML=renderSquad();break;
+    case'squad':m.innerHTML=renderSquad();setTimeout(initSquadPTR,0);break;
     case'stats':m.innerHTML=renderStats();break;
+  }
+  // Streak milestone modal
+  if(S.showStreakModal) {
+    const _mil = S.showStreakModal;
+    const _metrics2 = getForgeMetrics();
+    document.body.insertAdjacentHTML('beforeend',
+      '<div id="streak-overlay">'+renderStreakModal(_mil,_metrics2.streak)+'</div>'
+    );
+    const _existing = document.getElementById('streak-overlay');
+    if(_existing && document.querySelectorAll('#streak-overlay').length > 1) {
+      _existing.remove();
+    }
   }
   // Inject modals — prepend to main content
   const _hadModal = S.confirmPending||S.promptPending;
@@ -5723,6 +6438,460 @@ function announce(msg) {
   el.textContent = '';
   requestAnimationFrame(() => { el.textContent = msg; });
 }
+
+// ============================================================
+// FORGE TIMER ENGINE
+// Single shared interval — all timing modes use this
+// ============================================================
+
+// Timer state — lives in S.timer
+// Modes: 'rest' | 'work' | 'stopwatch' | 'tabata' | 'emom'
+
+function timerInit() {
+  if (!S.timer) {
+    S.timer = {
+      active: false,
+      paused: false,
+      mode: 'rest',
+      remaining: 0,   // seconds left (countdown modes)
+      elapsed: 0,     // seconds elapsed (stopwatch)
+      total: 0,       // original duration for progress bar
+      label: '',      // display label e.g. "REST" / "WORK" / "PLANK"
+      // Tabata state
+      tabataRound: 0,
+      tabataPhase: 'work', // 'work' | 'rest'
+      tabataRounds: 8,
+      tabataWork: 20,
+      tabataRest: 10,
+      // EMOM state
+      emomMinute: 0,
+      emomTotal: 0,
+      // Stopwatch
+      workoutStart: null,
+    };
+  }
+}
+
+function timerTick() {
+  timerInit();
+  const t = S.timer;
+  if (!t.active || t.paused) return;
+
+  if (t.mode === 'stopwatch') {
+    t.elapsed++;
+    timerUpdateUI();
+    return;
+  }
+
+  if (t.mode === 'tabata') {
+    t.remaining--;
+    if (t.remaining <= 0) {
+      if (t.tabataPhase === 'work') {
+        // Switch to rest
+        t.tabataPhase = 'rest';
+        t.remaining = t.tabataRest;
+        t.total = t.tabataRest;
+        t.label = 'REST';
+        timerVibrate('short');
+      } else {
+        // Next round
+        t.tabataRound++;
+        if (t.tabataRound >= t.tabataRounds) {
+          timerComplete();
+          return;
+        }
+        t.tabataPhase = 'work';
+        t.remaining = t.tabataWork;
+        t.total = t.tabataWork;
+        t.label = 'WORK · R' + (t.tabataRound + 1);
+        timerVibrate('short');
+      }
+    }
+    timerUpdateUI();
+    return;
+  }
+
+  if (t.mode === 'emom') {
+    t.remaining--;
+    t.elapsed++;
+    if (t.remaining <= 0) {
+      t.emomMinute++;
+      if (t.emomMinute >= t.emomTotal) {
+        timerComplete();
+        return;
+      }
+      t.remaining = 60;
+      t.total = 60;
+      t.label = 'EMOM · MIN ' + (t.emomMinute + 1);
+      timerVibrate('short');
+    }
+    timerUpdateUI();
+    return;
+  }
+
+  // rest / work countdown
+  t.remaining--;
+  if (t.remaining <= 0) {
+    timerComplete();
+    return;
+  }
+  if (t.remaining <= 3) timerVibrate('tick');
+  timerUpdateUI();
+}
+
+function timerComplete() {
+  const t = S.timer;
+  timerVibrate('done');
+  t.active = false;
+  t.remaining = 0;
+  timerUpdateUI();
+  announce(t.label + ' timer done');
+}
+
+function timerVibrate(type) {
+  if (!navigator.vibrate) return;
+  if (type === 'tick') navigator.vibrate(40);
+  else if (type === 'short') navigator.vibrate([60, 40, 60]);
+  else if (type === 'done') navigator.vibrate([100, 50, 100, 50, 200]);
+}
+
+function timerFmt(secs) {
+  const m = Math.floor(Math.abs(secs) / 60);
+  const s = Math.abs(secs) % 60;
+  return (m > 0 ? m + ':' + String(s).padStart(2,'0') : String(s) + 's');
+}
+
+function timerStart(mode, opts) {
+  timerInit();
+  const t = S.timer;
+
+  // Clear existing interval
+  if (window._forgeTimerInterval) clearInterval(window._forgeTimerInterval);
+
+  t.mode = mode;
+  t.active = true;
+  t.paused = false;
+
+  if (mode === 'rest') {
+    const dur = opts.duration || S.restDuration || 90;
+    t.remaining = dur;
+    t.total = dur;
+    t.label = 'REST';
+    t.elapsed = 0;
+  } else if (mode === 'work') {
+    t.remaining = opts.duration;
+    t.total = opts.duration;
+    t.label = opts.label || 'WORK';
+    t.elapsed = 0;
+  } else if (mode === 'stopwatch') {
+    t.elapsed = 0;
+    t.workoutStart = Date.now();
+    t.label = 'WORKOUT';
+  } else if (mode === 'tabata') {
+    t.tabataRound = 0;
+    t.tabataPhase = 'work';
+    t.tabataWork = opts.work || 20;
+    t.tabataRest = opts.rest || 10;
+    t.tabataRounds = opts.rounds || 8;
+    t.remaining = t.tabataWork;
+    t.total = t.tabataWork;
+    t.label = 'WORK · R1';
+    t.elapsed = 0;
+  } else if (mode === 'emom') {
+    t.emomMinute = 0;
+    t.emomTotal = opts.minutes || 10;
+    t.remaining = 60;
+    t.total = 60;
+    t.label = 'EMOM · MIN 1';
+    t.elapsed = 0;
+  }
+
+  window._forgeTimerInterval = setInterval(timerTick, 1000);
+  timerUpdateUI();
+}
+
+function timerPause() {
+  timerInit();
+  S.timer.paused = !S.timer.paused;
+  timerUpdateUI();
+}
+
+function timerStop() {
+  timerInit();
+  S.timer.active = false;
+  S.timer.paused = false;
+  if (window._forgeTimerInterval) clearInterval(window._forgeTimerInterval);
+  timerUpdateUI();
+}
+
+function timerSkip() {
+  timerInit();
+  S.timer.remaining = 0;
+  timerComplete();
+}
+
+function timerSetRest(secs) {
+  S.restDuration = secs;
+  if (S.timer && S.timer.active && S.timer.mode === 'rest') {
+    S.timer.remaining = secs;
+    S.timer.total = secs;
+  }
+  timerUpdateUI();
+}
+
+// Surgical DOM update — never calls renderMain
+function timerUpdateUI() {
+  const el = document.getElementById('forge-timer-bar');
+  if (!el) return;
+
+  const t = S.timer;
+  if (!t || !t.active) {
+    el.style.display = 'none';
+    return;
+  }
+
+  el.style.display = 'flex';
+
+  const isRest = t.mode === 'rest';
+  const isStopwatch = t.mode === 'stopwatch';
+  const isTabata = t.mode === 'tabata';
+  const accentColor = isRest ? 'var(--accent)' : t.tabataPhase === 'rest' ? 'var(--accent)' : 'var(--red)';
+
+  const timeStr = isStopwatch ? timerFmt(t.elapsed) : timerFmt(t.remaining);
+  const pct = isStopwatch ? 100 : Math.round((t.remaining / t.total) * 100);
+  const labelStr = t.label;
+
+  // Tabata round indicator
+  let roundDots = '';
+  if (isTabata) {
+    roundDots = Array.from({length: t.tabataRounds}, (_,i) =>
+      `<div style="width:6px;height:6px;border-radius:50%;background:${i < t.tabataRound ? accentColor : 'rgba(255,255,255,.15)'}"></div>`
+    ).join('');
+  }
+
+  el.innerHTML = `
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:${accentColor};flex-shrink:0">${labelStr}</div>
+        ${isTabata ? `<div style="display:flex;gap:3px;flex-wrap:nowrap">${roundDots}</div>` : ''}
+      </div>
+      <div style="font-family:var(--display);font-size:32px;line-height:1;letter-spacing:2px;color:var(--text);margin-top:2px">${timeStr}</div>
+      <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:6px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${accentColor};border-radius:2px;transition:width 0.9s linear"></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-left:12px;flex-shrink:0">
+      <button onclick="timerPause()" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:6px 10px;background:rgba(255,255,255,.06);border:none;color:var(--text2);cursor:pointer;border-radius:8px;min-width:48px">${t.paused ? 'RESUME' : 'PAUSE'}</button>
+      <button onclick="timerStop()" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:6px 10px;background:rgba(255,255,255,.04);border:none;color:var(--text3);cursor:pointer;border-radius:8px">STOP</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// REST DURATION SETTING — persisted in localStorage
+// ============================================================
+
+function parseDuration(dStr) {
+  if (!dStr) return null;
+  const s = String(dStr).toLowerCase();
+  const minMatch = s.match(/(\d+)\s*min/);
+  const secMatch = s.match(/(\d+)\s*sec/);
+  if (minMatch) return parseInt(minMatch[1]) * 60;
+  if (secMatch) return parseInt(secMatch[1]);
+  return null;
+}
+function getRestDuration() {
+  return parseInt(localStorage.getItem('forge_rest_duration') || '90');
+}
+function saveRestDuration(secs) {
+  localStorage.setItem('forge_rest_duration', String(secs));
+  S.restDuration = secs;
+}
+
+// ============================================================
+// STREAK MILESTONES
+// ============================================================
+const STREAK_MILESTONES = [3, 7, 14, 21, 30, 60, 100, 200, 365];
+
+function getAckedMilestones() {
+  try { return JSON.parse(localStorage.getItem('forge_streak_acked') || '[]'); }
+  catch(e) { return []; }
+}
+
+function ackMilestone(n) {
+  const acked = getAckedMilestones();
+  if (!acked.includes(n)) {
+    acked.push(n);
+    localStorage.setItem('forge_streak_acked', JSON.stringify(acked));
+  }
+}
+
+function checkStreakMilestone(streak) {
+  if (!streak || streak < 3) return null;
+  const acked = getAckedMilestones();
+  // Find highest unacknowledged milestone hit
+  const hit = [...STREAK_MILESTONES].reverse().find(m => streak >= m && !acked.includes(m));
+  return hit || null;
+}
+
+function renderStreakModal(milestone, streak) {
+  const msgs = {
+    3:   { title: 'LOCKED IN',        sub: '3 days straight. The habit is forming.' },
+    7:   { title: 'ONE WEEK',         sub: 'Seven consecutive days. You showed up.' },
+    14:  { title: 'TWO WEEKS',        sub: 'Fourteen days. This is becoming who you are.' },
+    21:  { title: 'THREE WEEKS',      sub: '21 days. The research says habits are forming now.' },
+    30:  { title: 'THIRTY DAYS',      sub: 'A full month of consecutive training. Rare air.' },
+    60:  { title: 'SIXTY DAYS',       sub: 'Two months. Most people quit in week two. You\'re still here.' },
+    100: { title: 'ONE HUNDRED',      sub: '100 days consecutive. That\'s discipline, not motivation.' },
+    200: { title: 'TWO HUNDRED', sub: '200 days. Built what most people only dream about.' },
+    365: { title: 'ONE FULL YEAR',    sub: 'A complete year of consecutive training. Extraordinary.' },
+  };
+  const m = msgs[milestone] || { title: milestone + ' DAYS', sub: 'Keep going.' };
+  return `<div role="dialog" aria-modal="true" aria-labelledby="streak-modal-title"
+    style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    backdrop-filter:blur(8px)" onclick="ackMilestone(${milestone});S.showStreakModal=null;renderMain()">
+    <div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 48%,rgba(166,203,42,.06)),var(--card);
+      border:1px solid var(--accent-border);border-radius:28px;
+      padding:36px 28px;max-width:320px;width:100%;text-align:center;
+      box-shadow:0 0 80px rgba(166,203,42,.18),0 20px 60px rgba(0,0,0,.5)"
+      onclick="event.stopPropagation()">
+      <div style="font-family:var(--display);font-size:72px;line-height:1;
+        color:var(--accent);letter-spacing:2px;
+        text-shadow:0 0 40px rgba(166,203,42,.4)">${streak}</div>
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;
+        color:var(--text3);margin-top:4px">DAY STREAK</div>
+      <div id="streak-modal-title" style="font-family:var(--display);font-size:36px;
+        letter-spacing:3px;color:var(--text);margin:20px 0 10px;line-height:1">${m.title}</div>
+      <div style="font-family:var(--body);font-size:15px;color:var(--text2);
+        line-height:1.6;margin-bottom:28px">${m.sub}</div>
+      <button class="action-btn" style="margin-top:0"
+        onclick="ackMilestone(${milestone});S.showStreakModal=null;renderMain()">
+        FORGE ON
+      </button>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// SQUAD PULL-TO-REFRESH
+// ============================================================
+function initSquadPTR() {
+  const main = document.getElementById('main');
+  if (!main || main._ptrAttached) return;
+  main._ptrAttached = true;
+  let startY = 0;
+  main.addEventListener('touchstart', function(e) {
+    if (main.scrollTop === 0) startY = e.touches[0].clientY;
+  }, { passive: true });
+  main.addEventListener('touchend', function(e) {
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > 60 && S.tab === 'squad') {
+      loadSquadFeed();
+      announce('Refreshing squad feed');
+    }
+  }, { passive: true });
+}
+
+// ============================================================
+// SWIPE BETWEEN LOG SUB-TABS
+// ============================================================
+function initLogSwipe() {
+  const main = document.getElementById('main');
+  if (!main || main._swipeAttached) return;
+  main._swipeAttached = true;
+  const LOG_TABS = ['plan','custom','generate'];
+  let startX = 0, startY = 0;
+  main.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  main.addEventListener('touchend', function(e) {
+    if (S.tab !== 'log') return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const cur = LOG_TABS.indexOf(S.logMode || 'plan');
+    if (dx < 0 && cur < LOG_TABS.length - 1) {
+      S.logMode = LOG_TABS[cur + 1]; renderMain();
+    } else if (dx > 0 && cur > 0) {
+      S.logMode = LOG_TABS[cur - 1]; renderMain();
+    }
+  }, { passive: true });
+}
+
+// ============================================================
+// OFFLINE INDICATOR
+// ============================================================
+function initOfflineDetection() {
+  function update() {
+    const bar = document.getElementById('offline-bar');
+    if (bar) bar.style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online', update);
+  window.addEventListener('offline', update);
+  update();
+}
+
+// ============================================================
+// SQUAD REACTIONS — flex 💪 and fist bump 👊
+// ============================================================
+const REACTION_TYPES = ['💪','👊'];
+
+function getReactions() {
+  try { return JSON.parse(localStorage.getItem('forge_reactions') || '{}'); }
+  catch(e) { return {}; }
+}
+
+function saveReactions(data) {
+  localStorage.setItem('forge_reactions', JSON.stringify(data));
+}
+
+function toggleReaction(entryId, emoji) {
+  const all = getReactions();
+  const userId = getUserId();
+  if (!userId) return;
+  if (!all[entryId]) all[entryId] = {};
+  if (!all[entryId][emoji]) all[entryId][emoji] = [];
+  const idx = all[entryId][emoji].indexOf(userId);
+  if (idx >= 0) {
+    all[entryId][emoji].splice(idx, 1); // un-react
+  } else {
+    all[entryId][emoji].push(userId); // react
+  }
+  saveReactions(all);
+  // Surgical update — only update this entry's reaction row
+  const el = document.getElementById('reactions-' + entryId);
+  if (el) el.innerHTML = renderReactionButtons(entryId);
+  else renderMain();
+}
+
+function renderReactionButtons(entryId) {
+  const all = getReactions();
+  const entry = all[entryId] || {};
+  const userId = getUserId();
+  return REACTION_TYPES.map(emoji => {
+    const users = entry[emoji] || [];
+    const count = users.length;
+    const isMine = users.includes(userId);
+    return `<button 
+      data-eid="${entryId}" data-emoji="${emoji}"
+      onclick="toggleReaction(this.dataset.eid, this.dataset.emoji)"
+      style="
+        display:inline-flex;align-items:center;gap:5px;
+        padding:6px 12px;border-radius:100px;cursor:pointer;
+        font-size:16px;font-family:var(--body);font-size:13px;
+        font-weight:${isMine?'700':'400'};
+        background:${isMine?'var(--accent-bg)':'rgba(255,255,255,.05)'};
+        border:1px solid ${isMine?'var(--accent-border)':'rgba(255,255,255,.1)'};
+        color:${isMine?'var(--accent)':'var(--text3)'};
+        transition:all 0.15s;
+      "
+      aria-label="${emoji} reaction${isMine?' (tap to remove)':''}"
+      aria-pressed="${isMine}"
+    >${emoji}${count > 0 ? `<span style="font-size:12px;font-family:var(--display);letter-spacing:1px">${count}</span>` : ''}</button>`;
+  }).join('');
+}
 function renderNav(){
   ['today','plan','log','fuel','squad','stats'].forEach(t=>{
     const el=document.getElementById('nav-'+t);
@@ -5735,6 +6904,7 @@ function renderNav(){
 function setTab(t){
   // gen tab folded into log
   if(t==='gen'){t='log';S.logMode='generate';}
+  if(t!=='today') S.showProfile=false;
   // When switching to log tab, pre-load today's session from active goal plan
   if(t==='log' && S.logMode!=='generate'){
     var phases=getActivePlanPhases();
@@ -5747,10 +6917,10 @@ function setTab(t){
       else initLogSets(pi,di);
     }
   }
-  S.tab=t;renderNav();renderMain();
-  const titles={'today':'Home — FORGE','plan':'Programs — FORGE','log':'Workout — FORGE','fuel':'Fuel — FORGE','squad':'Group — FORGE','stats':'Stats — FORGE'};
+  S.tab=t;renderNav();renderMain();if(document.getElementById('main')){document.getElementById('main')._swipeAttached=false;document.getElementById('main')._ptrAttached=false;}
+  const titles={'today':'Home — FORGE','plan':'Programs — FORGE','log':'Workout — FORGE','fuel':'Fuel — FORGE','squad':'Squad — FORGE','stats':'Stats — FORGE'};
   document.title=titles[t]||'FORGE';
-  const labels={'today':'Today tab','plan':'Plan tab','log':'Log tab','fuel':'Fuel tab','gen':'Build tab','squad':'Squad tab','stats':'Stats tab'};
+  const labels={'today':'Today tab','plan':'Plan tab','log':'Workout tab','fuel':'Fuel tab','gen':'Build tab','squad':'Squad tab','stats':'Stats tab'};
   announce(labels[t]||t);
   document.getElementById('main').scrollTo(0,0);
   if(t==='squad' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') loadSquadFeed();
@@ -5792,7 +6962,7 @@ function openPlanMove(pi, di) {
 function goLog(phaseIdx, dayIdx){
  S.logPhase=phaseIdx; S.logDay=dayIdx;
  initLogFromExercises(phaseIdx, dayIdx);
- setTab('log');
+ setTab('log');setTimeout(initLogSwipe,100);
 }
 function renderPlanMovePanel(pi, di) {
  const {sourceDateStr, selectedTarget, targets} = S.planMove;
@@ -5841,7 +7011,30 @@ function removeSet(exName, idx){
  }
  renderMain();
 }
-function toggleDone(name,i){if(S.logSets[name])S.logSets[name][i].done=!S.logSets[name][i].done;renderMain();}
+function toggleDone(name,i){
+  if(!S.logSets[name]) return;
+  const wasDone = S.logSets[name][i].done;
+  S.logSets[name][i].done = !wasDone;
+  // Auto-start rest timer when marking a set done
+  if(!wasDone) {
+    // Start workout stopwatch on first completion if not running
+    if(!S.timer || !S.timer.active || S.timer.mode !== 'stopwatch') {
+      if(!S.workoutTimerRunning) {
+        S.workoutTimerRunning = true;
+        S.workoutElapsed = 0;
+        if(!window._forgeStopwatch) {
+          window._forgeStopwatch = setInterval(()=>{S.workoutElapsed=(S.workoutElapsed||0)+1;},1000);
+        }
+      }
+    }
+    if(S.restDuration > 0) {
+      timerStart('rest', {duration: S.restDuration});
+    }
+  } else if(wasDone && S.timer && S.timer.active && S.timer.mode === 'rest') {
+    timerStop(); // Un-checking stops rest timer
+  }
+  renderMain();
+}
 function toggleDoneOnly(exName){
  if(!S.logSets[exName]) S.logSets[exName]=[{reps:'',weight:'',done:false}];
  S.logSets[exName][0].done = !S.logSets[exName][0].done;
@@ -5883,7 +7076,172 @@ function selectPlanMoveTarget(ds) {
  renderMain();
 }
 
-function init(){setupManifest();const pi=getPhaseForDate(todayStr());const di=getDayIdxForDate(todayStr(),pi>=0?pi:0);S.logPhase=pi>=0?pi:0;S.logDay=di>=0?di:0;const ex=getLogEntry(todayStr());if(ex){S.logSets=ex.sets;S.logNotes=ex.notes||'';}else initLogSets(S.logPhase,S.logDay);renderNav();renderMain();}
+
+// ============================================================
+// LANDING PAGE — browser-only, never shown to installed users
+// ============================================================
+function isStandalone() {
+  // True when launched from home screen (installed PWA)
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true
+      || document.referrer.startsWith('android-app://');
+}
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function renderLanding() {
+  const ios = isIOS();
+  return `<div id="landing" style="
+    position:fixed;inset:0;z-index:10000;overflow-y:auto;
+    background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;
+    padding:0 24px;text-align:center">
+
+    <!-- Hero -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:380px;padding:60px 0 40px">
+
+      <!-- F-mark icon -->
+      <div style="width:88px;height:88px;border-radius:22px;background:var(--bg2);
+        border:1px solid var(--border);display:grid;place-items:center;margin-bottom:28px;
+        box-shadow:0 0 60px rgba(166,203,42,.15)">
+        <svg width="52" height="52" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+          <path d="M22 28 H98 L90 40 H30 Z" fill="#A6C82A"/>
+          <path d="M34 46 H86 L79 57 H41 Z" fill="#A6C82A"/>
+          <rect x="54" y="52" width="12" height="9" fill="#A6C82A"/>
+          <path d="M41 50 H79 L73 59 H47 Z" fill="#A6C82A"/>
+          <path d="M40 66 L60 56 L80 66 L74 66 L60 60 L46 66 Z" fill="#A6C82A"/>
+          <path d="M45 74 L60 65 L75 74 L69 74 L60 69 L51 74 Z" fill="#A6C82A"/>
+          <path d="M50 82 L60 74 L70 82 L65 82 L60 78 L55 82 Z" fill="#A6C82A"/>
+        </svg>
+      </div>
+
+      <div style="font-family:var(--display);font-size:52px;letter-spacing:6px;color:var(--text);line-height:1;margin-bottom:8px">FORGE</div>
+      <div style="font-family:var(--display);font-size:15px;letter-spacing:5px;color:var(--accent);margin-bottom:28px">STAY SHARP</div>
+
+      <div style="font-family:var(--body);font-size:17px;color:var(--text2);line-height:1.6;margin-bottom:8px">
+        Train with intent. Track every session.<br>Stay accountable to your squad.
+      </div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:36px;font-style:italic">
+        As iron sharpens iron, so one person sharpens another.
+      </div>
+
+      <!-- CTA -->
+      ${ios ? `
+      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:300px">
+        ENTER FORGE →
+      </button>
+      <div style="margin-top:24px;padding:16px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:320px">
+        <div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">ADD TO HOME SCREEN</div>
+        <div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.6;text-align:left">
+          1. Tap the Share button <span style="opacity:.7">(square with arrow)</span><br>
+          2. Scroll and tap <strong style="color:var(--text)">Add to Home Screen</strong><br>
+          3. Open FORGE from your home screen
+        </div>
+      </div>` : `
+      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:300px">
+        ENTER FORGE →
+      </button>
+      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:20px;max-width:300px">
+        Tip: Add this to your home screen for the full app experience and offline access.
+      </div>`}
+
+    </div>
+
+    <!-- Feature strip -->
+    <div style="width:100%;max-width:380px;padding:0 0 40px">
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        ${[
+          ['Programs','Structured training phases'],
+          ['Squad','Shared accountability'],
+          ['Forge Score','Daily performance index'],
+        ].map(([t,d])=>`
+          <div style="flex:1;min-width:90px;padding:14px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px">
+            <div style="font-family:var(--display);font-size:14px;letter-spacing:1.5px;color:var(--accent);margin-bottom:4px">${t}</div>
+            <div style="font-family:var(--body);font-size:11px;color:var(--text3);line-height:1.4">${d}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function dismissLanding() {
+  S.landingDismissed = true;
+  const el = document.getElementById('landing');
+  if (el) {
+    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = '0';
+    setTimeout(() => { el.remove(); }, 300);
+  }
+}
+
+
+// ============================================================
+// MODEL B MIGRATION — run once on app init
+// Extracts embedded planData from goals into forge_programs
+// ============================================================
+function migrateToModelB() {
+  if (localStorage.getItem('forge_model_b_migrated')) return;
+  try {
+    const goals = getGoals();
+    const programs = getPrograms();
+    let changed = false;
+
+    goals.forEach(goal => {
+      // Already migrated or no plan data
+      if (goal.programId || !goal.planData || !goal.planData.phases) return;
+
+      // Create a program from the embedded planData
+      const progId = makeProgramId();
+      const prog = {
+        id: progId,
+        name: goal.label || 'Training Program',
+        phases: goal.planData.phases,
+        planType: goal.planType || 'app',
+        discipline: goal.discipline || null,
+        goalType: goal.goalType || null,
+        createdAt: goal.createdAt || new Date().toISOString(),
+        sourceGoalId: goal.id,
+      };
+      programs[progId] = prog;
+
+      // Update the goal — add programId, keep planData briefly for safety
+      goal.programId = progId;
+      changed = true;
+    });
+
+    if (changed) {
+      savePrograms(programs);
+      saveGoals(goals);
+    }
+
+    localStorage.setItem('forge_model_b_migrated', '1');
+    console.log('Forge: Model B migration complete');
+  } catch(e) {
+    console.warn('Forge: Model B migration failed', e);
+    // Don't set the flag — will retry next load
+  }
+}
+
+function init(){
+  migrateToModelB();
+  setupManifest();
+  S.restDuration=getRestDuration();
+  initOfflineDetection();
+
+  // LANDING PAGE GATE — browser visitors only, never installed users
+  // isStandalone() is true when launched from home screen → skip landing entirely
+  if (!isStandalone() && !S.landingDismissed) {
+    // Show landing as an overlay; app still initializes underneath
+    setTimeout(() => {
+      if (!document.getElementById('landing') && !S.landingDismissed) {
+        document.body.insertAdjacentHTML('beforeend', renderLanding());
+      }
+    }, 0);
+  }
+const pi=getPhaseForDate(todayStr());const di=getDayIdxForDate(todayStr(),pi>=0?pi:0);S.logPhase=pi>=0?pi:0;S.logDay=di>=0?di:0;const ex=getLogEntry(todayStr());if(ex){S.logSets=ex.sets;S.logNotes=ex.notes||'';}else initLogSets(S.logPhase,S.logDay);renderNav();renderMain();if(document.getElementById('main')){document.getElementById('main')._swipeAttached=false;document.getElementById('main')._ptrAttached=false;}}
 init();
 </script>
 </body>
