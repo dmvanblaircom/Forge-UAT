@@ -1,69 +1,35 @@
 # FORGE — Stay Sharp
 
-**14-week personal training program with group accountability and pregnancy safe mode.**
+**Performance training app with squad accountability, goal-driven programs, and daily Forge Score tracking.**
+
+Built as a PWA — installs to your home screen, works offline, no App Store required.
 
 ---
 
-## QUICK START
+## Features
 
-1. Deploy this folder to GitHub Pages (see DEPLOY.md)
-2. Open your GitHub Pages URL in Safari on your phone
-3. Share → Add to Home Screen → FORGE
-4. Set up your name, gender, and mode on first launch
-5. Connect Supabase for group features (see SQUAD-SETUP.md)
-
----
-
-## FILES
-
-| File | Purpose |
-|------|---------|
-| `index.html` | The entire app — self-contained |
-| `manifest.json` | PWA config |
-| `sw.js` | Service worker — offline mode |
-| `icon-512.svg` | App icon (large) |
-| `icon-192.svg` | App icon (small) |
-| `apple-touch-icon.svg` | iOS home screen icon |
-| `SQUAD-SETUP.md` | Connect the shared group feed |
-| `README.md` | This file |
+- **Goal-driven programs** — set a goal, build a program to achieve it
+- **Forge Score** — daily performance index tracking consistency, readiness, and streak
+- **Squad feed** — share workouts, react with flex and fist bumps
+- **Rest timer** — auto-starts between sets with haptic feedback
+- **Workout generator** — builds sessions from your location, equipment, and time
+- **Full profile** — weight tracking, nutrition goals, training preferences
 
 ---
 
-## FEATURES
+## Deploy
 
-| Tab | What it does |
-|-----|-------------|
-| **HOME** | Daily check-in · Week briefing · Today's workout · Protein bar |
-| **WORKOUT** | Full 14-week plan · Proactive rescheduling · Move workouts ahead |
-| **LOG** | Log sets, reps, weight · Save + Send to Group |
-| **FUEL** | Protein tracking · Quick-add foods · Timing guidance |
-| **BUILD** | Offline workout generator · Home/away · Pregnancy safe mode |
-| **GROUP** | Live group activity feed · Expandable workout details |
-| **STATS** | Completion rate · PT benchmarks · Body metrics · History |
+```bash
+# Set your token (Windows)
+set GITHUB_TOKEN=ghp_yourtoken
 
----
+# Deploy to UAT first
+python deploy.py forge-uat "message"
 
-## PREGNANCY SAFE MODE
-
-For female users — toggle on during profile setup or via Program Settings.
-- Modifies the BUILD workout generator to pregnancy-safe exercises only
-- Flags exercises in your plan that need modification (with notes)
-- Marks exercises to skip entirely with a red warning
-- Includes pelvic floor work in every session
-- Safe across all trimesters
+# Ship to production
+python deploy.py forge "message"
+```
 
 ---
 
-## THE PROGRAM (for the primary user)
-
-| Phase | Weeks | Focus |
-|-------|-------|-------|
-| 01 REACTIVATION | 1–2 | Bodyweight · 4 days/week |
-| 02 FOUNDATION | 3–5 | Dumbbells · 5 days/week |
-| 03 BUILD | 6–8 | Heavier · Conditioning |
-| 04 PROVE IT | 9–10 | Max effort · Benchmarks |
-| 05 FINISH STRONG | 11–14 | Final push · July 31 test |
-
----
-
-*No ads. No tracking. Data stays on your device (except group workouts shared via Supabase).*
+*As iron sharpens iron, so one person sharpens another. — Proverbs 27:17*
