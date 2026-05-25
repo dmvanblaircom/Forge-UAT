@@ -529,7 +529,7 @@ body{
 .set-row{
   display:flex;align-items:center;gap:7px;
   padding:7px 14px;border-bottom:1px solid var(--bg);
-}
+;overflow-x:hidden;max-width:100%}
 .set-num{
   font-family:var(--display);font-size:22px;color:var(--accent);
   width:22px;flex-shrink:0;text-align:right;
@@ -1937,11 +1937,7 @@ body{
 
 .forge-activity-row:last-child{border-bottom:none}
 
-.forge-heart{
-  margin-left:auto;
-  color:var(--accent);
-  font-size:22px;
-}
+
 
 div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   border-radius:22px !important;
@@ -2413,18 +2409,63 @@ function setCalorieTotal(date, kcal) {
 function getProteinTarget(){return getSettings().proteinTarget||170}
 function loadStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
 
-function deleteLogEntry(date){
-  showConfirm('Delete this workout log?',function(){
-    const s=loadStore();
-    delete s[date];
-    localStorage.setItem(STORE_KEY,JSON.stringify(s));
-    if(S.lastSavedDate===date) S.lastSavedDate=null;
+function deleteLogEntry(date, entryId) {
+  showConfirm('Delete this log?', function() {
+    const s = loadStore();
+    if (!s[date]) return;
+    if (!Array.isArray(s[date])) s[date] = [s[date]];
+    if (entryId) {
+      s[date] = s[date].filter(e => e.id !== entryId);
+      if (!s[date].length) delete s[date];
+    } else {
+      delete s[date]; // delete all entries for this date (legacy fallback)
+    }
+    localStorage.setItem(STORE_KEY, JSON.stringify(s));
+    S.lastSavedDate = null;
     renderMain();
-  },'DELETE','red');
+  }, 'DELETE', 'red');
 }
-function saveLogEntry(date,phaseId,dayIdx,sets,notes){const s=loadStore();s[date]={phaseId,dayIdx,sets,notes,savedAt:new Date().toISOString()};localStorage.setItem(STORE_KEY,JSON.stringify(s));}
-function getLogEntry(date){return loadStore()[date]||null}
-function getAllLogs(){return Object.entries(loadStore()).sort((a,b)=>b[0].localeCompare(a[0]))}
+function saveLogEntry(date, phaseId, dayIdx, sets, notes, title) {
+  const s = loadStore();
+  const entry = {
+    id: date + '_' + Date.now(),
+    phaseId, dayIdx, sets,
+    notes: notes || '',
+    title: title || null,
+    savedAt: new Date().toISOString(),
+  };
+  if (!s[date]) s[date] = [];
+  // If it's an array already, append. If legacy single object, wrap first.
+  if (!Array.isArray(s[date])) s[date] = [s[date]];
+  s[date].push(entry);
+  localStorage.setItem(STORE_KEY, JSON.stringify(s));
+  return entry;
+}
+
+// Get the LAST entry for a date (for plan log pre-fill, date changes, etc.)
+function getLogEntry(date) {
+  const entries = getLogEntries(date);
+  return entries.length ? entries[entries.length - 1] : null;
+}
+
+// Get ALL entries for a date
+function getLogEntries(date) {
+  const day = loadStore()[date];
+  if (!day) return [];
+  if (Array.isArray(day)) return day;
+  return [day]; // legacy single entry — wrap transparently
+}
+
+// Get all entries across all dates, flat, sorted newest first
+function getAllLogs() {
+  const store = loadStore();
+  const entries = [];
+  Object.entries(store).sort((a,b) => b[0].localeCompare(a[0])).forEach(([date, day]) => {
+    const dayEntries = Array.isArray(day) ? day : [day];
+    dayEntries.slice().reverse().forEach(e => entries.push([date, e]));
+  });
+  return entries;
+}
 function getSkips(){try{return JSON.parse(localStorage.getItem(SKIPS_KEY)||'{}')}catch(e){return{}}}
 function saveSkipEntry(date,type,phaseId,dayIdx,movedTo){const s=getSkips();s[date]={type,phaseId,dayIdx,movedTo:movedTo||null,savedAt:new Date().toISOString()};localStorage.setItem(SKIPS_KEY,JSON.stringify(s));}
 function getMoves(){try{return JSON.parse(localStorage.getItem(MOVES_KEY)||'{}')}catch(e){return{}}}
@@ -2554,7 +2595,7 @@ let S={
  tab:'today',
  planOpen:[true,false,false,false,false],planDayIdx:[0,0,0,0,0],
  planMove:{open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]},
- logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',lastSavedDate:null,showScoreBreakdown:false,showProfile:false,landingDismissed:false,showStreakModal:null,timer:null,restDuration:90,
+ logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',lastSavedDate:null,showArchivedPrograms:false,showProfile:false,landingDismissed:false,showStreakModal:null,timer:null,restDuration:90,
  planMode:'myplan',
  showGoalCreator:false,
  activeGoalId:null,
@@ -2564,7 +2605,6 @@ let S={
  libOpen:false,
  histOpen:{},showSettings:false,showBriefing:true,
  cantDo:{open:false,selectedMoveDate:null,moveDates:[]},
- checkinOpen:false,checkinDraft:{sleep:null,energy:null,pain:null},
  fuelCustom:{name:'',grams:''},
  statsTab:'history',statsDataMsg:'',
  ptDraft:{pushups:'',row2k:'',mile:'',plank:'',notes:''},
@@ -2648,6 +2688,154 @@ function getUser(){
 }
 function saveUser(obj){localStorage.setItem(USER_KEY,JSON.stringify(obj));}
 
+
+
+// ============================================================
+// PROGRAM STATUS — archive, restore, hide Foundation
+// ============================================================
+function archiveProgram(programId) {
+  const all = getPrograms();
+  if (all[programId]) {
+    all[programId].status = 'archived';
+    all[programId].archivedAt = new Date().toISOString();
+    savePrograms(all);
+    // Unlink from active goals so they fall back to Foundation
+    const goals = getGoals();
+    let changed = false;
+    goals.forEach(g => {
+      if (g.programId === programId && g.status === 'active') {
+        g.programId = null;
+        changed = true;
+      }
+    });
+    if (changed) saveGoals(goals);
+  }
+}
+
+function restoreProgram(programId) {
+  const prog = getProgramById(programId);
+  if (!prog) return;
+  // Show two-option modal
+  const modal = document.createElement('div');
+  modal.id = 'restore-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)';
+  modal.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px 22px 0 0;
+      padding:28px 24px 40px;width:100%;max-width:480px">
+      <div style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--text);margin-bottom:8px">RESTORE PROGRAM</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px">
+        Do you want to pick up where you left off, or start the program fresh from today?
+      </div>
+      <button onclick="
+        (function(){
+          const all = getPrograms();
+          if(all['${programId}']){all['${programId}'].status='active';delete all['${programId}'].archivedAt;savePrograms(all);}
+          document.getElementById('restore-modal').remove();
+          renderMain();
+        })()"
+        style="display:block;width:100%;padding:16px;margin-bottom:10px;font-family:var(--display);
+        font-size:16px;letter-spacing:2px;background:var(--accent);color:#0B0D0B;
+        border:none;border-radius:12px;cursor:pointer">
+        KEEP MY PROGRESS
+      </button>
+      <button onclick="
+        (function(){
+          const all = getPrograms();
+          if(all['${programId}']){all['${programId}'].status='active';delete all['${programId}'].archivedAt;savePrograms(all);}
+          saveSettings({startDate:todayStr()});
+          document.getElementById('restore-modal').remove();
+          renderMain();
+        })()"
+        style="display:block;width:100%;padding:16px;margin-bottom:10px;font-family:var(--display);
+        font-size:16px;letter-spacing:2px;background:var(--bg2);color:var(--text2);
+        border:1px solid var(--border);border-radius:12px;cursor:pointer">
+        START OVER
+        <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:3px;font-weight:400">Resets to Week 1 from today</div>
+      </button>
+      <button onclick="document.getElementById('restore-modal').remove()"
+        style="display:block;width:100%;padding:12px;font-family:var(--display);
+        font-size:13px;letter-spacing:2px;background:none;color:var(--text3);
+        border:none;cursor:pointer">CANCEL</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function isFoundationHidden() {
+  return localStorage.getItem('forge_foundation_hidden') === '1';
+}
+
+function hideFoundation() {
+  localStorage.setItem('forge_foundation_hidden', '1');
+}
+
+function showFoundation() {
+  // Show same keep/start-over prompt for Foundation restore
+  const modal = document.createElement('div');
+  modal.id = 'restore-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)';
+  modal.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px 22px 0 0;
+      padding:28px 24px 40px;width:100%;max-width:480px">
+      <div style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--text);margin-bottom:8px">RESTORE FOUNDATION</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px">
+        Pick up where you left off, or restart Foundation from Week 1 today?
+      </div>
+      <button onclick="localStorage.removeItem('forge_foundation_hidden');document.getElementById('restore-modal').remove();renderMain()"
+        style="display:block;width:100%;padding:16px;margin-bottom:10px;font-family:var(--display);
+        font-size:16px;letter-spacing:2px;background:var(--accent);color:#0B0D0B;
+        border:none;border-radius:12px;cursor:pointer">
+        KEEP MY PROGRESS
+      </button>
+      <button onclick="localStorage.removeItem('forge_foundation_hidden');saveSettings({startDate:todayStr()});document.getElementById('restore-modal').remove();renderMain()"
+        style="display:block;width:100%;padding:16px;margin-bottom:10px;font-family:var(--display);
+        font-size:16px;letter-spacing:2px;background:var(--bg2);color:var(--text2);
+        border:1px solid var(--border);border-radius:12px;cursor:pointer">
+        START OVER
+        <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:3px;font-weight:400">Resets to Week 1 from today</div>
+      </button>
+      <button onclick="document.getElementById('restore-modal').remove()"
+        style="display:block;width:100%;padding:12px;font-family:var(--display);
+        font-size:13px;letter-spacing:2px;background:none;color:var(--text3);
+        border:none;cursor:pointer">CANCEL</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function programArchiveConfirm(programId) {
+  const prog = getProgramById(programId);
+  const name = prog ? prog.name : 'this program';
+  showConfirm(
+    'Archive ' + name + '? It will be hidden but your history is preserved.',
+    function() { archiveProgram(programId); renderMain(); },
+    'ARCHIVE', 'amber'
+  );
+}
+
+function foundationHideConfirm() {
+  showConfirm(
+    'Hide Foundation? You can restore it anytime from archived programs.',
+    function() { hideFoundation(); renderMain(); },
+    'HIDE', 'amber'
+  );
+}
+
+function deleteProgram(programId) {
+  showConfirm('Delete this program? Goals linked to it will lose their program.',
+    function() {
+      // Unlink goals that reference this program
+      const goals = getGoals();
+      goals.forEach(g => {
+        if (g.programId === programId) g.programId = null;
+      });
+      saveGoals(goals);
+      deleteProgramEntry(programId);
+      if (S.planGoalId) {
+        const g = getGoals().find(g => g.id === S.planGoalId);
+        if (g && !g.programId) S.planGoalId = null;
+      }
+      renderMain();
+    }, 'DELETE', 'red');
+}
 function toggleEquipment(item) {
   const u = getUser() || {};
   const eq = Array.isArray(u.equipment) ? [...u.equipment] : [];
@@ -2730,61 +2918,131 @@ function renderForgeMark(size){
 }
 
 function getForgeMetrics(){
-  const store=loadStore();
-  const logs=Object.keys(store).sort();
-  const today=parseDate(todayStr());
+  const store = loadStore();
+  const today = parseDate(todayStr());
+  const phases = getActivePlanPhases();
+  const hasProgram = !!(phases && phases.length);
 
-  // STREAK — no cap, every logged day counts
-  let streak=0;
-  for(let i=0;i<3650;i++){
-    const d=new Date(today);
-    d.setDate(today.getDate()-i);
-    if(getLogEntry(dateStr(d))) streak++;
-    else if(i>0) break;
+  // ── UNIQUE ACTIVE DAYS ──────────────────────────────────────
+  // store is keyed by date string — one entry per calendar day
+  // multiple workouts on same day = still one day (already handled by storage)
+  const activeDays = new Set(Object.keys(store));
+
+  // ── WEEK HELPERS ─────────────────────────────────────────────
+  // Calendar week: Monday → Sunday
+  function weekStart(d) {
+    const day = new Date(d);
+    const dow = day.getDay(); // 0=Sun
+    const diff = dow === 0 ? -6 : 1 - dow; // adjust to Monday
+    day.setDate(day.getDate() + diff);
+    day.setHours(0,0,0,0);
+    return day;
   }
 
-  // CONSISTENCY — scored against your planned days this week, not a hardcoded 5
-  const weekLogs=logs.filter(ds=>{
-    const diff=(today-parseDate(ds))/86400000;
-    return diff>=0&&diff<7;
-  }).length;
+  function daysLoggedInWeek(weekMonday) {
+    let count = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekMonday);
+      d.setDate(weekMonday.getDate() + i);
+      if (activeDays.has(dateStr(d))) count++;
+    }
+    return count;
+  }
 
-  // Get planned workout days this week from active goal plan
-  // Falls back to the user's profile training preference, then 5
-  const _u = getUser();
-  let plannedDaysThisWeek = (_u && _u.daysPerWeek) ? parseInt(_u.daysPerWeek) : 5;
-  const phases=getActivePlanPhases();
-  if(phases&&phases.length){
-    const pi=getPhaseForDate(todayStr());
-    const phase=phases[pi>=0?pi:0];
-    if(phase&&phase.schedule){
-      // Count non-rest sessions in this phase's weekly schedule
-      plannedDaysThisWeek=phase.schedule.filter(s=>
-        s.tag&&s.tag!=='REST'&&s.tag!=='RECOVERY'&&s.tag!=='ACTIVE'
-      ).length||phase.schedule.length;
+  function plannedWorkoutDaysInWeek(weekMonday) {
+    // Count scheduled workout days (non-REST) that fall in this week
+    if (!hasProgram) return null;
+    let planned = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekMonday);
+      d.setDate(weekMonday.getDate() + i);
+      const ds = dateStr(d);
+      if (isScheduledWorkoutDay(ds)) planned++;
+    }
+    return planned;
+  }
+
+  // ── isScheduledWorkoutDay ────────────────────────────────────
+  function isScheduledWorkoutDay(ds) {
+    if (!hasProgram) return null;
+    const startDate = parseDate(getStartDate());
+    const d = parseDate(ds);
+    let dayOffset = Math.floor((d - startDate) / 86400000);
+    if (dayOffset < 0) return null;
+    let phaseIdx = 0, remaining = dayOffset;
+    for (let i = 0; i < phases.length; i++) {
+      const len = (phases[i].lengthWeeks || phases[i].lengthDays || 2) * 7;
+      if (remaining < len) { phaseIdx = i; break; }
+      remaining -= len;
+      if (i === phases.length - 1) phaseIdx = i;
+    }
+    const phase = phases[phaseIdx];
+    if (!phase || !phase.dowMap) return null;
+    const dow = parseDate(ds).getDay();
+    const dayInPhase = phase.dowMap[dow];
+    if (dayInPhase === undefined) return false;
+    const day = phase.schedule && phase.schedule[dayInPhase];
+    if (!day) return false;
+    const tag = (day.tag || '').toUpperCase();
+    return tag !== 'REST' && tag !== 'RECOVERY' && tag !== 'ACTIVE' && tag !== 'OFF';
+  }
+
+  // ── STREAK — WEEKLY COMPLETION ───────────────────────────────
+  // A streak week = unique days logged >= planned workout days that week
+  // Moved sessions count: if you do Wednesday's workout on Thursday, it still
+  // counts toward the week's tally. Life happens — reward the work, not the day.
+  // Current (incomplete) week never breaks the streak.
+  let streak = 0;
+  const thisWeekStart = weekStart(today);
+
+  if (hasProgram) {
+    for (let w = 0; w < 52 * 10; w++) { // up to 10 years back
+      const wStart = new Date(thisWeekStart);
+      wStart.setDate(thisWeekStart.getDate() - w * 7);
+      const wEnd = new Date(wStart);
+      wEnd.setDate(wStart.getDate() + 6);
+
+      // Skip current incomplete week — don't penalize for days still to come
+      if (w === 0) { streak = 0; continue; }
+
+      const logged = daysLoggedInWeek(wStart);
+      const planned = plannedWorkoutDaysInWeek(wStart);
+
+      // Week before program started — stop counting
+      if (planned === 0 || planned === null) break;
+
+      if (logged >= planned) {
+        streak++;
+      } else {
+        break; // week not completed — streak over
+      }
+    }
+  } else {
+    // No program — simple consecutive-day streak as fallback
+    for (let i = 0; i < 3650; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      if (activeDays.has(dateStr(d))) streak++;
+      else if (i > 0) break;
     }
   }
-  const consistency=Math.min(100,Math.round((weekLogs/Math.max(1,plannedDaysThisWeek))*100));
 
-  // READINESS — only calculated if user has checked in today, null otherwise
-  const checkin=getCheckin(todayStr());
-  let readiness=null;
-  if(checkin&&checkin.sleep!=null&&checkin.energy!=null){
-    readiness=Math.max(10,Math.min(100,Math.round((checkin.sleep/9)*50+(checkin.energy/5)*50)));
+  // ── THIS WEEK ────────────────────────────────────────────────
+  const weekLogs = daysLoggedInWeek(thisWeekStart);
+  const _u = getUser();
+  let plannedDaysThisWeek = (_u && _u.daysPerWeek) ? parseInt(_u.daysPerWeek) : 5;
+  if (hasProgram) {
+    const planned = plannedWorkoutDaysInWeek(thisWeekStart);
+    if (planned !== null && planned > 0) plannedDaysThisWeek = planned;
   }
 
-  // SCORE — readiness only contributes if checked in, otherwise consistency+streak drive it
-  const readinessContrib=readiness!=null?readiness*.32:0;
-  const readinessBase=readiness!=null?0:16; // neutral baseline when not checked in yet
-  const score=Math.max(10,Math.min(99,Math.round(
-    consistency*.48+
-    readinessContrib+
-    readinessBase+
-    streak*1.4+  // no cap — every streak day counts
-    6
-  )));
+  // ── LAST 30 DAYS (for no-program display) ───────────────────
+  const monthLogs = Array.from(activeDays).filter(ds => {
+    const diff = (today - parseDate(ds)) / 86400000;
+    return diff >= 0 && diff < 30;
+  }).length;
 
-  return {score,streak,weekLogs,consistency,readiness,plannedDaysThisWeek};
+  return { streak, weekLogs, monthLogs, plannedDaysThisWeek, hasProgram };
 }
 
 function getTodaySession(){
@@ -2798,93 +3056,81 @@ function getTodaySession(){
   return {phaseIdx:Math.max(phaseIdx,0),phase:ph,dayIdx:mapped!==undefined?mapped:0,day};
 }
 
-function renderForgeScoreCard(metrics){
-  const breakdown = S.showScoreBreakdown;
-  const readinessStr = metrics.readiness!=null ? metrics.readiness+'%' : '--';
-  const consistencyStr = metrics.consistency+'%';
-  const plannedStr = metrics.plannedDaysThisWeek!=null
-    ? `${metrics.weekLogs}/${metrics.plannedDaysThisWeek} sessions`
-    : `${metrics.weekLogs} sessions`;
 
-  if(breakdown){
-    return `<div class="forge-card forge-wide" onclick="S.showScoreBreakdown=false;renderMain()" style="cursor:pointer">
+function renderForgeWorkoutCard(session, logged, todayEntries){
+  todayEntries = todayEntries || (logged ? [logged] : []);
+  const hasLogged = todayEntries.length > 0;
+
+  // Show all sessions logged today
+  const sessionCards = hasLogged ? todayEntries.map((entry, i) => {
+    const allSets = Object.values(entry.sets||{}).flat();
+    const done = allSets.filter(s=>s.done).length;
+    const label = entry.title || (entry.dayIdx >= 0 ? 'Planned Session' : 'Custom Workout');
+    return `<div style="display:flex;align-items:center;justify-content:space-between;
+      padding:10px 0;${i>0?'border-top:1px solid var(--border);margin-top:6px':''}">
+      <div>
+        <div style="font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--text)">${label}</div>
+        <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${done}/${allSets.length} sets logged</div>
+      </div>
+      <span style="color:var(--accent);font-size:18px">✓</span>
+    </div>`;
+  }).join('') : '';
+
+  if (!session || !session.day) {
+    if (!hasLogged) return '';
+    // No scheduled session but logged something — show what they logged
+    return `<div class="forge-card forge-wide forge-home">
       <div class="forge-card-inner">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div class="forge-card-label" style="color:var(--accent)">HOW IT'S CALCULATED</div>
-          <div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--text3)">TAP TO CLOSE</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
-            <div>
-              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">CONSISTENCY</div>
-              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${plannedStr} this week · 48% weight</div>
-            </div>
-            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:var(--text)">${consistencyStr}</div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
-            <div>
-              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">READINESS</div>
-              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${metrics.readiness!=null?'From today\'s check-in · 32% weight':'Check in to unlock · 32% weight'}</div>
-            </div>
-            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:${metrics.readiness!=null?'var(--text)':'var(--text3)'}">${readinessStr}</div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:12px">
-            <div>
-              <div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">STREAK</div>
-              <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">Consecutive days logged · no cap</div>
-            </div>
-            <div style="font-family:var(--display);font-size:28px;letter-spacing:1px;color:var(--text)">${metrics.streak}d</div>
-          </div>
-        </div>
-        <div style="margin-top:14px;font-family:var(--body);font-size:12px;color:var(--text3);text-align:center;line-height:1.5">
-          Check in daily and hit your planned sessions to push this higher.
-        </div>
+        <div class="forge-card-label">TODAY'S SESSIONS</div>
+        ${sessionCards}
+        <button class="action-btn secondary" style="margin-top:10px" onclick="setTab('log')">LOG ANOTHER</button>
       </div>
     </div>`;
   }
 
-  return `<div class="forge-card forge-wide" onclick="S.showScoreBreakdown=true;S.showProfile=false;renderMain()" style="cursor:pointer" role="button" aria-label="Forge Score ${metrics.score}%. Tap for breakdown.">
-    <div class="forge-card-inner">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
-        <div>
-          <div class="forge-card-label">Forge Score</div>
-          <div class="forge-metric">${metrics.score}%</div>
-        </div>
-        <div>
-          <div class="forge-card-label">Streak</div>
-          <div class="forge-metric small">${metrics.streak}</div>
-        </div>
-      </div>
-      <div class="forge-progress"><span style="width:${metrics.score}%"></span></div>
-      <div class="forge-card-note" style="display:flex;justify-content:space-between;align-items:center">
-        <span>${metrics.streak>0?`${metrics.streak} day streak.`:'Start the streak today.'} ${plannedStr} this week.</span>
-        <span style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;color:var(--text3)">HOW? →</span>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderForgeWorkoutCard(session,logged){
-  if(!session||!session.day) return '';
-  const day=session.day;
-  const est=getDayEst(day.label)||60;
+  const day = session.day;
+  const est = getDayEst(day.label)||60;
   return `<div class="forge-card forge-wide forge-home">
     <div class="forge-card-inner">
-      <div class="forge-card-label">Today's Workout</div>
+      <div class="forge-card-label">TODAY'S WORKOUT</div>
       <div class="forge-workout-main" style="margin-top:12px">
         <div class="forge-workout-icon">
           <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M4 17h16"/><path d="M2 10v4"/><path d="M22 10v4"/></svg>
         </div>
         <div style="flex:1;min-width:0">
           <div class="forge-workout-title">${day.label}</div>
-          <div class="forge-workout-meta">${est} MIN · ${day.tag||'STRENGTH'}${logged?' · LOGGED':''}</div>
+          <div class="forge-workout-meta">${est} MIN · ${day.tag||'STRENGTH'}</div>
         </div>
       </div>
-      <button class="action-btn" onclick="goLog(${session.phaseIdx},${session.dayIdx})">${logged?'VIEW LOG':'START WORKOUT'}</button>
+      ${hasLogged ? `<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:8px">${sessionCards}</div>` : ''}
+      <button class="action-btn" style="margin-top:10px" onclick="goLog(${session.phaseIdx},${session.dayIdx})">${hasLogged?'VIEW LOG':'START WORKOUT'}</button>
+      ${hasLogged ? `<button class="action-btn secondary" style="margin-top:6px" onclick="setTab('log')">LOG ANOTHER SESSION</button>` : ''}
     </div>
   </div>`;
 }
 
+function getActivityReacts() {
+  try { return JSON.parse(localStorage.getItem('forge_activity_reacts') || '{}'); }
+  catch(e) { return {}; }
+}
+function getActivityReact(dateStr) {
+  return getActivityReacts()[dateStr] || null;
+}
+function toggleActivityReact(dateStr) {
+  const all = getActivityReacts();
+  if (all[dateStr]) delete all[dateStr];
+  else all[dateStr] = '⚡';
+  localStorage.setItem('forge_activity_reacts', JSON.stringify(all));
+  // Surgical update
+  const btn = document.getElementById('react-' + dateStr);
+  if (btn) {
+    const active = !!all[dateStr];
+    btn.style.color = active ? 'var(--accent)' : 'var(--text3)';
+    btn.innerHTML = '⚡';
+  } else {
+    renderMain();
+  }
+}
 function renderForgeRecentActivity(){
   const user=getUser();
   const store=loadStore();
@@ -2896,7 +3142,7 @@ function renderForgeRecentActivity(){
         <div style="font-family:var(--body);font-weight:700;font-size:14px;color:var(--text)">${entry.title||'Workout Complete'}</div>
         <div style="font-family:var(--body);font-size:12px;color:var(--text3)">${fmtDate(ds).short}</div>
       </div>
-      <div class="forge-heart">♡</div>
+      <button id="react-${ds}" onclick="toggleActivityReact('${ds}')" style="background:none;border:none;cursor:pointer;font-size:20px;padding:4px 8px;margin-left:auto;color:${getActivityReact(ds)?'var(--accent)':'rgba(255,255,255,.25)'};transition:color .15s" aria-label="React">⚡</button>
     </div>`;
   }).join('');
   return `<div class="forge-card forge-wide">
@@ -3027,7 +3273,7 @@ function renderSetup(){
       <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Set a goal, then build a program to reach it. You can add up to 3 goals anytime.</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
         ${oBtn("finishSetupThenGoal()", 'SET MY FIRST GOAL', 'Define a goal, then build a program for it')}
-        ${oBtn("finishSetupWithDefault()", 'USE DEFAULT PROGRAM', 'Jump in with a ready-made 14-week program')}
+        ${oBtn("finishSetupWithDefault()", 'USE FOUNDATION', 'Jump in with a ready-made 14-week program')}
       </div>
       <button onclick="finishSetupSkip()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;padding:14px 0">SKIP FOR NOW</button>
       ${back(4)}`);
@@ -3042,10 +3288,6 @@ function setupTogglePregnancy(){
   renderMain();
 }
 
-function setupSelectPlan(c){
-  setupPlanChoice=c;
-  renderMain();
-}
 
 
 function _finishSetupSaveUser(){
@@ -3080,7 +3322,7 @@ function finishSetupThenGoal(){
   renderNav();renderMain();
 }
 
-// Route B: use the built-in default program — no goal, default plan is the fallback
+// Route B: use the built-in foundation program — no goal, default plan is the fallback
 function finishSetupWithDefault(){
   _finishSetupSaveUser();
   S.planMode='myplan';
@@ -3174,7 +3416,7 @@ function renderSquad(){
           ['Alex R.','Completed Conditioning','3h ago'],
           ['Sam C.','Completed Push Day','5h ago'],
           ['Emily W.','Completed Lower Body','1d ago']
-        ].map(r=>`<div class="forge-activity-row"><div class="forge-avatar" style="width:32px;height:32px;font-size:15px">${r[0].charAt(0)}</div><div><div style="font-family:var(--body);font-weight:700;font-size:14px;color:var(--text)">${r[0]}</div><div style="font-family:var(--body);font-size:12px;color:var(--text2)">${r[1]}</div><div style="font-family:var(--body);font-size:11px;color:var(--text3)">${r[2]}</div></div><div class="forge-heart">&#9825;</div></div>`).join('')}
+        ].map(r=>`<div class="forge-activity-row"><div class="forge-avatar" style="width:32px;height:32px;font-size:15px">${r[0].charAt(0)}</div><div><div style="font-family:var(--body);font-weight:700;font-size:14px;color:var(--text)">${r[0]}</div><div style="font-family:var(--body);font-size:12px;color:var(--text2)">${r[1]}</div><div style="font-family:var(--body);font-size:11px;color:var(--text3)">${r[2]}</div></div><div style="margin-left:auto;color:rgba(255,255,255,.25);font-size:18px">⚡</div></div>`).join('')}
       </div>
     </div>
     <div class="forge-quote forge-card">
@@ -3191,7 +3433,7 @@ function renderSquad(){
     <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 24px">Log a workout and share it to the squad to get things started.</div>
     <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
   </div>`;
-  return `<div class="fade-in" style="padding:18px 16px 30px">
+  return `<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div class="section-label" style="margin-bottom:0">SQUAD FEED</div>
       <button onclick="loadSquadFeed()" style="background:none;border:none;font-family:var(--display);font-size:16px;letter-spacing:2px;color:var(--text3);cursor:pointer">↻ REFRESH</button>
@@ -3264,6 +3506,7 @@ function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
     duration_est:durationEst||null,
     exercises:JSON.stringify(exSummary),
     notes:notes||null,
+    local_date:todayStr(), // actual training date, not server receipt time
   };
   supaFetch('workouts',{method:'POST',prefer:'return=minimal',body:JSON.stringify(payload)})
     .catch(e=>console.warn('Squad sync failed:',e));
@@ -3866,7 +4109,15 @@ function gbLabelNext(){
     if(el) el.style.borderBottomColor="var(--red)";
   }
 }
-function gbBack() { if(GB.step > 0) GB.step--; renderMain(); }
+function gbBack() {
+  if (GB.step <= 0) return;
+  GB.step--;
+  GB.reusePrompt = false; // clear reuse prompt if going back
+  // Skip steps that auto-advance (e.g. step 3 sub-type only shows for endurance)
+  // If we land on step 3 and discipline isn't endurance, skip back further
+  if (GB.step === 3 && GB.draft.discipline !== 'endurance') GB.step--;
+  renderMain();
+}
 function gbSetDisc(d) { GB.draft.discipline = d; GB.draft.activity = null; GB.draft.goalType = null; GB.draft.crossTraining = []; gbNext(); }
 function gbSetActivity(a) { GB.draft.activity = a; gbNext(); }
 function gbSetGoalType(t) { GB.draft.goalType = t; gbNext(); }
@@ -5056,18 +5307,27 @@ function renderPlan(){
 
  // Plan builder mode
  if(mode==='buildplan') return `<div class="fade-in" style="padding:18px 16px 0">
-  <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:0">
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.planMode='myplan';renderMain()">MY PROGRAM</button>
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='buildplan';renderMain()">BUILD A PROGRAM</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px;border-bottom:1px solid var(--border);margin-bottom:16px">
+    <button onclick="S.planMode='myplan';renderMain()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer">← BACK</button>
+    <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text)">NEW PROGRAM</div>
+    <div style="width:60px"></div>
   </div>
   ${renderPlanBuilder()}
  </div>`;
  return html+`<div class="fade-in" style="padding:18px 0 20px">
-  <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg4);color:var(--accent);border-bottom:2px solid var(--accent)" onclick="S.planMode='myplan';renderMain()">MY PROGRAM</button>
-   <button style="flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:var(--bg2);color:var(--text3);border-bottom:2px solid var(--border)" onclick="S.showGoalCreator=true;gbReset();renderMain()">BUILD A PROGRAM</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px">
+    <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3)">MY PROGRAMS</div>
+    <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
-  ${!hasCustomPlan()?'<div style="padding:0 16px 14px"><div class="section-label">DEFAULT PROGRAM</div></div>':'<div style="padding:0 16px 14px"><div class="section-label">MY PROGRAM</div></div>'}
+  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+(hasCustomPlan()?'MY PROGRAM':'FOUNDATION')+'</div>'+(progId?
+    '<div style="display:flex;gap:8px">'+
+    '<button onclick="programArchiveConfirm(\''+progId+'\')" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">ARCHIVE</button>'+
+    '<button onclick="deleteProgram(\''+progId+'\')" style="background:none;border:none;color:var(--red);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">DELETE</button>'+
+    '</div>'
+    :
+    // Foundation — show Hide button
+    (!isFoundationHidden()?'<button onclick="foundationHideConfirm()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">HIDE</button>':'')
+  )+'</div>'; })()}
   ${getActivePlanPhases().map((ph,pi)=>{
    const open=S.planOpen[pi];const di=S.planDayIdx[pi]||0;const day=ph.schedule[di];
    const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
@@ -5121,7 +5381,24 @@ function renderPlan(){
     </div>`:''}
    </div>`;
   }).join('')}
- </div>`;
+
+ ${(()=>{
+   const _archProgs = Object.values(getPrograms()).filter(function(p){return p.status==='archived';});
+   const _fHidden = isFoundationHidden();
+   if(!_archProgs.length && !_fHidden) return '';
+   const _archCnt = _archProgs.length + (_fHidden?1:0);
+   let _aHtml = '<div style="padding:0 16px;margin-top:24px;margin-bottom:8px">';
+   _aHtml += '<button onclick="S.showArchivedPrograms=!S.showArchivedPrograms;renderMain()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:2px;cursor:pointer;padding:0;margin-bottom:12px">' + (S.showArchivedPrograms?'▼':'▶') + ' ARCHIVED (' + _archCnt + ')</button>';
+   if(S.showArchivedPrograms) {
+     if(_fHidden) _aHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border)"><div style="font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--text3)">FOUNDATION</div><button onclick="showFoundation()" style="background:none;border:none;color:var(--accent);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">RESTORE</button></div>';
+     _archProgs.forEach(function(p){
+       _aHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border)"><div style="font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--text3)">' + p.name + '</div><div style="display:flex;gap:12px"><button onclick="restoreProgram(\'' + p.id + '\')" style="background:none;border:none;color:var(--accent);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">RESTORE</button><button onclick="deleteProgram(\'' + p.id + '\')" style="background:none;border:none;color:var(--red);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">DELETE</button></div></div>';
+     });
+   }
+   _aHtml += '</div>';
+   return _aHtml;
+ })()}
+</div>`;
 }
 function togglePhase(pi){S.planOpen[pi]=!S.planOpen[pi];if(S.planMove.open&&S.planMove.phaseIdx!==pi)closePlanMove();renderMain();}
 function setPlanDay(pi,di){S.planDayIdx[pi]=di;if(S.planMove.open&&(S.planMove.phaseIdx!==pi||S.planMove.dayIdx!==di))closePlanMove();renderMain();}
@@ -5152,9 +5429,10 @@ function customSearch(q){
   // Surgically update only the results dropdown — preserve input focus
   const el=document.getElementById('custom-search-results');
   if(el){
-    el.innerHTML=S.custom.searchResults.map(name=>
-      `<button data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname)" style="width:100%;padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:none;border-left:none;border-right:none;text-align:left"><span>${name}</span><span style="color:var(--accent);font-size:14px">ADD +</span></button>`
-    ).join('');
+    el.innerHTML=S.custom.searchResults.map(function(name){
+      var safeName = name.replace(/"/g,'&quot;');
+      return '<button data-exname="'+safeName+'" onclick="customAddExercise(this.dataset.exname)" style="width:100%;padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:none;border-left:none;border-right:none;text-align:left"><span>'+name+'</span><span style="color:var(--accent);font-size:14px">ADD +</span></button>';
+    }).join('');
     // Show/hide freeform add option
     const freeform=document.getElementById('custom-search-freeform');
     if(freeform){
@@ -5363,11 +5641,11 @@ function renderPlanExRow(ex){
 }
 function renderPlanLog(tabBar){
   const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0],day=(ph.schedule||[])[S.logDay]||ph.schedule[0];const existing=getLogEntry(S.logDate);
-  return`<div class="fade-in" style="padding:18px 16px 30px">
+  return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
   <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
-   <input type="date" value="${S.logDate}" onchange="changeLogDate(this.value)" class="date-input" style="flex:1;min-width:130px">
+   <input type="date" value="${S.logDate}" onchange="changeLogDate(this.value)" class="date-input" style="flex:1;min-width:0;max-width:160px">
    <select class="log-select" onchange="changeLogPhase(this.value)">${getPlanPhases().map((p,i)=>`<option value="${i}" ${i===S.logPhase?'selected':''}>${p.short||'Ph '+(i+1)}</option>`).join('')}</select>
    <select class="log-select" onchange="changeLogDay(this.value)">${(getPlanPhases()[S.logPhase]?.schedule||ph.schedule).map((d,i)=>`<option value="${i}" ${i===S.logDay?'selected':''}>${d.day||('Day '+(i+1))} — ${d.label}</option>`).join('')}</select>
   </div>
@@ -5451,7 +5729,7 @@ function renderCustomLog(tabBar){
   const shareBlock=S.squadShareShown?`<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">${S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED'}</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>`:'';
   const squadBtn=SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareCustomWorkout()" style="margin-top:8px">${getUserEmoji()}\u2705 SAVE + SEND TO SQUAD</button>`:'';
   const resultItems=results.map(name=>`<div data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname);document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
-  return`<div class="fade-in" style="padding:18px 16px 30px">
+  return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
   <div style="display:flex;gap:7px;margin-bottom:12px">
@@ -5912,7 +6190,8 @@ function logGeneratedWorkout(){
 // INTEL (HISTORY + PT + METRICS + STATS)
 // ============================================================
 function renderStats(){
- const totalLogs=Object.keys(loadStore()).length;
+ const store=loadStore();
+ const totalLogs=Object.values(store).reduce((sum,day)=>sum+(Array.isArray(day)?day.length:1),0);
  // Empty state — no workouts logged yet
  if(totalLogs===0){
    return `<div class="fade-in" style="padding:60px 24px;text-align:center">
@@ -5929,9 +6208,12 @@ function renderStats(){
  // Compute completion rate
  const totalPlanned=totalLogs+totalSkips+totalMoves;
  const rate=totalPlanned>0?Math.round(totalLogs/totalPlanned*100):0;
- return`<div class="fade-in" style="padding:18px 16px 30px">
+ return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">STATS</div>
   <div class="stat-grid">
+   ${(()=>{ const _m=getForgeMetrics(); return _m.hasProgram ?
+    '<div class="stat-tile"><div class="stat-label">STREAK</div><div class="stat-value" style="color:var(--accent)">'+_m.streak+'</div><div class="stat-unit">WEEKS</div></div>' :
+    '<div class="stat-tile"><div class="stat-label">LAST 7 DAYS</div><div class="stat-value" style="color:var(--accent)">'+_m.weekLogs+'</div><div class="stat-unit">SESSIONS</div></div>'; })()}
    <div class="stat-tile"><div class="stat-label">SESSIONS</div><div class="stat-value">${totalLogs}</div><div class="stat-unit">COMPLETED</div></div>
    <div class="stat-tile"><div class="stat-label">COMPLETION</div><div class="stat-value">${rate}</div><div class="stat-unit">PERCENT</div></div>
    <div class="stat-tile"><div class="stat-label">MOVED</div><div class="stat-value" style="color:var(--accent)">${totalMoves}</div><div class="stat-unit">RESCHEDULED</div></div>
@@ -5953,39 +6235,57 @@ function renderStats(){
 }
 
 function renderHistoryBlock(){
- const logs=Object.entries(loadStore());const skips=getSkips();const moves=getMoves();
- const allDates=new Set([...logs.map(l=>l[0]),...Object.keys(skips),...Object.keys(moves)]);
- const sorted=[...allDates].sort((a,b)=>b.localeCompare(a));
- if(sorted.length===0)return`<div style="padding:30px 0;text-align:center;font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:2px;color:var(--text2);line-height:2">NO WORKOUTS LOGGED YET.<br><br>START TODAY.</div>`;
- const logStore=loadStore();
- return sorted.map(date=>{
-  const log=logStore[date];const skip=skips[date];const move=moves[date];
-  const{dow,full}=fmtDate(date);const isOpen=S.histOpen[date];
-  if(skip&&!log){
-   const ph=(skip.phaseId>=0?getPlanPhases()[skip.phaseId]:null);const day=ph?.schedule?.[skip.dayIdx];
-   return`<div class="hist-entry" style="border-color:${skip.type==='skipped'?'var(--red-border)':'var(--accent-border)'}">
-    <div class="hist-head" onclick="S.histOpen['${date}']=!S.histOpen['${date}'];renderMain()">
-     <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${day?day.label:''} <span class="${skip.type==='skipped'?'skipped-pill':'moved-pill'}">${skip.type==='skipped'?'SKIPPED':'MOVED'}</span>${skip.movedTo?` → ${fmtDate(skip.movedTo).short}`:''}</div></div>
-     <div class="hist-chevron ${isOpen?'open':''}">▼</div>
-    </div>
-    <div class="hist-body ${isOpen?'open':''}">${skip.type==='skipped'?`<div style="font-family:var(--body);font-size:17px;color:var(--red);margin-bottom:8px">Session skipped.</div>`:`<div style="font-family:var(--body);font-size:17px;color:var(--accent);margin-bottom:8px">Moved to ${fmtDate(skip.movedTo||date).short}.</div>`}<button class="action-btn secondary" style="padding:8px;font-size:17px" onclick="undoSkip('${date}')">UNDO</button></div>
-   </div>`;
-  }
-  if(!log)return'';
-  const ph=(log.phaseId>=0?getPlanPhases()[log.phaseId]:null);const day=ph?.schedule?.[log.dayIdx];
-  const allSets=Object.values(log.sets||{}).flat();const done=allSets.filter(s=>s.done).length;
-  return`<div class="hist-entry">
-   <div class="hist-head" onclick="S.histOpen['${date}']=!S.histOpen['${date}'];renderMain()">
-    <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${ph?ph.short:''} — ${day?day.label:''} · ${done}/${allSets.length} sets${move?` <span class="moved-pill">MOVED IN</span>`:''}</div></div>
-    <div class="hist-chevron ${isOpen?'open':''}">▼</div>
-   </div>
-   <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<div style="display:flex;gap:8px;margin-top:8px">
-      <button class="action-btn secondary" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button>
-      <button class="action-btn red" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="deleteLogEntry('${date}')">DELETE</button>
-    </div></div>
-  </div>`;
- }).join('');
+  const store = loadStore();
+  const skips = getSkips();
+  const moves = getMoves();
+  const allDates = new Set([...Object.keys(store),...Object.keys(skips),...Object.keys(moves)]);
+  const sorted = [...allDates].sort((a,b) => b.localeCompare(a));
+  if (sorted.length === 0) return `<div style="padding:30px 0;text-align:center;font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text2);line-height:2">NO WORKOUTS LOGGED YET.<br><br>START TODAY.</div>`;
+
+  return sorted.map(date => {
+    const {dow, full} = fmtDate(date);
+    const move = moves[date];
+    const skip = skips[date];
+
+    // Skipped/moved days — no log
+    const dayEntries = store[date] ? (Array.isArray(store[date]) ? store[date] : [store[date]]) : [];
+    if (skip && !dayEntries.length) {
+      const ph = (skip.phaseId >= 0 ? getPlanPhases()[skip.phaseId] : null);
+      const day = ph?.schedule?.[skip.dayIdx];
+      const isOpen = S.histOpen[date + '_skip'];
+      return `<div class="hist-entry" style="border-color:${skip.type==='skipped'?'var(--red-border)':'var(--accent-border)'}">
+        <div class="hist-head" onclick="S.histOpen['${date}_skip']=!S.histOpen['${date}_skip'];renderMain()">
+          <div><div class="hist-date">${dow} · ${full}</div><div class="hist-sub">${day?day.label:''} <span class="${skip.type==='skipped'?'skipped-pill':'moved-pill'}">${skip.type==='skipped'?'SKIPPED':'MOVED'}</span>${skip.movedTo?` → ${fmtDate(skip.movedTo).short}`:''}</div></div>
+          <div class="hist-chevron ${isOpen?'open':''}">▼</div>
+        </div>
+        <div class="hist-body ${isOpen?'open':''}">${skip.type==='skipped'?`<div style="font-family:var(--body);font-size:17px;color:var(--red);margin-bottom:8px">Session skipped.</div>`:`<div style="font-family:var(--body);font-size:17px;color:var(--accent);margin-bottom:8px">Moved to ${fmtDate(skip.movedTo||date).short}.</div>`}<button class="action-btn secondary" style="padding:8px;font-size:17px" onclick="undoSkip('${date}')">UNDO</button></div>
+      </div>`;
+    }
+
+    // One card per log entry that day
+    return dayEntries.map((log, entryIdx) => {
+      const entryKey = date + '_' + (log.id || entryIdx);
+      const isOpen = S.histOpen[entryKey];
+      const ph = (log.phaseId >= 0 ? getPlanPhases()[log.phaseId] : null);
+      const day = ph?.schedule?.[log.dayIdx];
+      const allSets = Object.values(log.sets||{}).flat();
+      const done = allSets.filter(s => s.done).length;
+      const sessionLabel = log.title || (day ? day.label : 'Custom Workout');
+      const multiLabel = dayEntries.length > 1 ? ` <span style="font-family:var(--display);font-size:11px;letter-spacing:1px;color:var(--accent);background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:100px;padding:2px 7px">${entryIdx+1} of ${dayEntries.length}</span>` : '';
+      return `<div class="hist-entry">
+        <div class="hist-head" onclick="S.histOpen['${entryKey}']=!S.histOpen['${entryKey}'];renderMain()">
+          <div><div class="hist-date">${dow} · ${full}${multiLabel}</div><div class="hist-sub">${sessionLabel} · ${done}/${allSets.length} sets${move?` <span class="moved-pill">MOVED IN</span>`:''}</div></div>
+          <div class="hist-chevron ${isOpen?'open':''}">▼</div>
+        </div>
+        <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<div style="display:flex;gap:8px;margin-top:8px">
+            <button class="action-btn secondary" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button>
+            <button class="action-btn red" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="deleteLogEntry('${date}','${log.id||''}')">DELETE</button>
+          </div></div>
+      </div>`;
+    }).join('');
+  }).join('');
 }
+
 function editLog(date,pi,di){S.logDate=date;S.logPhase=pi;S.logDay=di;const e=getLogEntry(date);S.logSets=e?e.sets:{};S.logNotes=e?e.notes||'':'';setTab('log');setTimeout(initLogSwipe,100);}
 
 // ============================================================
@@ -6053,7 +6353,7 @@ function renderGoalsHistory() {
 }
 function renderDataBlock(){
   const user=getUser();
-  const logsCount=Object.keys(loadStore()).length;
+  const _ds=loadStore();const logsCount=Object.values(_ds).reduce((s,d)=>s+(Array.isArray(d)?d.length:1),0);
   const libCount=getLibrary().length;
   const hasPlan=hasCustomPlan();
   return '<div>'+
@@ -6063,7 +6363,7 @@ function renderDataBlock(){
     '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">CURRENT STORAGE</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+logsCount+' workout sessions logged</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+libCount+' workouts in library</div>'+
-    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">'+(hasPlan?'Custom program saved':'Using default program')+'</div>'+
+    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">'+(hasPlan?'Custom program saved':'Using foundation program')+'</div>'+
     '</div>'+
     '<button class="action-btn" onclick="exportAllData()">EXPORT BACKUP TO PHONE</button>'+
     '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px;margin-bottom:16px;line-height:1.5">Saves a .json file to your phone. Use it to restore if you clear browser data or switch devices.</div>'+
@@ -6118,8 +6418,8 @@ function renderToday(){
   const phases=getActivePlanPhases();
   const pi=phaseIdx>=0?phaseIdx:-1;
   const ph=pi>=0?phases[pi]:null;
-  const logged=getLogEntry(dateStr);
-  const checkin=getCheckin(dateStr);
+  const logged=getLogEntry(dateStr); // last entry (for workout card)
+  const todayEntries=getLogEntries(dateStr); // ALL entries today
   const settings=getSettings();
   const startDate=getStartDate();
 
@@ -6144,12 +6444,46 @@ function renderToday(){
   </div>
   ${S.showProfile ? `
   <div style="padding:0 0 4px">${renderProfilePanel()}</div>` : ''}
-  <div style="padding:0 16px;margin-bottom:12px">${renderCheckinStrip(dateStr,checkin)}</div>
   <div class="forge-grid">
-   ${renderForgeScoreCard(metrics)}
-   <div class="forge-card"><div class="forge-card-inner"><div class="forge-card-label">Readiness</div><div class="forge-metric small">${metrics.readiness!=null?metrics.readiness+"%":"--"}</div>`+`<div class="forge-card-note">${metrics.readiness!=null?"Based on today's check-in.":"Check in to calculate."}</div>`+`</div></div>
+   <div class="forge-card forge-wide">
+    <div class="forge-card-inner">
+      ${metrics.hasProgram ? `
+      <!-- Program active: streak + this week -->
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="forge-card-label">STREAK</div>
+          <div class="forge-metric" style="font-size:56px">${metrics.streak}<span style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--text3);margin-left:4px">WEEKS</span></div>
+        </div>
+        <div style="text-align:right">
+          <div class="forge-card-label">THIS WEEK</div>
+          <div style="font-family:var(--display);font-size:36px;letter-spacing:1px;color:var(--text);line-height:1">${metrics.weekLogs}<span style="font-family:var(--display);font-size:14px;letter-spacing:1px;color:var(--text3);margin-left:2px">/ ${metrics.plannedDaysThisWeek}</span></div>
+          <div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:6px;overflow:hidden;width:80px">
+            <div style="height:100%;width:${Math.min(100,Math.round(metrics.weekLogs/Math.max(1,metrics.plannedDaysThisWeek)*100))}%;background:var(--accent);border-radius:2px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="forge-card-note" style="margin-top:10px">${metrics.streak>0?metrics.streak+' day streak — rest days don\'t break it.':'Log your first workout to start your streak.'}</div>
+      ` : `
+      <!-- No program: rolling 7 + 30 day counts -->
+      <div class="forge-card-label" style="margin-bottom:12px">CONSISTENCY</div>
+      <div style="display:flex;gap:20px;align-items:flex-end;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--display);font-size:48px;letter-spacing:1px;color:var(--accent);line-height:1">${metrics.weekLogs}</div>
+          <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-top:4px">LAST 7 DAYS</div>
+        </div>
+        <div style="width:1px;height:48px;background:var(--border)"></div>
+        <div>
+          <div style="font-family:var(--display);font-size:48px;letter-spacing:1px;color:var(--text);line-height:1">${metrics.monthLogs}</div>
+          <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-top:4px">LAST 30 DAYS</div>
+        </div>
+      </div>
+      <div class="forge-card-note">Set a goal and build a program to track your streak.</div>
+      `}
+    </div>
+  </div>
+
    <div class="forge-card"><div class="forge-card-inner"><div class="forge-card-label">Weekly</div><div class="forge-metric small">${metrics.weekLogs}/5</div><div class="forge-card-note">Consistency this week.</div></div></div>
-   ${renderForgeWorkoutCard(session,logged)}
+   ${renderForgeWorkoutCard(session,logged,todayEntries)}
    ${renderForgeRecentActivity()}
   </div>`;
 
@@ -6172,70 +6506,7 @@ function renderToday(){
 
   return html;
 }
-function renderCheckinStrip(dateStr, checkin) {
-  const hasData = checkin && checkin.sleep !== null;
-  const summary = hasData
-    ? `SLEEP ${checkin.sleep}h · ENERGY ${checkin.energy} · BODY ${checkin.pain === 'ok' ? 'GOOD' : 'SORE'}`
-    : null;
 
-  // Collapsed — has data, not open
-  if (hasData && !S.checkinOpen) {
-    return `<div class="forge-checkin-card" onclick="openCheckin()" role="button" aria-label="Edit check-in" tabindex="0">
-      <div class="forge-checkin-row">
-        <div>
-          <div class="forge-checkin-label">CHECK-IN</div>
-          <div class="forge-checkin-summary">${summary}</div>
-        </div>
-        <div class="forge-checkin-edit">EDIT</div>
-      </div>
-    </div>`;
-  }
-
-  // Expanded — editing
-  if (S.checkinOpen) {
-    return `<div class="forge-checkin-card expanded">
-      <div class="forge-checkin-row" onclick="S.checkinOpen=false;renderMain()" style="cursor:pointer;margin-bottom:16px">
-        <div class="forge-checkin-label">CHECK-IN</div>
-        <div class="forge-checkin-edit">DONE</div>
-      </div>
-      ${renderCheckinForm(checkin, hasData)}
-    </div>`;
-  }
-
-  // Empty — prompt to log
-  return `<div class="forge-checkin-card prompt" onclick="openCheckin()" role="button" aria-label="Log check-in" tabindex="0">
-    <div class="forge-checkin-row">
-      <div>
-        <div class="forge-checkin-label">CHECK-IN</div>
-        <div class="forge-checkin-prompt-text">How are you feeling today? · 5 sec</div>
-      </div>
-      <div class="forge-checkin-cta">LOG →</div>
-    </div>
-  </div>`;
-}
-
-function renderCheckinForm(existing,editing){
-  const d=S.checkinDraft;
-  const sl=d.sleep!==null?d.sleep:(existing?existing.sleep:null);
-  const en=d.energy!==null?d.energy:(existing?existing.energy:null);
-  const pa=d.pain!==null?d.pain:(existing?existing.pain:null);
-  return `<div class="checkin-row">
-   <div class="checkin-row-label">SLEEP (HRS)</div>
-   <div class="num-pills" role="group" aria-label="Sleep hours">${[4,5,6,7,8,9].map(n=>`<button class="num-pill${sl===n?' selected':''}" onclick="setCheckinVal('sleep',${n})" aria-pressed="${sl===n}" aria-label="${n} hours">${n}</button>`).join('')}</div>
-  </div>
-  <div class="checkin-row">
-   <div class="checkin-row-label">ENERGY LEVEL</div>
-   <div class="num-pills" role="group" aria-label="Energy level">${[1,2,3,4,5].map(n=>`<button class="num-pill${en===n?' selected':''}" onclick="setCheckinVal('energy',${n})" aria-pressed="${en===n}" aria-label="${n} out of 5">${n}</button>`).join('')}</div>
-  </div>
-  <div class="checkin-row">
-   <div class="checkin-row-label">BODY</div>
-   <div class="pain-pills">
-    <button class="pain-pill${pa==='ok'?' selected-ok':''}" onclick="setCheckinVal('pain','ok')" aria-pressed="${pa==='ok'}">GOOD TO GO</button>
-    <button class="pain-pill${pa==='bad'?' selected-bad':''}" onclick="setCheckinVal('pain','bad')" aria-pressed="${pa==='bad'}">SORE / TIGHT</button>
-   </div>
-  </div>
-  <button class="action-btn" onclick="saveCheckinNow()" ${sl!==null&&en!==null&&pa!==null?'':' disabled style="opacity:0.4;cursor:not-allowed"'}> SAVE CHECK-IN</button>`;
-}
 function renderBriefing(pi,ph){
   if(!ph||!ph.briefings) return '';
   const wk=getWeekNum(todayStr());
@@ -6460,64 +6731,6 @@ function renderSettingsPanel(settings,phases){
 function getCheckin(dateStr){
   try{const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');return all[dateStr]||null;}
   catch(e){return null;}
-}
-function saveCheckinNow(){S.checkinOpen=false;announce('Check-in saved');
-  const d=S.checkinDraft;
-  if(d.sleep===null||d.energy===null||d.pain===null)return;
-  const all=JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}');
-  all[todayStr()]={sleep:d.sleep,energy:d.energy,pain:d.pain,ts:Date.now()};
-  localStorage.setItem(CHECKIN_KEY,JSON.stringify(all));
-  S.checkinOpen=false;
-  S.checkinDraft={sleep:null,energy:null,pain:null};
-  renderMain();
-}
-function setCheckinVal(k,v){S.checkinDraft[k]=v;renderMain();}
-function openCheckin(){
-  S.checkinOpen=true;
-  const existing=getCheckin(todayStr());
-  if(existing&&S.checkinDraft.sleep===null){
-    S.checkinDraft={sleep:existing.sleep,energy:existing.energy,pain:existing.pain};
-  }
-  renderMain();
-}
-function closeCheckin(){S.checkinOpen=false;renderMain();}
-
-// ============================================================
-// CORE
-// ============================================================
-function renderMain(){
-  const m=document.getElementById('main');
-  // Show setup screen if no user profile
-  if(!getUser()){m.innerHTML=renderSetup();return;}
-  // Show goal creator overlay from any tab
-  if(S.showGoalCreator){m.innerHTML='<div class="fade-in">'+renderGoalCreator()+'</div>';return;}
-  switch(S.tab){
-    case'today':m.innerHTML=renderToday();break;
-    case'plan':m.innerHTML=renderPlan();break;
-    case'log':m.innerHTML=renderLog();setTimeout(()=>{initLogSwipe();if(main._ptrAttached)main._ptrAttached=false;main._swipeAttached=false;initLogSwipe();},0);break;
-    case'fuel':m.innerHTML=renderFuel();break;
-    case'gen':S.tab='log';S.logMode='generate';m.innerHTML=renderLog();break;
-    case'squad':m.innerHTML=renderSquad();setTimeout(initSquadPTR,0);break;
-    case'stats':m.innerHTML=renderStats();break;
-  }
-  // Streak milestone modal
-  if(S.showStreakModal) {
-    const _mil = S.showStreakModal;
-    const _metrics2 = getForgeMetrics();
-    document.body.insertAdjacentHTML('beforeend',
-      '<div id="streak-overlay">'+renderStreakModal(_mil,_metrics2.streak)+'</div>'
-    );
-    const _existing = document.getElementById('streak-overlay');
-    if(_existing && document.querySelectorAll('#streak-overlay').length > 1) {
-      _existing.remove();
-    }
-  }
-  // Inject modals — prepend to main content
-  const _hadModal = S.confirmPending||S.promptPending;
-  if(_hadModal){
-    m.innerHTML=renderConfirmModal()+renderPromptModal()+m.innerHTML;
-    if(_hadModal) trapFocus('modal');
-  }
 }
 
 function announce(msg) {
@@ -6799,7 +7012,7 @@ function saveRestDuration(secs) {
 // ============================================================
 // STREAK MILESTONES
 // ============================================================
-const STREAK_MILESTONES = [3, 7, 14, 21, 30, 60, 100, 200, 365];
+const STREAK_MILESTONES = [1, 4, 10, 13, 20, 26, 39, 52, 100];
 
 function getAckedMilestones() {
   try { return JSON.parse(localStorage.getItem('forge_streak_acked') || '[]'); }
@@ -6824,15 +7037,15 @@ function checkStreakMilestone(streak) {
 
 function renderStreakModal(milestone, streak) {
   const msgs = {
-    3:   { title: 'LOCKED IN',        sub: '3 days straight. The habit is forming.' },
-    7:   { title: 'ONE WEEK',         sub: 'Seven consecutive days. You showed up.' },
-    14:  { title: 'TWO WEEKS',        sub: 'Fourteen days. This is becoming who you are.' },
-    21:  { title: 'THREE WEEKS',      sub: '21 days. The research says habits are forming now.' },
-    30:  { title: 'THIRTY DAYS',      sub: 'A full month of consecutive training. Rare air.' },
-    60:  { title: 'SIXTY DAYS',       sub: 'Two months. Most people quit in week two. You\'re still here.' },
-    100: { title: 'ONE HUNDRED',      sub: '100 days consecutive. That\'s discipline, not motivation.' },
-    200: { title: 'TWO HUNDRED', sub: '200 days. Built what most people only dream about.' },
-    365: { title: 'ONE FULL YEAR',    sub: 'A complete year of consecutive training. Extraordinary.' },
+    1:   { title: 'FIRST WEEK',    sub: 'Week one complete. The work starts here.' },
+    4:   { title: 'ONE MONTH',     sub: 'Four weeks in. You are building something.' },
+    10:  { title: 'TEN WEEKS',     sub: 'Ten weeks of consistent training. The habit is real.' },
+    13:  { title: 'THREE MONTHS',  sub: 'A full quarter of showing up. That is rare.' },
+    20:  { title: 'FIVE MONTHS',   sub: 'Twenty weeks. You are not the same person you were.' },
+    26:  { title: 'SIX MONTHS',    sub: 'Half a year. Most people quit in week three. Not you.' },
+    39:  { title: 'NINE MONTHS',   sub: 'Nine months of consistent work. Built, not born.' },
+    52:  { title: 'ONE YEAR',      sub: 'A full year of weekly training. Extraordinary discipline.' },
+    100: { title: 'HALL OF FAME',  sub: '100 weeks. Almost two years. You are the iron.' },
   };
   const m = msgs[milestone] || { title: milestone + ' DAYS', sub: 'Keep going.' };
   return `<div role="dialog" aria-modal="true" aria-labelledby="streak-modal-title"
@@ -7270,6 +7483,26 @@ function dismissLanding() {
 // MODEL B MIGRATION — run once on app init
 // Extracts embedded planData from goals into forge_programs
 // ============================================================
+function migrateLegacyStore() {
+  if (localStorage.getItem('forge_store_v2_migrated')) return;
+  try {
+    const s = loadStore();
+    let changed = false;
+    Object.keys(s).forEach(date => {
+      if (s[date] && !Array.isArray(s[date])) {
+        // Legacy single entry — wrap in array, add id if missing
+        const entry = s[date];
+        if (!entry.id) entry.id = date + '_legacy';
+        s[date] = [entry];
+        changed = true;
+      }
+    });
+    if (changed) localStorage.setItem(STORE_KEY, JSON.stringify(s));
+    localStorage.setItem('forge_store_v2_migrated', '1');
+    console.log('Forge: store migration complete');
+  } catch(e) { console.warn('Forge: store migration failed', e); }
+}
+
 function migrateToModelB() {
   if (localStorage.getItem('forge_model_b_migrated')) return;
   try {
@@ -7314,6 +7547,7 @@ function migrateToModelB() {
 }
 
 function init(){
+  migrateLegacyStore();
   migrateToModelB();
   setupManifest();
   S.restDuration=getRestDuration();
