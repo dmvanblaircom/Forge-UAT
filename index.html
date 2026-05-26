@@ -2118,7 +2118,7 @@ const PHASES=[
  {id:0,title:"REACTIVATION",short:"REACT.",weeks:"Wks 1–2",color:"var(--green)",tagline:"Wake the body up. Don't crush it.",dowMap:{1:0,2:1,4:2,6:3},schedule:[
   {day:"MON",label:"Upper Body",tag:"BODYWEIGHT",exercises:[
    {n:"Dynamic Warmup",d:"5 min — arm circles, cat-cow, hip circles",t:"warmup",log:false},
-   {n:"Push Ups",d:"3 × 10",t:"bw",log:true,ro:true},
+   {n:"Push Ups",d:"3 × 10",t:"bw",log:true},
    {n:"Pike Push Ups",d:"3 × 8",t:"bw",log:true,ro:true},
    {n:"Bench Assisted Rows",d:"3 × 10",t:"bw",log:true,ro:true},
    {n:"Plank",d:"3 × 30 sec",t:"core",log:true,ro:true},
@@ -3156,7 +3156,9 @@ function renderForgeRecentActivity(){
 // ============================================================
 // SETUP SCREEN
 // ============================================================
-let setupGender=null,setupPregnancy=false,setupPlanChoice=null;
+let setupGender=null,setupPregnancy=false,setupPlanChoice=null,setupName="",setupStep=1;
+let setupProfile={age:"",height:"",currentWeight:"",goalWeight:""};
+let setupPrefs={daysPerWeek:4,sessionLength:45,experience:"intermediate",equipment:[]};
 
 function renderSetup(){
   const TOTAL = 5;
@@ -5319,7 +5321,7 @@ function renderPlan(){
     <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3)">MY PROGRAMS</div>
     <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
-  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+(hasCustomPlan()?'MY PROGRAM':'FOUNDATION')+'</div>'+(progId?
+  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+(hasCustomPlan()?'MY PROGRAM':'FOUNDATION')+'</div>'+(progId?
     '<div style="display:flex;gap:8px">'+
     '<button onclick="programArchiveConfirm(\''+progId+'\')" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">ARCHIVE</button>'+
     '<button onclick="deleteProgram(\''+progId+'\')" style="background:none;border:none;color:var(--red);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">DELETE</button>'+
@@ -5328,7 +5330,7 @@ function renderPlan(){
     // Foundation — show Hide button
     (!isFoundationHidden()?'<button onclick="foundationHideConfirm()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">HIDE</button>':'')
   )+'</div>'; })()}
-  ${getActivePlanPhases().map((ph,pi)=>{
+  ${(!hasCustomPlan() && isFoundationHidden()) ? '' : getActivePlanPhases().map((ph,pi)=>{
    const open=S.planOpen[pi];const di=S.planDayIdx[pi]||0;const day=ph.schedule[di];
    const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
    // Compute session status for viewed day
@@ -5625,7 +5627,15 @@ function renderPlanExRow(ex){
     const isTabataEx=/tabata/i.test(ex.n);
     const isEmom=/emom/i.test(ex.n);
     const timerBtn=isTabataEx?'<button onclick="timerStart(\'tabata\',{work:20,rest:10,rounds:8})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;margin-left:auto">TABATA</button>':isEmom?'<button onclick="timerStart(\'emom\',{minutes:10})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">EMOM</button>':durSecs?'<button onclick="timerStart(\'work\',{duration:'+durSecs+',label:\''+ex.n.toUpperCase().slice(0,12)+'\'}); " style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">START TIMER</button>':'';
-    return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div><div class="done-only"><button class="big-check '+chk+'" onclick="toggleDoneOnly(\''+esc+'\')">'+sym+'</button><div><div style="font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'+comp+'</div>'+timerBtn+'</div></div></div>';
+    return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+      + '<div class="set-row">'
+      + '<span class="set-num" style="opacity:0">1</span>'
+      + '<div style="flex:1;font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'
+      + timerBtn
+      + (done0?'<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--green);margin-right:8px">DONE</div>':'')
+      + '<button class="check-btn '+chk+'" onclick="toggleDoneOnly(\''+esc+'\')">'+sym+'</button>'
+      + '</div>'
+      + '</div>';
   }
   const setRows=sets.map(function(set,si){
     const dk=set.done?'done':'';const sym=set.done?'\u2713':'\u25cb';
@@ -5641,6 +5651,29 @@ function renderPlanExRow(ex){
 }
 function renderPlanLog(tabBar){
   const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0],day=(ph.schedule||[])[S.logDay]||ph.schedule[0];const existing=getLogEntry(S.logDate);
+
+  // Post-save confirmation — show after saving, use string concat (no template nesting)
+  if(S.lastSavedDate && S.lastSavedDate===(S.logDate||todayStr())){
+    const _sl=getLogEntry(S.lastSavedDate);
+    if(_sl){
+      const _sets=Object.values(_sl.sets||{}).flat();
+      const _done=_sets.filter(function(s){return s.done;}).length;
+      const _supaBtn=SUPABASE_URL!=='YOUR_SUPABASE_URL'
+        ?'<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-bottom:8px">SEND TO SQUAD</button>'
+        :'';
+      return tabBar
+        +'<div style="padding:18px 16px 30px">'
+        +'<div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 48%,rgba(166,203,42,.04)),var(--card);border:1px solid var(--border);border-radius:22px;padding:24px 20px;text-align:center;margin-bottom:16px">'
+        +'<div style="font-size:36px;margin-bottom:8px">&#10003;</div>'
+        +'<div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--accent);margin-bottom:6px">LOGGED</div>'
+        +'<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+(day&&day.label?day.label:'Workout')+' &middot; '+_done+'/'+_sets.length+' sets</div>'
+        +'<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)">'+fmtDate(S.lastSavedDate).full+'</div>'
+        +'</div>'
+        +_supaBtn
+        +'<button class="action-btn secondary" onclick="S.lastSavedDate=null;renderMain()">LOG ANOTHER</button>'
+        +'</div>';
+    }
+  }
   return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
@@ -5652,9 +5685,9 @@ function renderPlanLog(tabBar){
   ${existing&&existing.phaseId>=0?`<div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--green);margin-bottom:12px">\u2713 PREVIOUSLY LOGGED \u2014 UPDATING</div>`:''}
   ${day.exercises.filter(ex=>ex.log).map(renderPlanExRow).join('')}
   <textarea class="notes" enterkeyhint="done" placeholder="Session notes — how did it feel? PR? Adjustments?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
-  <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
+  <div class="rest-timer-row" style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
     <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
-    ${[0,30,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+    ${[0,30,60,90,120,180].map(s=>`<button data-secs="${s}" onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
   <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
   ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SEND TO GROUP</button>`:''}
@@ -5729,6 +5762,8 @@ function renderCustomLog(tabBar){
   const shareBlock=S.squadShareShown?`<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">${S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED'}</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>`:'';
   const squadBtn=SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareCustomWorkout()" style="margin-top:8px">${getUserEmoji()}\u2705 SAVE + SEND TO SQUAD</button>`:'';
   const resultItems=results.map(name=>`<div data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname);document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
+  
+
   return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
@@ -5764,9 +5799,9 @@ function renderCustomLog(tabBar){
   ${exs.map(renderCustomExRow).join('')}
   ${exs.length>0?'<button class="action-btn secondary" onclick="saveCurrentToLibrary()" style="margin-bottom:8px">SAVE TO LIBRARY</button>':''}
   ${exs.length>0?`<textarea class="notes" enterkeyhint="done" placeholder="How did it go? Any PRs?" oninput="S.logNotes=this.value">${S.logNotes}</textarea>
-   <div style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
+   <div class="rest-timer-row" style="display:flex;align-items:center;gap:6px;margin-top:14px;padding:10px 12px;background:var(--bg3);border-radius:12px">
     <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);flex:1">REST TIMER</div>
-    ${[0,30,60,90,120,180].map(s=>`<button onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
+    ${[0,30,60,90,120,180].map(s=>`<button data-secs="${s}" onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
  <button class="save-btn" id="save-btn-custom" onclick="saveCustomWorkout()">SAVE WORKOUT</button>
   <button class="action-btn secondary" style="margin-top:6px;font-size:10px" onclick="(function(){const exs=S.custom.exercises;if(!exs.length)return;const name=S.custom.workoutTitle||'Custom Workout';saveToLibrary(name,'CUSTOM',exs.map(e=>({n:e.name,d:e.sets.length+' sets',t:e.type})),'custom');announce('Saved to library');})()">+ SAVE TO LIBRARY</button>
@@ -5825,27 +5860,24 @@ function initLogSets(pi,di){
 function changeLogDate(v){S.logDate=v;const ex=getLogEntry(v);if(ex&&ex.phaseId>=0){S.logPhase=ex.phaseId;S.logDay=ex.dayIdx;S.logSets=ex.sets;S.logNotes=ex.notes||'';}else{const pi=getPhaseForDate(v);const di=getDayIdxForDate(v,pi>=0?pi:0);if(pi>=0)S.logPhase=pi;if(di>=0)S.logDay=di;initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogPhase(v){S.logPhase=parseInt(v);S.logDay=0;if(S.logPhase<getActivePlanPhases().length){initLogSets(S.logPhase,S.logDay);}renderMain();}
 function changeLogDay(v){S.logDay=parseInt(v);initLogSets(S.logPhase,S.logDay);renderMain();}
-function saveWorkout(){announce('Workout saved');
-  // Check for streak milestone
-  const _metrics = getForgeMetrics();
-  const _hit = checkStreakMilestone(_metrics.streak);
-  if (_hit) { S.showStreakModal = _hit; }
-
+function saveWorkout(){
   if(window._forgeStopwatch){clearInterval(window._forgeStopwatch);window._forgeStopwatch=null;}
   if(S.timer&&S.timer.active&&S.timer.mode==='rest') timerStop();
   S.workoutTimerRunning=false;
   saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes,null);
   S.lastSavedDate=S.logDate||todayStr();
   S.squadShareShown=false;S.squadShareOk=false;S.squadShareCopied=false;
-  const btn=document.getElementById('save-btn');
-  if(btn){btn.textContent='✓ SAVED';btn.classList.add('saved');}
-  setTimeout(()=>{if(btn){btn.textContent='SAVE WORKOUT';btn.classList.remove('saved');}},1800);
+  const _metrics=getForgeMetrics();
+  const _hit=checkStreakMilestone(_metrics.streak);
+  if(_hit){S.showStreakModal=_hit;}
+  announce('Workout saved');
   renderMain();
 }
 function saveAndShareWorkout(){
-  const ph=getPlanPhases()[S.logPhase]||getPlanPhases()[0];const day=ph.schedule[S.logDay]||ph.schedule[0];
+  const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0];const day=(ph.schedule||[])[S.logDay]||ph.schedule[0];
   const exPairs=Object.entries(S.logSets);
-  saveLogEntry(S.logDate,S.logPhase,S.logDay,S.logSets,S.logNotes,null);
+  // Don't save again — workout already saved by saveWorkout()
+  // Just send to squad
   sendToSquad(day.label,ph.title+' · '+day.tag,getDayEst(day.label),exPairs,S.logNotes);
 }
 
@@ -6687,9 +6719,9 @@ function renderProfilePanel() {
         <!-- 6. APP SETTINGS -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">APP</div>
         ${row('REST TIMER DEFAULT',
-          `<div style="display:flex;gap:6px;flex-wrap:wrap">
+          `<div class="rest-timer-row" style="display:flex;gap:6px;flex-wrap:wrap">
             ${[0,30,60,90,120,180].map(s =>
-              `<button onclick="saveRestDuration(${s})"
+              `<button data-secs="${s}" onclick="saveRestDuration(${s})"
                 style="font-family:var(--display);font-size:12px;letter-spacing:1px;
                 padding:7px 12px;border-radius:8px;border:none;cursor:pointer;
                 background:${restDur===s?'var(--accent)':'rgba(255,255,255,.06)'};
@@ -7007,6 +7039,15 @@ function getRestDuration() {
 function saveRestDuration(secs) {
   localStorage.setItem('forge_rest_duration', String(secs));
   S.restDuration = secs;
+  // Surgically update just the rest timer rows — no full re-render (preserves input focus)
+  document.querySelectorAll('.rest-timer-row').forEach(row => {
+    row.querySelectorAll('button[data-secs]').forEach(btn => {
+      const s = parseInt(btn.dataset.secs);
+      const active = s === secs;
+      btn.style.background = active ? 'var(--accent)' : 'rgba(255,255,255,.06)';
+      btn.style.color = active ? '#0B0D0B' : 'var(--text3)';
+    });
+  });
 }
 
 // ============================================================
@@ -7193,6 +7234,74 @@ function renderReactionButtons(entryId) {
     >${emoji}${count > 0 ? `<span style="font-size:12px;font-family:var(--display);letter-spacing:1px">${count}</span>` : ''}</button>`;
   }).join('');
 }
+
+function renderMain(){
+  const main = document.getElementById('main');
+  if (!main) return;
+
+  // Setup screen — no user yet
+  try {
+    if (!getUser()) {
+      main.innerHTML = renderSetup();
+      return;
+    }
+  } catch(e) {
+    main.innerHTML = '<div style="padding:40px 24px;font-family:var(--display);color:var(--red)">SETUP ERROR: ' + e.message + '</div>';
+    return;
+  }
+
+  // Streak milestone modal
+  try {
+    if (S.showStreakModal) {
+      const _mil = S.showStreakModal;
+      const _metrics = getForgeMetrics();
+      if (!document.getElementById('streak-overlay')) {
+        document.body.insertAdjacentHTML('beforeend',
+          '<div id="streak-overlay">' + renderStreakModal(_mil, _metrics.streak) + '</div>'
+        );
+      }
+    }
+  } catch(e) { console.warn('Streak modal error:', e); }
+
+  // Modals — inject as body overlays so they appear above any tab
+  // Remove any existing modal overlays first
+  ['forge-confirm-overlay','forge-prompt-overlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+  if (S.confirmPending) {
+    const div = document.createElement('div');
+    div.id = 'forge-confirm-overlay';
+    div.innerHTML = renderConfirmModal();
+    document.body.appendChild(div);
+  }
+  if (S.promptPending) {
+    const div = document.createElement('div');
+    div.id = 'forge-prompt-overlay';
+    div.innerHTML = renderPromptModal();
+    document.body.appendChild(div);
+  }
+
+  // Tab routing — each tab wrapped so one crash doesn't kill everything
+  try {
+    switch(S.tab) {
+      case 'today':  main.innerHTML = renderToday();  break;
+      case 'plan':   main.innerHTML = renderPlan();   break;
+      case 'log':    main.innerHTML = renderLog();    setTimeout(initLogSwipe, 0); break;
+      case 'fuel':   main.innerHTML = renderFuel();   break;
+      case 'squad':  main.innerHTML = renderSquad();  setTimeout(initSquadPTR, 0); break;
+      case 'stats':  main.innerHTML = renderStats();  break;
+      default:       main.innerHTML = renderToday();  break;
+    }
+  } catch(e) {
+    main.innerHTML = '<div style="padding:40px 24px;font-family:var(--display);letter-spacing:2px">'
+      + '<div style="color:var(--red);font-size:18px;margin-bottom:16px">TAB ERROR (' + S.tab.toUpperCase() + ')</div>'
+      + '<div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.6;word-break:break-all">' + e.message + '</div>'
+      + '<div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:12px;word-break:break-all">' + (e.stack||'').split('\n').slice(0,3).join('<br>') + '</div>'
+      + '</div>';
+  }
+}
+
 function renderNav(){
   ['today','plan','log','fuel','squad','stats'].forEach(t=>{
     const el=document.getElementById('nav-'+t);
