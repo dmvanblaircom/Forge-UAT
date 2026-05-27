@@ -2595,7 +2595,7 @@ let S={
  tab:'today',
  planOpen:[true,false,false,false,false],planDayIdx:[0,0,0,0,0],
  planMove:{open:false,phaseIdx:null,dayIdx:null,sourceDateStr:null,selectedTarget:null,targets:[]},
- logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',logGoalId:null,lastSavedDate:null,fuelTimingOpen:false,fuelPortionOpen:false,showArchivedPrograms:false,showProfile:false,landingDismissed:false,showStreakModal:null,timer:null,restDuration:90,
+ logDate:todayStr(),logPhase:0,logDay:0,logSets:{},logNotes:'',logMode:'plan',logGoalId:null,lastSavedDate:null,fuelTimingOpen:false,fuelPortionOpen:false,showArchivedPrograms:false,squadOpenRows:{},showProfile:false,landingDismissed:false,showStreakModal:null,timer:null,restDuration:90,
  planMode:'myplan',
  showGoalCreator:false,
  activeGoalId:null,
@@ -3047,68 +3047,128 @@ function getForgeMetrics(){
 }
 
 function getTodaySession(){
-  const phaseIdx=getPhaseForDate(todayStr());
-  const phases=getPlanPhases();
-  const ph=phaseIdx>=0?phases[phaseIdx]:phases[0];
-  if(!ph||!ph.schedule||!ph.schedule.length) return null;
-  const dow=parseDate(todayStr()).getDay();
-  const mapped=ph.dowMap&&ph.dowMap[dow];
-  const day=ph.schedule[mapped!==undefined?mapped:0]||ph.schedule[0];
-  return {phaseIdx:Math.max(phaseIdx,0),phase:ph,dayIdx:mapped!==undefined?mapped:0,day};
+  // Returns session for the currently selected goal/program (S.planGoalId)
+  // Falls back to built-in Base plan
+  const phases = getActivePlanPhases();
+  if (!phases || !phases.length) return null;
+
+  const today = todayStr();
+  const startDate = parseDate(getStartDate());
+  const d = parseDate(today);
+  const dayOffset = Math.floor((d - startDate) / 86400000);
+  const phaseLens = getPlanPhaseLengths();
+
+  let phaseIdx = 0, remaining = Math.max(0, dayOffset);
+  for (let i = 0; i < phases.length; i++) {
+    const len = phaseLens[i] || 14;
+    if (remaining < len) { phaseIdx = i; break; }
+    remaining -= len;
+    if (i === phases.length - 1) phaseIdx = i;
+  }
+
+  const ph = phases[phaseIdx];
+  if (!ph || !ph.schedule || !ph.schedule.length) return null;
+  const dow = parseDate(today).getDay();
+  const mapped = ph.dowMap && ph.dowMap[dow];
+  if (mapped === undefined) return null; // rest day
+  const day = ph.schedule[mapped];
+  if (!day) return null;
+  return {phaseIdx, phase: ph, dayIdx: mapped, day};
+}
+
+function getAllTodaySessions() {
+  // Returns an array of {session, goal} for every active goal with a workout today
+  const results = [];
+  const goals = getActiveGoals();
+  const today = todayStr();
+  const dow = parseDate(today).getDay();
+  const startDate = parseDate(getStartDate());
+  const phaseLens = getPlanPhaseLengths();
+
+  goals.forEach(function(goal) {
+    if (goal.planType === 'own') return; // own-program goals don't have scheduled sessions
+    var session = getTodayGoalSession(goal);
+    if (session) results.push({session, goal});
+  });
+
+  // Also check built-in Base if no goals linked to it
+  const hasBaseGoal = goals.some(g => !g.programId && (g.planType==='app'||g.planType==='undecided'));
+  if (!hasBaseGoal && !isFoundationHidden()) {
+    // Check Base plan for today
+    const phases = PHASES;
+    const dayOffset = Math.max(0, Math.floor((parseDate(today)-startDate)/86400000));
+    let phaseIdx = 0, rem = dayOffset;
+    for (let i = 0; i < phaseLens.length; i++) {
+      if (rem < (phaseLens[i]||14)) { phaseIdx=i; break; }
+      rem -= (phaseLens[i]||14);
+      if (i===phaseLens.length-1) phaseIdx=i;
+    }
+    const ph = phases[phaseIdx];
+    if (ph && ph.dowMap && ph.dowMap[dow] !== undefined) {
+      const dayInPhase = ph.dowMap[dow];
+      const day = ph.schedule[dayInPhase];
+      if (day) results.push({session:{phaseIdx,phase:ph,dayIdx:dayInPhase,day}, goal:null});
+    }
+  }
+  return results;
 }
 
 
 function renderForgeWorkoutCard(session, logged, todayEntries){
+  // Delegates to multi-session version
+  return renderTodayWorkoutCards(logged, todayEntries);
+}
+
+function renderTodayWorkoutCards(logged, todayEntries) {
   todayEntries = todayEntries || (logged ? [logged] : []);
   const hasLogged = todayEntries.length > 0;
+  const allSessions = getAllTodaySessions();
 
-  // Show all sessions logged today
-  const sessionCards = hasLogged ? todayEntries.map((entry, i) => {
-    const allSets = Object.values(entry.sets||{}).flat();
-    const done = allSets.filter(s=>s.done).length;
-    const label = entry.title || (entry.dayIdx >= 0 ? 'Planned Session' : 'Custom Workout');
-    return `<div style="display:flex;align-items:center;justify-content:space-between;
-      padding:10px 0;${i>0?'border-top:1px solid var(--border);margin-top:6px':''}">
-      <div>
-        <div style="font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--text)">${label}</div>
-        <div style="font-family:var(--body);font-size:12px;color:var(--text3);margin-top:2px">${done}/${allSets.length} sets logged</div>
-      </div>
-      <span style="color:var(--accent);font-size:18px">✓</span>
-    </div>`;
-  }).join('') : '';
+  if (!allSessions.length && !hasLogged) return '';
 
-  if (!session || !session.day) {
-    if (!hasLogged) return '';
-    // No scheduled session but logged something — show what they logged
-    return `<div class="forge-card forge-wide forge-home">
-      <div class="forge-card-inner">
-        <div class="forge-card-label">TODAY'S SESSIONS</div>
-        ${sessionCards}
-        <button class="action-btn secondary" style="margin-top:10px" onclick="setTab('log')">LOG ANOTHER</button>
-      </div>
-    </div>`;
+  if (!allSessions.length && hasLogged) {
+    const loggedCards = todayEntries.map(function(entry, i) {
+      const allSets = Object.values(entry.sets||{}).flat();
+      const done = allSets.filter(function(s){return s.done;}).length;
+      const label = entry.title || 'Custom Workout';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;'+(i>0?'border-top:1px solid var(--border)':'')+'">'
+        +'<div><div style="font-family:var(--display);font-size:15px;letter-spacing:1px">'+label+'</div>'
+        +'<div style="font-family:var(--body);font-size:12px;color:var(--text3)">'+done+'/'+allSets.length+' sets</div></div>'
+        +'<span style="color:var(--accent)">&#10003;</span></div>';
+    }).join('');
+    return '<div class="forge-card forge-wide forge-home"><div class="forge-card-inner">'
+      +'<div class="forge-card-label">TODAY&#39;S SESSIONS</div>'+loggedCards
+      +'<button class="action-btn secondary" style="margin-top:10px" onclick="setTab(&quot;log&quot;)">LOG ANOTHER</button>'
+      +'</div></div>';
   }
 
-  const day = session.day;
-  const est = getDayEst(day.label)||60;
-  return `<div class="forge-card forge-wide forge-home">
-    <div class="forge-card-inner">
-      <div class="forge-card-label">TODAY'S WORKOUT</div>
-      <div class="forge-workout-main" style="margin-top:12px">
-        <div class="forge-workout-icon">
-          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M4 17h16"/><path d="M2 10v4"/><path d="M22 10v4"/></svg>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div class="forge-workout-title">${day.label}</div>
-          <div class="forge-workout-meta">${est} MIN · ${day.tag||'STRENGTH'}</div>
-        </div>
-      </div>
-      ${hasLogged ? `<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:8px">${sessionCards}</div>` : ''}
-      <button class="action-btn" style="margin-top:10px" onclick="goLog(${session.phaseIdx},${session.dayIdx})">${hasLogged?'VIEW LOG':'START WORKOUT'}</button>
-      ${hasLogged ? `<button class="action-btn secondary" style="margin-top:6px" onclick="setTab('log')">LOG ANOTHER SESSION</button>` : ''}
-    </div>
-  </div>`;
+  return allSessions.map(function(item) {
+    var session = item.session, goal = item.goal;
+    var day = session.day;
+    var est = getDayEst(day.label) || 60;
+    var goalId = goal ? goal.id : null;
+    var goalLabel = goal ? goal.label.toUpperCase() : 'BASE';
+    var sessionLogged = todayEntries.find(function(e) {
+      return (e.title && e.title.toLowerCase() === day.label.toLowerCase())
+          || (e.dayIdx === session.dayIdx && e.phaseId === session.phaseIdx);
+    });
+    var goLogCall = goalId
+      ? 'goLog('+session.phaseIdx+','+session.dayIdx+',this.dataset.gid)'
+      : 'goLog('+session.phaseIdx+','+session.dayIdx+')';
+    return '<div class="forge-card forge-wide forge-home"><div class="forge-card-inner">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+      +'<div class="forge-card-label">TODAY&#39;S WORKOUT</div>'
+      +'<div style="font-family:var(--display);font-size:10px;letter-spacing:2px;color:var(--accent)">'+goalLabel+'</div></div>'
+      +'<div class="forge-workout-main">'
+      +'<div class="forge-workout-icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M4 17h16"/><path d="M2 10v4"/><path d="M22 10v4"/></svg></div>'
+      +'<div style="flex:1;min-width:0"><div class="forge-workout-title">'+day.label+'</div>'
+      +'<div class="forge-workout-meta">'+est+' MIN &middot; '+(day.tag||'STRENGTH')+'</div></div></div>'
+      +(sessionLogged?'<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 0;border-top:1px solid var(--border)"><span style="color:var(--accent)">&#10003;</span><div style="font-family:var(--display);font-size:12px;letter-spacing:1px;color:var(--text2)">LOGGED</div></div>':'')
+      +'<button class="action-btn'+(sessionLogged?' secondary':'')+'" data-gid="'+(goalId||'')+'" style="margin-top:10px" onclick="'+goLogCall+'">'+(sessionLogged?'VIEW LOG':'START WORKOUT')+'</button>'
+      +'</div></div>';
+  }).join('');
 }
+
 
 function getActivityReacts() {
   try { return JSON.parse(localStorage.getItem('forge_activity_reacts') || '{}'); }
@@ -3122,16 +3182,15 @@ function toggleActivityReact(dateStr) {
   if (all[dateStr]) delete all[dateStr];
   else all[dateStr] = '⚡';
   localStorage.setItem('forge_activity_reacts', JSON.stringify(all));
-  // Surgical update
   const btn = document.getElementById('react-' + dateStr);
   if (btn) {
     const active = !!all[dateStr];
-    btn.style.color = active ? 'var(--accent)' : 'var(--text3)';
-    btn.innerHTML = '⚡';
+    btn.style.color = active ? 'var(--accent)' : 'rgba(255,255,255,.25)';
   } else {
     renderMain();
   }
 }
+
 function renderForgeRecentActivity(){
   const user=getUser();
   const store=loadStore();
@@ -3895,18 +3954,6 @@ function getActivePlanStartDate() {
   }
   return getStartDate();
 }
-function getAllTodaySessions() {
-  var goals = getActiveGoals();
-  var sessions = [];
-  goals.forEach(function(goal) {
-    var session = getTodayGoalSession(goal);
-    if (session) {
-      sessions.push({goal: goal, session: session});
-    }
-  });
-  return sessions;
-}
-
 function detectConflicts(sessions) {
   // Conflict = two sessions that are both high-intensity on same day
   // e.g. two IRON sessions, or IRON + FUNCTIONAL
@@ -5845,7 +5892,6 @@ function renderCustomLog(tabBar){
   return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">WORKOUT LOG</div>
   ${tabBar}
-  ${_progStrip}
   <div style="display:flex;gap:7px;margin-bottom:12px">
    <input type="date" value="${S.logDate}" onchange="S.logDate=this.value" class="date-input" style="flex:0 0 auto">
    <input type="text" placeholder="Workout name (optional)" value="${title}" oninput="S.custom.workoutTitle=this.value" style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:14px;padding:7px 10px;color-scheme:dark">
@@ -6609,7 +6655,7 @@ function renderToday(){
   </div>`;
 
   // Goal strip
-  html+=renderGoalStrip();
+  // Goal strip removed — workout cards on home replace this
 
   // Week briefing (for users with the built-in 14-week plan or similar)
   var _ap=getActivePlanPhases();var _pi=getPhaseForDate(todayStr());var _ph=_ap[_pi>=0?_pi:0];if(_ph&&_ph.briefings){html+=renderBriefing(_pi>=0?_pi:0,_ph);}
@@ -7470,10 +7516,17 @@ function openPlanMove(pi, di) {
  renderMain();
  setTimeout(()=>document.getElementById('plan-move-panel')?.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
 }
-function goLog(phaseIdx, dayIdx){
- S.logPhase=phaseIdx; S.logDay=dayIdx;
- initLogFromExercises(phaseIdx, dayIdx);
- setTab('log');setTimeout(initLogSwipe,100);
+function goLog(phaseIdx, dayIdx, goalId){
+  // If a specific goal is provided, switch to it before logging
+  if (goalId) {
+    S.planGoalId = goalId;
+    S.logGoalId = goalId;
+  }
+  S.logPhase = phaseIdx;
+  S.logDay = dayIdx;
+  initLogFromExercises(phaseIdx, dayIdx);
+  setTab('log');
+  setTimeout(initLogSwipe, 100);
 }
 function renderPlanMovePanel(pi, di) {
  const {sourceDateStr, selectedTarget, targets} = S.planMove;
