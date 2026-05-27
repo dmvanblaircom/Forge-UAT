@@ -5702,6 +5702,25 @@ function renderLog(){
   if(mode==='generate') return renderGenInLog(tabBar);
   return mode==='custom'?renderCustomLog(tabBar):renderPlanLog(tabBar);
 }
+
+// ── EXERCISE DATA CAPTURE HELPERS ────────────────────────────────────────
+function captureStopwatchTime(exName) {
+  // Saves current stopwatch elapsed to the exercise's first set as "time"
+  if (!S.timer || !S.timer.active) return;
+  const t = S.timer;
+  const timeStr = timerFmt(t.mode==='stopwatch' ? t.elapsed : t.remaining);
+  if (!S.logSets[exName]) S.logSets[exName] = [{time:'',done:false}];
+  S.logSets[exName][0].time = timeStr;
+  // Surgical update of the time field
+  const el = document.getElementById('log-time-'+CSS.escape(exName));
+  if (el) el.value = timeStr;
+}
+
+function startAmrapTimer(exName, minutes) {
+  const secs = parseInt(minutes) * 60;
+  timerStart('work', {duration: secs, label: 'AMRAP'});
+}
+
 function renderPlanExRow(ex){
   const sets=S.logSets[ex.n]||[{reps:'',weight:'',done:false}];
   const tm=TM[ex.t]||TM.bw;
@@ -5765,24 +5784,65 @@ function renderPlanExRow(ex){
         // Continuous cardio: single done tap + timer
         const chkC=S.logSets[ex.n][0].done?'done':'';
         const symC=S.logSets[ex.n][0].done?'\u2713':'\u25cb';
+        const isDistanceEx=/row|run|treadmill|bike|swim|sprint|1 mile|2000m|500m|250m/i.test(ex.n+' '+ex.d);
+        const distUnit=/row|meter|2000m|500m|250m/i.test(ex.n+' '+ex.d)?'m':/mile/i.test(ex.n+' '+ex.d)?'mi':'km';
+        const distVal=S.logSets[ex.n][0].distance||'';
+        const distRow=isDistanceEx
+          ?'<div class="set-row"><span style="font-family:var(--body);font-size:13px;color:var(--text3);flex:1">Distance</span>'
+            +'<input type="number" inputmode="decimal" class="num-input" placeholder="—" value="'+distVal+'" oninput="updateSet(\''+esc+'\',0,\'distance\',this.value)" style="width:72px" aria-label="Distance">'
+            +'<span style="font-family:var(--display);font-size:12px;letter-spacing:1px;color:var(--text3);min-width:24px">'+distUnit+'</span>'
+            +'</div>'
+          :'';
         return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
           +'<div class="set-row">'
           +'<div style="flex:1;font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'
           +timerBtn
           +(S.logSets[ex.n][0].done?'<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--green);margin-right:8px">DONE</div>':'')
           +'<button class="check-btn '+chkC+'" onclick="toggleDoneOnly(\''+esc+'\')">'+symC+'</button>'
-          +'</div></div>';
+          +'</div>'
+          +distRow
+          +'</div>';
       }
     }
 
-    // ── CIRCUIT / FOR TIME → rounds with done per round ─────────────
-    const isCircuit = exType==='circuit'||exType==='circ'||/for.?time|amrap|emom|tabata/i.test(ex.n);
+    // ── CIRCUIT / FOR TIME / AMRAP ───────────────────────────────────
+    const isAmrap = /amrap/i.test(ex.n) || /amrap/i.test(ex.d);
+    const isForTime = /for.?time/i.test(ex.n) || exType==='circuit'||exType==='circ';
+    const isCircuit = isAmrap || isForTime;
     if(isCircuit){
-      const rounds=ex.sets||parseInt((ex.d.match(/(\d+)\s*rounds?/i)||[])[1])||4;
-      if(!S.logSets[ex.n]||S.logSets[ex.n].length!==rounds){
-        S.logSets[ex.n]=Array.from({length:rounds},(_,i)=>
-          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      if(!S.logSets[ex.n]||!S.logSets[ex.n].length){
+        S.logSets[ex.n]=[{reps:'',time:'',done:false}];
       }
+      const cset = S.logSets[ex.n][0];
+      const rounds = ex.sets||parseInt((ex.d.match(/(\d+)\s*rounds?/i)||[])[1])||4;
+
+      if(isAmrap){
+        // AMRAP: countdown timer (set minutes) + total rounds+reps completed
+        const amrapMins = ex.d.match(/(\d+)\s*min/i)?parseInt(ex.d.match(/(\d+)\s*min/i)[1]):12;
+        const amrapTimerActive = S.timer&&S.timer.active&&S.timer.mode==='work'&&S.timer.label==='AMRAP';
+        const timerDisplay = amrapTimerActive
+          ? '<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--accent)">' + timerFmt(S.timer.remaining) + '</div>'
+          : '';
+        const chkA=cset.done?'done':'';const symA=cset.done?'\u2713':'\u25cb';
+        return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+          +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+          +'<div class="set-row" style="flex-wrap:wrap;gap:8px;padding:10px 14px">'
+          +(amrapTimerActive?timerDisplay:'<button onclick="startAmrapTimer(\''+esc+'\','+amrapMins+')" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer">▶ START '+amrapMins+'min</button>')
+          +'</div>'
+          +'<div class="set-row">'
+          +'<span style="font-family:var(--body);font-size:13px;color:var(--text3);flex:1">Rounds + reps completed</span>'
+          +'<input type="text" class="num-input" placeholder="e.g. 8+5" value="'+(cset.reps||'')+'" oninput="updateSet(\''+esc+'\',0,\'reps\',this.value)" style="width:80px" aria-label="Rounds completed">'
+          +'<button class="check-btn '+chkA+'" onclick="markSetDone(\''+esc+'\',0)">'+symA+'</button>'
+          +'</div></div>';
+      }
+
+      // FOR TIME: stopwatch + save time + rounds done
+      if(!S.logSets[ex.n]||S.logSets[ex.n].length<rounds){
+        S.logSets[ex.n]=Array.from({length:rounds},(_,i)=>
+          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',time:'',done:false});
+      }
+      const swActive = S.timer&&S.timer.active&&S.timer.mode==='stopwatch';
+      const savedTime = S.logSets[ex.n].find(function(s){return s.time;});
       const roundRows=S.logSets[ex.n].map(function(set,si){
         const dk=set.done?'done':'';const rs=set.done?'\u2713':'\u25cb';
         return '<div class="set-row"><span class="set-num" style="color:var(--text3)">R'+(si+1)+'</span>'
@@ -5790,9 +5850,17 @@ function renderPlanExRow(ex){
           +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rs+'</button>'
           +'</div>';
       }).join('');
+      const timeDisplay = savedTime
+        ? '<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--accent)">'+savedTime.time+'</div>'
+        : (swActive?'<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text3)">'+ timerFmt(S.timer.elapsed)+'</div>':'');
       return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
         +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
-        +'<div style="padding:6px 14px 8px"><button onclick="timerStart(\'stopwatch\',{})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer">▶ START STOPWATCH</button></div>'
+        +'<div class="set-row" style="padding:8px 14px;gap:10px">'
+        +timeDisplay
+        +(swActive
+          ?'<button onclick="captureStopwatchTime(\''+esc+'\');updateSet(\''+esc+'\',0,\'time\',timerFmt(S.timer.elapsed));timerStop();renderMain()" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer">SAVE TIME</button>'
+          :'<button onclick="timerStart(\'stopwatch\',{})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer">▶ START STOPWATCH</button>')
+        +'</div>'
         +roundRows
         +'</div>';
     }
@@ -6595,7 +6663,7 @@ function renderHistoryBlock(){
           <div><div class="hist-date">${dow} · ${full}${multiLabel}</div><div class="hist-sub">${sessionLabel} · ${done}/${allSets.length} sets${move?` <span class="moved-pill">MOVED IN</span>`:''}</div></div>
           <div class="hist-chevron ${isOpen?'open':''}">▼</div>
         </div>
-        <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<div style="display:flex;gap:8px;margin-top:8px">
+        <div class="hist-body ${isOpen?'open':''}">${Object.entries(log.sets||{}).map(([exName,sets])=>`<div style="margin-bottom:8px"><div class="hist-ex-name">${exName}</div>${sets.map((s,i)=>`<div class="hist-set ${s.done?'done-set':''}">Set ${i+1}:${s.time?' Time: '+s.time:''}${s.distance?' '+s.distance+(s.unit||''):''}${!s.time&&s.reps?' '+s.reps+' reps':''}${s.weight&&s.weight!='0'?' @ '+s.weight+'lbs':''}${s.done?' ✓':''}</div>`).join('')}</div>`).join('')}${log.notes?`<div class="hist-notes-text">"${log.notes}"</div>`:''}<div style="display:flex;gap:8px;margin-top:8px">
             <button class="action-btn secondary" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="editLog('${date}',${log.phaseId},${log.dayIdx})">EDIT</button>
             <button class="action-btn red" style="padding:8px;font-size:17px;margin-top:0;flex:1" onclick="deleteLogEntry('${date}','${log.id||''}')">DELETE</button>
           </div></div>
