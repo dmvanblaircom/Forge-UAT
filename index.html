@@ -3584,7 +3584,7 @@ function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
     user_name:user.name,user_gender:user.gender,
     workout_title:workoutTitle,phase_name:phaseName||null,
     duration_est:durationEst||null,
-    exercises:JSON.stringify(exSummary),
+    exercises:exSummary,
     notes:notes||null,
     local_date:todayStr(), // actual training date, not server receipt time
   };
@@ -6234,11 +6234,38 @@ function saveWorkout(){
   renderMain();
 }
 function saveAndShareWorkout(){
-  const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0];const day=(ph.schedule||[])[S.logDay]||ph.schedule[0];
+  const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0];const day=(ph&&ph.schedule||[])[S.logDay]||(ph&&ph.schedule||[])[0];
   const exPairs=Object.entries(S.logSets);
-  // Don't save again — workout already saved by saveWorkout()
-  // Just send to squad
-  sendToSquad(day.label,ph.title+' · '+day.tag,getDayEst(day.label),exPairs,S.logNotes);
+  const workoutTitle = day&&day.label || 'Workout';
+  const phaseName = ph&&ph.title ? ph.title+' · '+(day&&day.tag||'') : '';
+
+  // Send to Supabase squad feed
+  sendToSquad(workoutTitle, phaseName, getDayEst(workoutTitle), exPairs, S.logNotes);
+
+  // Build copyable group chat text
+  const user = getUser();
+  const exSummary = buildExSummary(exPairs);
+  const exLines = exSummary.map(function(ex){ return '• '+ex.name+(ex.detail?' — '+ex.detail:''); }).join('\n');
+  const shareText = (user&&user.name?user.name+' — ':'')
+    + workoutTitle + ' (' + fmtDate(todayStr()).short + ')\n'
+    + (exLines || 'Session complete.')
+    + (S.logNotes ? '\n"'+S.logNotes+'"' : '')
+    + '\n\n💪 via FORGE';
+
+  // Show confirmation modal with copy option
+  const modal = document.createElement('div');
+  modal.id = 'squad-share-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)';
+  // Store shareText for clipboard access
+  window._forgeShareText = shareText;
+  modal.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:22px 22px 0 0;padding:28px 24px 40px;width:100%;max-width:480px">'
+    + '<div style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--accent);margin-bottom:6px">SHARED ✓</div>'
+    + '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:20px">Posted to the squad feed. Copy the text below for your group chat.</div>'
+    + '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap">' + shareText + '</div>'
+    + '<button id="copy-confirm" onclick="navigator.clipboard.writeText(window._forgeShareText||' + "''" + ').then(function(){var b=document.getElementById(' + "'copy-confirm'" + ');if(b){b.textContent=' + "'COPIED ✓'" + ';b.style.background=' + "'var(--green)'" + ';}}).catch(function(){});" style="display:block;width:100%;padding:16px;font-family:var(--display);font-size:16px;letter-spacing:2px;background:var(--accent);color:#0B0D0B;border:none;border-radius:12px;cursor:pointer;margin-bottom:10px">COPY TO CLIPBOARD</button>'
+    + '<button onclick="document.getElementById(' + "'squad-share-modal'" + ').remove()" style="display:block;width:100%;padding:14px;font-family:var(--display);font-size:13px;letter-spacing:2px;background:none;color:var(--text3);border:none;cursor:pointer">DONE</button>'
+    + '</div>';
+  document.body.appendChild(modal);
 }
 
 // ============================================================
