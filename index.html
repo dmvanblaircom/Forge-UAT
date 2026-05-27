@@ -3538,25 +3538,41 @@ function buildShareText(workoutTitle,phaseName,durationEst,notes){
 }
 async function buildExSummary(exercises){
   return exercises.map(([name,sets])=>{
-    const done=sets.filter(s=>s.done);
-    if(!done.length) return null;
-    const isCardio=/run|ride|row|swim|walk|cardio|easy|tempo|long/i.test(name);
-    const isTimed=/tabata|emom|amrap|circuit|wod|for time|interval/i.test(name);
-    if(isCardio||isTimed){
-      const f=done[0];
-      const parts=[];
-      if(f.reps) parts.push(f.reps+' min');
-      if(f.weight&&f.weight!=='0') parts.push(f.weight+' mi');
-      return {name, detail:parts.join(' · ')||'Completed', type:isTimed?'time':'cardio'};
+    if(!sets||!sets.length) return null;
+    // Use all sets that have any data (done, reps, time, distance)
+    const logged = sets.filter(s=>s.done||s.reps||s.time||s.distance);
+    const allSets = logged.length ? logged : sets; // fall back to all sets if none marked done
+    if(!allSets.length) return null;
+
+    const isCardio=/run|ride|row|swim|walk|cardio|easy|tempo|long|treadmill/i.test(name);
+    const isAmrap=/amrap/i.test(name);
+    const isTimed=/tabata|emom|for.?time|circuit|wod|interval/i.test(name);
+
+    if(isAmrap){
+      const f=allSets[0];
+      return {name, detail:f.reps?(f.reps+' rds'):'Completed', type:'amrap'};
     }
-    const setLines=done.map(s=>{
+    if(isTimed){
+      const f=allSets[0];
+      const detail=f.time?('Time: '+f.time):(allSets.filter(s=>s.done).length+'/'+allSets.length+' rounds');
+      return {name, detail, type:'time'};
+    }
+    if(isCardio){
+      const f=allSets[0];
+      const parts=[];
+      if(f.time) parts.push(f.time);
+      if(f.distance) parts.push(f.distance+(f.unit||'m'));
+      return {name, detail:parts.join(' · ')||'Completed', type:'cardio'};
+    }
+    // Strength — reps ± weight
+    const setLines=allSets.map(s=>{
       const r=s.reps||'—';
       const w=(s.weight&&s.weight!=='0')?s.weight+'lb':null;
       return w?r+' @ '+w:r+' reps';
     });
-    const allSame=setLines.every(l=>l===setLines[0]);
+    const allSame=setLines.length>0&&setLines.every(l=>l===setLines[0]);
     const detail=allSame
-      ?done.length+' × '+setLines[0]
+      ?allSets.length+' × '+setLines[0]
       :setLines.map((l,i)=>'S'+(i+1)+': '+l).join(' · ');
     return {name, detail, type:'strength'};
   }).filter(Boolean);
@@ -7584,7 +7600,7 @@ function renderReactionButtons(entryId) {
     const isMine = users.includes(userId);
     return `<button 
       data-eid="${entryId}" data-emoji="${emoji}"
-      onclick="toggleReaction(this.dataset.eid, this.dataset.emoji)"
+      onclick="event.stopPropagation();toggleReaction(this.dataset.eid, this.dataset.emoji)"
       style="
         display:inline-flex;align-items:center;gap:5px;
         padding:6px 12px;border-radius:100px;cursor:pointer;
