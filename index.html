@@ -600,10 +600,11 @@ textarea.notes::placeholder{color:var(--text3)}
   padding:16px 18px;
   background:var(--bg2);
   border:1px solid var(--border);
-  border-left:3px solid var(--border2);
-  color:var(--text2);font-family:var(--display);
-  font-size:23px;letter-spacing:2px;
-  cursor:pointer;margin-bottom:8px;text-align:left;
+  border-left:3px solid var(--accent);
+  border-radius:12px;
+  color:var(--text);font-family:var(--display);
+  font-size:18px;letter-spacing:2px;
+  cursor:pointer;margin-bottom:10px;text-align:left;
   transition:all 0.12s;
 }
 .gen-option:active,.gen-option.selected{
@@ -611,8 +612,8 @@ textarea.notes::placeholder{color:var(--text3)}
   border-left-color:var(--green);color:var(--text);
 }
 .gen-option-sub{
-  font-family:var(--body);font-weight:400;font-size:18px;
-  color:var(--text2);margin-top:5px;letter-spacing:0;display:block;
+  font-family:var(--body);font-weight:400;font-size:14px;
+  color:var(--text3);margin-top:4px;letter-spacing:0;display:block;
 }
 .gen-back{
   font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:3px;
@@ -736,14 +737,15 @@ textarea.notes::placeholder{color:var(--text3)}
   border-bottom:2px solid var(--accent-border);
   margin-bottom:16px;
   overflow-x:auto;scrollbar-width:none;
+  padding:0 16px;
 }
 .intel-tabs::-webkit-scrollbar{display:none}
 .intel-tab{
-  flex-shrink:0;padding:10px 14px;
-  font-family:var(--display);font-size:22px;letter-spacing:2px;
-  border:1px solid var(--border);border-bottom:none;
-  background:var(--bg2);color:var(--text2);cursor:pointer;
-  transition:all 0.1s;
+  flex-shrink:0;padding:8px 12px;
+  font-family:var(--display);font-size:14px;letter-spacing:2px;
+  border:none;border-bottom:2px solid transparent;
+  background:transparent;color:var(--text3);cursor:pointer;
+  transition:all 0.1s;margin-bottom:-2px;
 }
 .intel-tab.active{
   color:var(--bg);background:var(--accent);
@@ -2149,7 +2151,7 @@ const PHASES=[
    {n:"Foam Roll",d:"10 min",t:"mob",log:false},
   ]},
  ]},
- {id:1,title:"BUILD",short:"BUILD",weeks:"Wks 3–5",color:"var(--accent)",tagline:"Introduce the iron. Build work capacity.",dowMap:{1:0,2:1,4:2,5:3,6:4},schedule:[
+ {id:1,title:"FOUNDATION",short:"FOUND.",weeks:"Wks 3–5",color:"var(--accent)",tagline:"Introduce the iron. Build work capacity.",dowMap:{1:0,2:1,4:2,5:3,6:4},schedule:[
   {day:"MON",label:"Upper Push",tag:"DUMBBELLS",exercises:[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
    {n:"Incline DB Bench Press",d:"3 × 10–12",t:"lift",log:true},
@@ -3142,7 +3144,7 @@ function renderTodayWorkoutCards(logged, todayEntries) {
       +'</div></div>';
   }
 
-  return allSessions.map(function(item) {
+  return allSessions.filter(function(item){ return item&&item.session&&item.session.day; }).map(function(item) {
     var session = item.session, goal = item.goal;
     var day = session.day;
     var est = getDayEst(day.label) || 60;
@@ -3854,11 +3856,14 @@ function getTodayGoalSession(goal) {
       var session = ph.schedule[sessionIdx];
       if (!session) return null;
       return {
+        day: session,        // the full schedule entry — renderTodayWorkoutCards uses .day
+        phaseIdx: pi,
+        dayIdx: sessionIdx,
+        // Legacy fields for backward compat
         label: session.label,
         tag: session.tag,
         est: getDayEst ? getDayEst(session.label) : null,
         exercises: session.exercises,
-        phaseIdx: pi,
         sessionIdx: sessionIdx,
       };
     }
@@ -5381,9 +5386,9 @@ function renderPlan(){
       }).join('') + '</div>';
     html += goalTabs;
   }
-  // If no custom goals, show Base pill
+  // If no custom goals, Base is the only program — show a plain left-aligned label
   if(appGoals.length === 0 && !isFoundationHidden()) {
-    html += '<div style="display:flex;gap:8px;overflow-x:auto;padding:0 16px 16px;margin-top:4px"><div style="flex-shrink:0;padding:10px 18px;font-family:var(--display);font-size:14px;letter-spacing:2px;border-radius:100px;background:var(--accent);color:#0B0D0B;border:1px solid var(--accent)">BASE</div></div>';
+    // No pill needed — section label below will show BASE
   }
 
  // Plan builder mode
@@ -5686,10 +5691,13 @@ function loadGenIntoCustomLog() {
 function renderLog(){
   const mode=S.logMode||'plan';
   const ts=(active)=>`flex:1;padding:11px 8px;font-family:var(--display);font-size:15px;letter-spacing:2px;border:none;cursor:pointer;background:${active?'var(--bg4)':'var(--bg2)'};color:${active?'var(--accent)':'var(--text3)'};border-bottom:2px solid ${active?'var(--accent)':'var(--border)'};`;
-  const tabBar=`<div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
-    <button style="${ts(mode==='plan')}" onclick="S.logMode='plan';renderMain()">PROGRAM</button>
-    <button style="${ts(mode==='custom')}" onclick="S.logMode='custom';S.squadShareShown=false;renderMain()">CUSTOM</button>
-    <button style="${ts(mode==='generate')}" onclick="S.logMode='generate';renderMain()">GENERATE</button>
+  const tabBar=`<div style="padding:18px 16px 0">
+    <div class="section-label" style="margin-bottom:14px">WORKOUT LOG</div>
+    <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
+      <button style="${ts(mode==='plan')}" onclick="S.logMode='plan';renderMain()">PROGRAM</button>
+      <button style="${ts(mode==='custom')}" onclick="S.logMode='custom';S.squadShareShown=false;renderMain()">CUSTOM</button>
+      <button style="${ts(mode==='generate')}" onclick="S.logMode='generate';renderMain()">GENERATE</button>
+    </div>
   </div>`;
   if(mode==='generate') return renderGenInLog(tabBar);
   return mode==='custom'?renderCustomLog(tabBar):renderPlanLog(tabBar);
@@ -5707,15 +5715,26 @@ function renderPlanExRow(ex){
     const isTabataEx=/tabata/i.test(ex.n);
     const isEmom=/emom/i.test(ex.n);
     const timerBtn=isTabataEx?'<button onclick="timerStart(\'tabata\',{work:20,rest:10,rounds:8})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;margin-left:auto">TABATA</button>':isEmom?'<button onclick="timerStart(\'emom\',{minutes:10})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">EMOM</button>':durSecs?'<button onclick="timerStart(\'work\',{duration:'+durSecs+',label:\''+ex.n.toUpperCase().slice(0,12)+'\'}); " style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">START TIMER</button>':'';
+    // ro:true: reps-only (no weight), but DO allow reps entry per set
+    if(!S.logSets[ex.n]||!S.logSets[ex.n].length){
+      const sc=ex.sets||3;
+      S.logSets[ex.n]=Array.from({length:sc},(_,i)=>S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+    }
+    const roSets=S.logSets[ex.n]||[];
+    const roSetRows=roSets.map(function(set,si){
+      const dk=set.done?'done':'';const rowSym=set.done?'\u2713':'\u25cb';
+      return '<div class="set-row"><span class="set-num">'+(si+1)+'</span>'
+        +'<input type="number" inputmode="numeric" enterkeyhint="next" class="num-input" placeholder="—" value="'+set.reps+'" oninput="updateSet(\''+esc+'\','+si+',\'reps\',this.value)" style="width:64px" aria-label="Reps"> '
+        +'<span style="font-family:var(--body);font-size:13px;color:var(--text3);flex:1">reps</span>'
+        +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rowSym+'</button>'
+        +'</div>';
+    }).join('');
     return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
-      + '<div class="set-row">'
-      + '<span class="set-num" style="opacity:0">1</span>'
-      + '<div style="flex:1;font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'
-      + timerBtn
-      + (done0?'<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--green);margin-right:8px">DONE</div>':'')
-      + '<button class="check-btn '+chk+'" onclick="toggleDoneOnly(\''+esc+'\')">'+sym+'</button>'
-      + '</div>'
-      + '</div>';
+      +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+      +'<div class="log-ex-head" style="padding:4px 14px 6px;border-bottom:1px solid var(--bg)"><span class="log-ex-col">REPS</span></div>'
+      +roSetRows
+      +timerBtn
+      +'</div>';
   }
   const setRows=sets.map(function(set,si){
     const dk=set.done?'done':'';const sym=set.done?'\u2713':'\u25cb';
@@ -5798,8 +5817,7 @@ function renderPlanLog(tabBar){
         +'</div>';
     }
   }
-  return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
-  <div class="section-label">WORKOUT LOG</div>
+  return`<div class="fade-in" style="padding:0 16px 30px;overflow-x:hidden;max-width:100%">
   ${tabBar}
   ${_progStrip}
   <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
@@ -5889,8 +5907,7 @@ function renderCustomLog(tabBar){
   const resultItems=results.map(name=>`<div data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname);document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
   
 
-  return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
-  <div class="section-label">WORKOUT LOG</div>
+  return`<div class="fade-in" style="padding:0 16px 30px;overflow-x:hidden;max-width:100%">
   ${tabBar}
   <div style="display:flex;gap:7px;margin-bottom:12px">
    <input type="date" value="${S.logDate}" onchange="S.logDate=this.value" class="date-input" style="flex:0 0 auto">
@@ -6087,7 +6104,7 @@ function renderGen(){
  if(G.error)return`<div class="fade-in" style="padding:24px 16px"><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--red);margin-bottom:12px">ERROR</div><div style="font-family:var(--body);font-size:17px;color:var(--text2);margin-bottom:16px">${G.error}</div><button class="gen-option" onclick="G.error=null;G.step='start';renderMain()">← START OVER</button></div>`;
  if(G.result)return renderGenResult();
  switch(G.step){
-  case'start':return`<div class="fade-in" style="padding:24px 16px"><div class="section-label">WORKOUT GENERATOR</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:20px;line-height:1.5">Tell me where you are and I'll build a workout on the spot.</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">WHERE ARE YOU TRAINING?</div><button class="gen-option" onclick="G.location='home';G.step='focus';renderMain()">AT HOME<span class="gen-option-sub">Rower · Treadmill · Dumbbells 5–55lb · Incline bench</span></button><button class="gen-option" onclick="G.location='away';G.step='equipment';renderMain()">AWAY FROM HOME<span class="gen-option-sub">Hotel, travel, or somewhere else</span></button></div>`;
+  case'start':return`<div class="fade-in" style="padding:24px 16px"><div style="font-family:var(--body);font-weight:300;font-size:17px;color:var(--text2);margin-bottom:20px;line-height:1.5">Tell me where you are and I'll build a workout on the spot.</div><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:3px;color:var(--text2);margin-bottom:12px">WHERE ARE YOU TRAINING?</div><button class="gen-option" onclick="G.location='home';G.step='focus';renderMain()">AT HOME<span class="gen-option-sub">Rower · Treadmill · Dumbbells 5–55lb · Incline bench</span></button><button class="gen-option" onclick="G.location='away';G.step='equipment';renderMain()">AWAY FROM HOME<span class="gen-option-sub">Hotel, travel, or somewhere else</span></button></div>`;
   case'equipment':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='start';renderMain()">← BACK</button><div class="section-label">STEP 1 OF 3 — EQUIPMENT</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What do you have access to?</div>${AWAY_EQUIP.map(e=>`<div class="equip-check ${G.equipment.includes(e.id)?'selected':''}" onclick="toggleEquip('${e.id}')"><div class="equip-check-box">${G.equipment.includes(e.id)?'✓':''}</div><div><div style="font-family:var(--display);font-size:22px;letter-spacing:1px;letter-spacing:1px;color:var(--text2)">${e.label}</div><div style="font-family:var(--body);font-weight:400;font-size:17px;color:var(--text2);margin-top:2px">${e.sub}</div></div></div>`).join('')}<button class="action-btn" style="margin-top:10px" onclick="if(G.equipment.length===0)G.equipment=['none'];G.step='focus';renderMain()">NEXT →</button></div>`;
   case'focus':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step=G.location==='away'?'equipment':'start';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 2 OF 3':'STEP 1 OF 2'} — FOCUS</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">What are we training?</div>${FOCUS_OPTIONS.map(f=>`<button class="gen-option ${G.focus===f.id?'selected':''}" onclick="G.focus='${f.id}';renderMain()">${f.label}</button>`).join('')}${G.focus?`<button class="action-btn" style="margin-top:4px" onclick="G.step='duration';renderMain()">NEXT →</button>`:''}`;
   case'duration':return`<div class="fade-in" style="padding:24px 16px"><button class="gen-back" onclick="G.step='focus';renderMain()">← BACK</button><div class="section-label">${G.location==='away'?'STEP 3 OF 3':'STEP 2 OF 2'} — DURATION</div><div style="font-family:var(--body);font-weight:300;font-size:18px;color:var(--text2);margin-bottom:16px">How long do you have?</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${DURATION_OPTIONS.map(d=>`<button class="gen-option ${G.duration===d?'selected':''}" onclick="G.duration=${d};renderMain()" style="text-align:center;padding:20px 8px"><span style="font-size:26px;font-family:var(--display);letter-spacing:2px;display:block">${d}</span><span style="font-size:18px;letter-spacing:2px;color:var(--text2)">MIN</span></button>`).join('')}</div>${G.duration?`<button class="action-btn amber" onclick="generateWorkout()">GENERATE WORKOUT</button>`:''}`;
@@ -7600,9 +7617,19 @@ function toggleDone(name,i){
   renderMain();
 }
 function toggleDoneOnly(exName){
- if(!S.logSets[exName]) S.logSets[exName]=[{reps:'',weight:'',done:false}];
- S.logSets[exName][0].done = !S.logSets[exName][0].done;
- renderMain();
+  if(!S.logSets[exName]) S.logSets[exName]=[{reps:'',weight:'',done:false}];
+  S.logSets[exName][0].done = !S.logSets[exName][0].done;
+  renderMain();
+}
+function markSetDone(exName,si){
+  if(!S.logSets[exName]) return;
+  if(si < S.logSets[exName].length) {
+    S.logSets[exName][si].done = !S.logSets[exName][si].done;
+    // Surgical update — avoid full re-render (preserves input focus)
+    var btn = document.querySelector('[data-ex="'+exName+'"][data-si="'+si+'"]');
+    if(btn){ btn.textContent=S.logSets[exName][si].done?'\u2713':'\u25cb'; btn.className='check-btn '+(S.logSets[exName][si].done?'done':''); }
+    else renderMain();
+  }
 }
 function updateSet(exName, idx, field, val){
  if(!S.logSets[exName]) return;
