@@ -3504,12 +3504,12 @@ function renderSquad(){
     </div>
     ${emptyFeed?'<div style="padding:40px 0;text-align:center;font-family:var(--display);font-size:15px;letter-spacing:2px;color:var(--text3);line-height:2">NO ACTIVITY YET.<br>LOG A WORKOUT AND GET IT STARTED.</div>':
     squadFeed.map(entry=>{
-      const isOpen=!!squadOpenRows[entry.id];
+      const isOpen=!!S.squadOpenRows[entry.id];
       const emoji=(entry.user_name||'F').charAt(0).toUpperCase();
       const isMe=user&&user.name===entry.user_name;
       const exercises=entry.exercises?(typeof entry.exercises==='string'?JSON.parse(entry.exercises):entry.exercises):[];
       return `<div style="background:var(--bg2);border:1px solid var(--border);${isMe?'border-left:3px solid var(--accent)':''};margin-bottom:8px;overflow:hidden">
-        <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="squadOpenRows['${entry.id}']=!squadOpenRows['${entry.id}'];renderMain()">
+        <div style="padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="S.squadOpenRows['${entry.id}']=!S.squadOpenRows['${entry.id}'];renderMain()">
           <span style="font-size:22px;flex-shrink:0">${emoji}</span>
           <div style="flex:1;min-width:0">
             <div style="font-family:var(--body);font-weight:700;font-size:15px;color:${isMe?'var(--accent)':'var(--text)'}">${entry.user_name}${isMe?' (you)':''}</div>
@@ -5715,11 +5715,145 @@ function renderPlanExRow(ex){
     const isTabataEx=/tabata/i.test(ex.n);
     const isEmom=/emom/i.test(ex.n);
     const timerBtn=isTabataEx?'<button onclick="timerStart(\'tabata\',{work:20,rest:10,rounds:8})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--red);border:none;color:#fff;border-radius:8px;cursor:pointer;margin-left:auto">TABATA</button>':isEmom?'<button onclick="timerStart(\'emom\',{minutes:10})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">EMOM</button>':durSecs?'<button onclick="timerStart(\'work\',{duration:'+durSecs+',label:\''+ex.n.toUpperCase().slice(0,12)+'\'}); " style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:6px 12px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer;margin-left:auto">START TIMER</button>':'';
-    // ro:true: reps-only (no weight), but DO allow reps entry per set
+    // ro:true: type-aware rendering
+    const exType = (ex.t||'').toLowerCase();
+
+    // ── WARMUP / COOLDOWN / MOBILITY → single done tap ──────────────
+    const isWarmCool = exType==='warmup'||exType==='cool'||exType==='mob'||exType==='cooldown';
+    if(isWarmCool){
+      if(!S.logSets[ex.n]) S.logSets[ex.n]=[{reps:'',weight:'',done:false}];
+      const chkW=S.logSets[ex.n][0].done?'done':'';
+      const symW=S.logSets[ex.n][0].done?'\u2713':'\u25cb';
+      return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+        +'<div class="set-row">'
+        +'<div style="flex:1;font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'
+        +timerBtn
+        +(S.logSets[ex.n][0].done?'<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--green);margin-right:8px">DONE</div>':'')
+        +'<button class="check-btn '+chkW+'" onclick="toggleDoneOnly(\''+esc+'\')">'+symW+'</button>'
+        +'</div></div>';
+    }
+
+    // ── CARDIO → duration-based, done + timer, NO reps ──────────────
+    // Some cardio is interval-based (e.g. "8×250m") → show round counter
+    const isCardio = exType==='cardio';
+    if(isCardio){
+      // Detect intervals: "8×250m", "5×1 min", "10×30 sec" etc.
+      const intervalMatch = ex.d.match(/^(\d+)\s*[×x×]\s*/);
+      const rounds = intervalMatch ? parseInt(intervalMatch[1]) : 1;
+      const isInterval = rounds > 1 && rounds <= 20; // sanity check
+
+      if(!S.logSets[ex.n]||S.logSets[ex.n].length!==rounds){
+        S.logSets[ex.n]=Array.from({length:rounds},(_,i)=>
+          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      }
+
+      if(isInterval){
+        // Interval cardio: round counter with done per interval
+        const intervalRows=S.logSets[ex.n].map(function(set,si){
+          const dk=set.done?'done':'';const rs=set.done?'\u2713':'\u25cb';
+          return '<div class="set-row"><span class="set-num" style="color:var(--text3)">'+( si+1)+'</span>'
+            +'<div style="flex:1;font-family:var(--body);font-size:14px;color:var(--text3)">Interval '+(si+1)+'</div>'
+            +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rs+'</button>'
+            +'</div>';
+        }).join('');
+        return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+          +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+          +timerBtn
+          +intervalRows
+          +'</div>';
+      } else {
+        // Continuous cardio: single done tap + timer
+        const chkC=S.logSets[ex.n][0].done?'done':'';
+        const symC=S.logSets[ex.n][0].done?'\u2713':'\u25cb';
+        return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+          +'<div class="set-row">'
+          +'<div style="flex:1;font-family:var(--body);font-size:15px;color:var(--text2)">'+ex.d+'</div>'
+          +timerBtn
+          +(S.logSets[ex.n][0].done?'<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--green);margin-right:8px">DONE</div>':'')
+          +'<button class="check-btn '+chkC+'" onclick="toggleDoneOnly(\''+esc+'\')">'+symC+'</button>'
+          +'</div></div>';
+      }
+    }
+
+    // ── CIRCUIT / FOR TIME → rounds with done per round ─────────────
+    const isCircuit = exType==='circuit'||exType==='circ'||/for.?time|amrap|emom|tabata/i.test(ex.n);
+    if(isCircuit){
+      const rounds=ex.sets||parseInt((ex.d.match(/(\d+)\s*rounds?/i)||[])[1])||4;
+      if(!S.logSets[ex.n]||S.logSets[ex.n].length!==rounds){
+        S.logSets[ex.n]=Array.from({length:rounds},(_,i)=>
+          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      }
+      const roundRows=S.logSets[ex.n].map(function(set,si){
+        const dk=set.done?'done':'';const rs=set.done?'\u2713':'\u25cb';
+        return '<div class="set-row"><span class="set-num" style="color:var(--text3)">R'+(si+1)+'</span>'
+          +'<div style="flex:1;font-family:var(--body);font-size:14px;color:var(--text3)">Round '+(si+1)+'</div>'
+          +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rs+'</button>'
+          +'</div>';
+      }).join('');
+      return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+        +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+        +'<div style="padding:6px 14px 8px"><button onclick="timerStart(\'stopwatch\',{})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer">▶ START STOPWATCH</button></div>'
+        +roundRows
+        +'</div>';
+    }
+
+    // ── CORE → timed sets if "sec" in prescription, else reps ───────
+    const isCoreCircuit = exType==='core' && /circuit|round/i.test(ex.n);
+    if(isCoreCircuit){
+      // Core circuits: treat like regular circuits (rounds)
+      const rounds = ex.sets||3;
+      if(!S.logSets[ex.n]||S.logSets[ex.n].length!==rounds){
+        S.logSets[ex.n]=Array.from({length:rounds},(_,i)=>
+          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      }
+      const coreCircuitRows=S.logSets[ex.n].map(function(set,si){
+        const dk=set.done?'done':'';const rs=set.done?'\u2713':'\u25cb';
+        return '<div class="set-row"><span class="set-num" style="color:var(--text3)">R'+(si+1)+'</span>'
+          +'<div style="flex:1;font-family:var(--body);font-size:14px;color:var(--text3)">Round '+(si+1)+'</div>'
+          +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rs+'</button>'
+          +'</div>';
+      }).join('');
+      return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+        +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+        +'<div style="padding:6px 14px 8px"><button onclick="timerStart(\'stopwatch\',{})" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);border:none;color:#0B0D0B;border-radius:8px;cursor:pointer">▶ START STOPWATCH</button></div>'
+        +coreCircuitRows
+        +'</div>';
+    }
+
+    const isCoreTime = exType==='core' && /\d+\s*sec|\d+\s*min/i.test(ex.d);
+    if(isCoreTime){
+      // Timed core sets (plank, hollow hold, etc.)
+      const setCount = ex.sets||3;
+      if(!S.logSets[ex.n]||S.logSets[ex.n].length!==setCount){
+        S.logSets[ex.n]=Array.from({length:setCount},(_,i)=>
+          S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      }
+      const timedRows=S.logSets[ex.n].map(function(set,si){
+        const dk=set.done?'done':'';const rs=set.done?'\u2713':'\u25cb';
+        // Extract time from prescription e.g. "3 × 30 sec" → "30 sec"
+        const timeLabel=(ex.d.match(/(\d+)\s*sec/i)||[])[1]?((ex.d.match(/(\d+)\s*sec/i)||[])[1]+' sec'):(ex.d.match(/(\d+)\s*min/i)||[])[1]?((ex.d.match(/(\d+)\s*min/i)||[])[1]+' min'):'';
+        return '<div class="set-row"><span class="set-num">'+(si+1)+'</span>'
+          +'<div style="flex:1;font-family:var(--body);font-size:14px;color:var(--text2)">'+timeLabel+'</div>'
+          +timerBtn
+          +'<button class="check-btn '+dk+'" onclick="markSetDone(\''+esc+'\','+si+')">'+rs+'</button>'
+          +'</div>';
+      }).join('');
+      return '<div class="log-ex"><div class="log-ex-head"><div class="log-ex-title">'+ex.n+'</div><span class="log-ex-type" style="color:'+tm.c+'">'+tm.label+'</span></div>'
+        +'<div style="padding:4px 14px 6px;font-family:var(--body);font-size:12px;color:var(--text3)">'+ex.d+'</div>'
+        +'<div class="log-ex-head" style="padding:4px 14px 6px;border-bottom:1px solid var(--bg)"><span class="log-ex-col">TIME</span></div>'
+        +timedRows
+        +'</div>';
+    }
+
+    // ── DEFAULT ro:true → reps per set, no weight (bw + core reps) ──
     if(!S.logSets[ex.n]||!S.logSets[ex.n].length){
       const sc=ex.sets||3;
-      S.logSets[ex.n]=Array.from({length:sc},(_,i)=>S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:'',weight:'',done:false});
+      S.logSets[ex.n]=Array.from({length:sc},(_,i)=>
+        S.logSets[ex.n]&&S.logSets[ex.n][i]?S.logSets[ex.n][i]:{reps:parseRepCount(ex.d)||'',weight:'',done:false});
     }
+    S.logSets[ex.n].forEach(function(set){
+      if(!set.reps) set.reps = parseRepCount(ex.d)||'';
+    });
     const roSets=S.logSets[ex.n]||[];
     const roSetRows=roSets.map(function(set,si){
       const dk=set.done?'done':'';const rowSym=set.done?'\u2713':'\u25cb';
@@ -5988,10 +6122,10 @@ function initLogSets(pi,di){
     if(!ex.log)return;
     const lastWeight=getLastLoggedWeight(ex.n);
     const lastReps=getLastLoggedReps(ex.n);
-    // Pre-fill all sets with last known weight (reps left blank — user should confirm)
+    const prescribedReps=parseRepCount(ex.d);
     const setCount=ex.sets||3;
     sets[ex.n]=Array.from({length:setCount},()=>({
-      reps:lastReps||'',
+      reps:lastReps||prescribedReps||'',
       weight:lastWeight,
       done:false
     }));
@@ -7636,21 +7770,45 @@ function updateSet(exName, idx, field, val){
  S.logSets[exName][idx][field]=val;
 }
 function undoSkip(date){const s=getSkips();delete s[date];localStorage.setItem(SKIPS_KEY,JSON.stringify(s));const m=getMoves();const skipped=Object.entries(m).find(([k,v])=>v.originalDate===date);if(skipped){delete m[skipped[0]];localStorage.setItem(MOVES_KEY,JSON.stringify(m));}renderMain();}
+function parseRepCount(prescription) {
+  // Parse reps from "3 × 15", "3 × 10 each leg", "20 reps", etc.
+  // Returns number or ''
+  const m = prescription && prescription.match(/[×x]\s*(\d+)/);
+  if (m) return m[1];
+  const m2 = prescription && prescription.match(/^(\d+)\s*reps?/i);
+  if (m2) return m2[1];
+  return '';
+}
+
 function initLogFromExercises(phaseIdx, dayIdx){
- const exercises = (getActivePlanPhases()[phaseIdx]||getPlanPhases()[phaseIdx]||PHASES[phaseIdx]||{schedule:[]}).schedule[dayIdx]?.exercises;
- const sets = {};
- const saved = getLogEntry(S.logDate);
- if(saved && saved.phaseId===phaseIdx && saved.dayIdx===dayIdx){
-  S.logSets = saved.sets;
-  S.logNotes = saved.notes||'';
- } else {
-  exercises.forEach(ex=>{
-   if(!ex.log) return;
-   sets[ex.n] = [{reps:'',weight:'',done:false}];
-  });
-  S.logSets = sets;
-  S.logNotes = '';
- }
+  const activePhases = getActivePlanPhases();
+  const ph = activePhases[phaseIdx] || getPlanPhases()[phaseIdx] || PHASES[phaseIdx] || {schedule:[]};
+  const day = ph.schedule && ph.schedule[dayIdx];
+  const exercises = day && day.exercises;
+  if (!exercises) { S.logSets = {}; S.logNotes = ''; return; }
+  const sets = {};
+  const saved = getLogEntry(S.logDate);
+  if(saved && saved.phaseId===phaseIdx && saved.dayIdx===dayIdx){
+    S.logSets = saved.sets;
+    S.logNotes = saved.notes||'';
+  } else {
+    exercises.forEach(function(ex) {
+      if(!ex.log) return;
+      const setCount = ex.sets || 3;
+      const prescribedReps = parseRepCount(ex.d);
+      const lastWeight = getLastLoggedWeight(ex.n);
+      const lastReps = getLastLoggedReps(ex.n);
+      sets[ex.n] = Array.from({length: setCount}, function() {
+        return {
+          reps: lastReps || prescribedReps,  // last logged, then prescribed, then blank
+          weight: lastWeight,
+          done: false
+        };
+      });
+    });
+    S.logSets = sets;
+    S.logNotes = '';
+  }
 }
 function confirmPlanMove() {
  const {phaseIdx, dayIdx, sourceDateStr, selectedTarget} = S.planMove;
