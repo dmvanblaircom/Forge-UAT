@@ -2813,7 +2813,7 @@ function programArchiveConfirm(programId) {
 
 function foundationHideConfirm() {
   showConfirm(
-    'Hide Foundation? You can restore it anytime from archived programs.',
+    'Hide Base? You can restore it anytime from archived programs.',
     function() { hideFoundation(); renderMain(); },
     'HIDE', 'amber'
   );
@@ -3524,10 +3524,18 @@ function renderGoalStrip() {
     var migrated = localStorage.getItem('forge_goal_migrated');
     if (!migrated) {
       var hasPlan = hasCustomPlan();
+      // Auto-set targetDate = 14 weeks from program start (98 days)
+      var _baseStart = getStartDate();
+      var _baseEnd = null;
+      if (_baseStart) {
+        var _sd = new Date(_baseStart);
+        _sd.setDate(_sd.getDate() + 98);
+        _baseEnd = _sd.toISOString().split('T')[0];
+      }
       var defaultGoal = {
         id: makeGoalId(),
-        label: hasPlan ? (getStoredPlan()?.title || '14-Week Program') : 'My Training',
-        targetDate: null,
+        label: hasPlan ? (getStoredPlan()?.title || 'Base') : 'Base',
+        targetDate: _baseEnd,
         discipline: 'weight_training',
         activity: null,
         goalType: null,
@@ -3538,6 +3546,22 @@ function renderGoalStrip() {
       };
       upsertGoal(defaultGoal);
       localStorage.setItem('forge_goal_migrated', '1');
+      // Fix any existing 'My Training' labels to 'Base'
+      var _goals = getGoals();
+      var _changed = false;
+      _goals.forEach(function(g) {
+        if (g.label === 'My Training') { g.label = 'Base'; _changed = true; }
+      });
+      // Also auto-set targetDate for Base goal if missing
+      _goals.forEach(function(g) {
+        if ((g.label === 'Base' || g.label === 'My Training') && !g.targetDate) {
+          var _sd2 = new Date(getStartDate());
+          _sd2.setDate(_sd2.getDate() + 98);
+          g.targetDate = _sd2.toISOString().split('T')[0];
+          _changed = true;
+        }
+      });
+      if (_changed) saveGoals(_goals);
       goals = getActiveGoals();
     }
   }
@@ -3737,16 +3761,21 @@ function goalCompleteConfirm(id) {
 
 // Get today's scheduled session for a goal with an app plan
 function getTodayGoalSession(goal) {
-  // Fall back to the built-in plan phases if goal has no stored planData
   var phases;
-  if (goal.planData && goal.planData.phases) {
-    phases = goal.planData.phases;
-  } else if (goal.planType === 'app' || goal.planType === 'undecided') {
-    // Use the built-in 14-week plan
-    phases = getPlanPhases();
-  } else {
-    return null;
+  // Model B: use linked program from forge_programs
+  if (goal.programId) {
+    var prog = getProgramById(goal.programId);
+    if (prog && prog.phases && prog.phases.length) phases = prog.phases;
   }
+  // Model A fallback: embedded planData
+  if (!phases && goal.planData && goal.planData.phases) {
+    phases = goal.planData.phases;
+  }
+  // Built-in Base plan fallback — ONLY for goals with no program linked
+  if (!phases && !goal.programId && (goal.planType === 'app' || goal.planType === 'undecided')) {
+    phases = getPlanPhases();
+  }
+  if (!phases) return null;
   if (!phases || !phases.length) return null;
   var today = new Date();
   var dow = today.getDay();
@@ -5296,16 +5325,18 @@ function renderPlan(){
       S.planGoalId = appGoals[0].id;
     }
   }
-  if(appGoals.length > 1) {
-    // Bug 5: more prominent goal switcher — card pills with padding
+  // Always show goal pills so user can see and switch programs
+  if(appGoals.length > 0) {
     var goalTabs = '<div style="display:flex;gap:8px;overflow-x:auto;padding:0 16px 16px;margin-top:4px">' +
       appGoals.map(function(g){
         var active = S.planGoalId === g.id;
         return '<button data-pgid="'+g.id+'" onclick="S.planGoalId=this.dataset.pgid;renderMain()" style="flex-shrink:0;padding:10px 18px;font-family:var(--display);font-size:14px;letter-spacing:2px;border-radius:100px;cursor:pointer;transition:all .15s;background:'+(active?'var(--accent)':'var(--bg2)')+';color:'+(active?'#0B0D0B':'var(--text2)')+';border:1px solid '+(active?'var(--accent)':'var(--border)')+'">'+g.label+'</button>';
       }).join('') + '</div>';
     html += goalTabs;
-  } else if(appGoals.length === 1) {
-    S.planGoalId = appGoals[0].id;
+  }
+  // If no custom goals, show Base pill
+  if(appGoals.length === 0 && !isFoundationHidden()) {
+    html += '<div style="display:flex;gap:8px;overflow-x:auto;padding:0 16px 16px;margin-top:4px"><div style="flex-shrink:0;padding:10px 18px;font-family:var(--display);font-size:14px;letter-spacing:2px;border-radius:100px;background:var(--accent);color:#0B0D0B;border:1px solid var(--accent)">BASE</div></div>';
   }
 
  // Plan builder mode
@@ -5317,12 +5348,13 @@ function renderPlan(){
   </div>
   ${renderPlanBuilder()}
  </div>`;
- return html+`<div class="fade-in" style="padding:18px 0 20px">
+ return `<div class="fade-in" style="padding:18px 0 20px">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px">
     <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3)">MY PROGRAMS</div>
     <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
-  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+((()=>{ const _ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const _prog=_ap&&_ap.programId?getProgramById(_ap.programId):null; return _prog&&_prog.name?_prog.name.toUpperCase():(hasCustomPlan()?'MY PROGRAM':'FOUNDATION'); })())+'</div>'+(progId?
+  ${html}
+  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+((()=>{ const _ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const _prog=_ap&&_ap.programId?getProgramById(_ap.programId):null; return _prog&&_prog.name?_prog.name.toUpperCase():(hasCustomPlan()?'MY PROGRAM':'BASE'); })())+'</div>'+(progId?
     '<div style="display:flex;gap:8px">'+
     '<button onclick="programArchiveConfirm(\''+progId+'\')" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">ARCHIVE</button>'+
     '<button onclick="deleteProgram(\''+progId+'\')" style="background:none;border:none;color:var(--red);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">DELETE</button>'+
