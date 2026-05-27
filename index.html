@@ -2149,7 +2149,7 @@ const PHASES=[
    {n:"Foam Roll",d:"10 min",t:"mob",log:false},
   ]},
  ]},
- {id:1,title:"FOUNDATION",short:"FOUND.",weeks:"Wks 3–5",color:"var(--accent)",tagline:"Introduce the iron. Build work capacity.",dowMap:{1:0,2:1,4:2,5:3,6:4},schedule:[
+ {id:1,title:"BUILD",short:"BUILD",weeks:"Wks 3–5",color:"var(--accent)",tagline:"Introduce the iron. Build work capacity.",dowMap:{1:0,2:1,4:2,5:3,6:4},schedule:[
   {day:"MON",label:"Upper Push",tag:"DUMBBELLS",exercises:[
    {n:"Dynamic Warmup",d:"5 min",t:"warmup",log:false},
    {n:"Incline DB Bench Press",d:"3 × 10–12",t:"lift",log:true},
@@ -3208,7 +3208,7 @@ function renderForgeRecentActivity(){
   return `<div class="forge-card forge-wide">
     <div class="forge-card-inner">
       <div class="forge-card-label">Recent Activity</div>
-      ${rows||'<div class="forge-card-note">Log a workout to start building your record.</div>'}
+      ${rows||'<div class="forge-card-note">Log a session to start building your record.</div>'}
     </div>
   </div>`;
 }
@@ -3240,7 +3240,7 @@ function renderSetup(){
   // ── STEP 1: NAME ──
   if (setupStep === 1) {
     return wrap(`
-      <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:12px">WHAT DO WE CALL YOU?</div>
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:12px">WHAT'S YOUR NAME?</div>
       <input id="setup-name" type="text" enterkeyhint="next" autocomplete="given-name"
         oninput="setupName=this.value.trim()" placeholder="First name" maxlength="20" value="${setupName}"
         style="width:100%;background:transparent;border:none;border-bottom:2px solid var(--accent);
@@ -3258,7 +3258,7 @@ function renderSetup(){
       color:${setupGender===val?'var(--accent)':'var(--text2)'}">${label}</button>`;
     return wrap(`
       <div style="font-family:var(--display);font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:6px">Hey, ${setupName}.</div>
-      <div style="font-family:var(--body);font-size:15px;color:var(--text3);margin-bottom:32px">This helps us tailor your experience.</div>
+      <div style="font-family:var(--body);font-size:15px;color:var(--text3);margin-bottom:32px">We'll personalise your experience.</div>
       <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:12px">I AM</div>
       <div style="display:flex;gap:10px;margin-bottom:16px">${gBtn('male','MALE')}${gBtn('female','FEMALE')}</div>
       <div id="setup-pregnancy-row" style="display:${setupGender==='female'?'block':'none'};margin-bottom:16px">
@@ -3301,8 +3301,8 @@ function renderSetup(){
         border:none;cursor:pointer;background:${String(setupPrefs[key])===String(v)?'var(--accent)':'rgba(255,255,255,.06)'};
         color:${String(setupPrefs[key])===String(v)?'#0B0D0B':'var(--text3)'}">${l}</button>`).join('')}</div>`;
     return wrap(`
-      <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">How do you train?</div>
-      <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Sets your Forge Score targets and tailors generated workouts.</div>
+      <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">Training preferences.</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Tailors generated workouts to your level.</div>
       <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">DAYS PER WEEK</div>
       ${pills('daysPerWeek',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}
       <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">SESSION LENGTH</div>
@@ -3491,8 +3491,8 @@ function renderSquad(){
   if(squadError||squadFeed===null) return `<div class="fade-in" style="padding:24px 16px"><div class="section-label">SQUAD</div><div style="font-family:var(--body);font-size:14px;color:var(--red);margin-bottom:12px">Could not reach squad feed.</div><button class="action-btn secondary" onclick="loadSquadFeed()">RETRY</button></div>`;
   const user=getUser();const emptyFeed=!squadFeed||!squadFeed.length;
   if(!squadFeed.length) return `<div class="fade-in forge-group-hero" style="text-align:center;padding:60px 24px">
-    <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO ACTIVITY YET</div>
-    <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 24px">Log a workout and share it to the squad to get things started.</div>
+    <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">QUIET SO FAR</div>
+    <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 24px">Log a session and share it. Get the group moving.</div>
     <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
   </div>`;
   return `<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
@@ -5789,7 +5789,7 @@ function renderPlanLog(tabBar){
         +'<div style="padding:18px 16px 30px">'
         +'<div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018) 48%,rgba(166,203,42,.04)),var(--card);border:1px solid var(--border);border-radius:22px;padding:24px 20px;text-align:center;margin-bottom:16px">'
         +'<div style="font-size:36px;margin-bottom:8px">&#10003;</div>'
-        +'<div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--accent);margin-bottom:6px">LOGGED</div>'
+        +'<div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--accent);margin-bottom:6px">SESSION DONE.</div>'
         +'<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+(day&&day.label?day.label:'Workout')+' &middot; '+_done+'/'+_sets.length+' sets</div>'
         +'<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)">'+fmtDate(S.lastSavedDate).full+'</div>'
         +'</div>'
@@ -5815,7 +5815,7 @@ function renderPlanLog(tabBar){
     ${[0,30,60,90,120,180].map(s=>`<button data-secs="${s}" onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
   <button class="save-btn" id="save-btn" onclick="saveWorkout()">SAVE WORKOUT</button>
-  ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SEND TO GROUP</button>`:''}
+  ${SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareWorkout()" style="margin-top:8px">SAVE + SHARE WITH SQUAD</button>`:''}
   ${S.squadShareShown?'<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">'+(S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED')+'</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>':''}
   <div style="height:10px"></div>
  </div>`;
@@ -6382,9 +6382,9 @@ function renderStats(){
     '<div class="stat-tile"><div class="stat-label">STREAK</div><div class="stat-value" style="color:var(--accent)">'+_m.streak+'</div><div class="stat-unit">WEEKS</div></div>' :
     '<div class="stat-tile"><div class="stat-label">LAST 7 DAYS</div><div class="stat-value" style="color:var(--accent)">'+_m.weekLogs+'</div><div class="stat-unit">SESSIONS</div></div>'; })()}
    <div class="stat-tile"><div class="stat-label">SESSIONS</div><div class="stat-value">${totalLogs}</div><div class="stat-unit">COMPLETED</div></div>
-   <div class="stat-tile"><div class="stat-label">COMPLETION</div><div class="stat-value">${rate}</div><div class="stat-unit">PERCENT</div></div>
+   <div class="stat-tile"><div class="stat-label">COMPLETION RATE</div><div class="stat-value">${rate}</div><div class="stat-unit">PERCENT</div></div>
    <div class="stat-tile"><div class="stat-label">MOVED</div><div class="stat-value" style="color:var(--accent)">${totalMoves}</div><div class="stat-unit">RESCHEDULED</div></div>
-   <div class="stat-tile"><div class="stat-label">SKIPPED</div><div class="stat-value" style="color:var(--red)">${totalSkips}</div><div class="stat-unit">NOT DONE</div></div>
+   <div class="stat-tile"><div class="stat-label">MISSED</div><div class="stat-value" style="color:var(--red)">${totalSkips}</div><div class="stat-unit">NOT DONE</div></div>
   </div>
   <div class="intel-tabs">
    <button class="intel-tab ${S.statsTab==='history'?'active':''}" onclick="S.statsTab='history';renderMain()">HISTORY</button>
@@ -6566,9 +6566,9 @@ function renderToday(){
   if(!activeGoals.length && !planPhases.length){
     return `<div class="fade-in" style="padding:40px 24px;text-align:center">
       <div style="font-family:var(--display);font-size:48px;color:var(--accent);line-height:1;margin-bottom:20px">⊕</div>
-      <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">READY TO FORGE?</div>
+      <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO SESSION TODAY.</div>
       <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:280px;margin:0 auto 32px">
-        Set a goal and build your program to get your daily sessions, Forge Score, and progress tracking started.
+        Set a goal and build your program to get yyour sessions and progress tracking started.
       </div>
       <button class="action-btn" onclick="S.showGoalCreator=true;renderMain()">
         CREATE YOUR FIRST GOAL
@@ -6605,8 +6605,8 @@ function renderToday(){
     </button>
    </div>
    <div class="forge-hero-label">TODAY</div>
-   <div class="forge-hero-title">BUILT TODAY.<br><span>SHARPENED FOREVER.</span></div>
-   <div class="forge-hero-copy">Show up. Put in the work. We all get stronger together.</div>
+   <div class="forge-hero-title">ANOTHER DAY.<br><span>ANOTHER SESSION.</span></div>
+   <div class="forge-hero-copy">Consistency compounds. Keep the group moving.</div>
    ${pi>=0?`<div style="margin-top:16px;font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)"><span class="phase-dot" style="background:${ph.color}"></span>PHASE ${pi+1} - ${ph.title}${isPregnancyMode()?' <span style="color:var(--accent)">- PREGNANCY SAFE</span>':''}</div>`:''}
   </div>
   ${S.showProfile ? `
@@ -6629,7 +6629,7 @@ function renderToday(){
           </div>
         </div>
       </div>
-      <div class="forge-card-note" style="margin-top:10px">${(()=>{ const _nm=getNextMilestone(metrics.streak); if(!metrics.streak&&metrics.weekLogs>0) return 'Finish this week to start your streak.'; if(!metrics.streak) return 'Complete your planned sessions each week to start your streak.'; if(!_nm) return 'Hall of Fame. You are the iron.'; return _nm.gap===1?'One more week to '+_nm.label+'.':_nm.gap+' weeks to '+_nm.label+'.'; })()}</div>
+      <div class="forge-card-note" style="margin-top:10px">${(()=>{ const _nm=getNextMilestone(metrics.streak); if(!metrics.streak&&metrics.weekLogs>0) return 'Keep going. Finish the week.'; if(!metrics.streak) return 'Complete your weekly sessions to start your streak.'; if(!_nm) return 'Hall of Fame. Earned.'; return _nm.gap===1?'One more week — '+_nm.label+'.':_nm.gap+' weeks to '+_nm.label+'.'; })()}</div>
       ` : `
       <!-- No program: rolling 7 + 30 day counts -->
       <div class="forge-card-label" style="margin-bottom:12px">CONSISTENCY</div>
@@ -7225,15 +7225,15 @@ function checkStreakMilestone(streak) {
 
 function renderStreakModal(milestone, streak) {
   const msgs = {
-    1:   { title: 'FIRST WEEK',    sub: 'Week one complete. The work starts here.' },
-    4:   { title: 'ONE MONTH',     sub: 'Four weeks in. You are building something.' },
-    10:  { title: 'TEN WEEKS',     sub: 'Ten weeks of consistent training. The habit is real.' },
-    13:  { title: 'THREE MONTHS',  sub: 'A full quarter of showing up. That is rare.' },
-    20:  { title: 'FIVE MONTHS',   sub: 'Twenty weeks. You are not the same person you were.' },
-    26:  { title: 'SIX MONTHS',    sub: 'Half a year. Most people quit in week three. Not you.' },
-    39:  { title: 'NINE MONTHS',   sub: 'Nine months of consistent work. Built, not born.' },
-    52:  { title: 'ONE YEAR',      sub: 'A full year of weekly training. Extraordinary discipline.' },
-    100: { title: 'HALL OF FAME',  sub: '100 weeks. Almost two years. You are the iron.' },
+    1:   { title: 'FIRST WEEK',    sub: 'Week one done. Keep going.' },
+    4:   { title: 'ONE MONTH',     sub: 'Four weeks in. The habit is forming.' },
+    10:  { title: 'TEN WEEKS',     sub: 'Ten weeks. Consistency is the work.' },
+    13:  { title: 'THREE MONTHS',  sub: 'A full quarter. Rare.' },
+    20:  { title: 'FIVE MONTHS',   sub: 'Twenty weeks of showing up. Built.' },
+    26:  { title: 'SIX MONTHS',    sub: 'Half a year. Earned.' },
+    39:  { title: 'NINE MONTHS',   sub: 'Nine months. Forged through repetition.' },
+    52:  { title: 'ONE YEAR',      sub: 'A full year. This is who you are now.' },
+    100: { title: 'HALL OF FAME',  sub: '100 weeks. This is what discipline looks like.' },
   };
   const m = msgs[milestone] || { title: milestone + ' DAYS', sub: 'Keep going.' };
   return `<div role="dialog" aria-modal="true" aria-labelledby="streak-modal-title"
@@ -7710,9 +7710,9 @@ function renderLanding() {
     <div style="width:100%;max-width:360px;padding:0 0 48px">
       <div style="display:flex;gap:8px;justify-content:center">
         ${[
-          ['GOALS','Set intent. Build your program around them.'],
-          ['SQUAD','Share workouts. Stay sharp together.'],
-          ['STREAK','Weekly consistency streak. Miss nothing.'],
+          ['GOALS','Set direction. Build a program around it.'],
+          ['SQUAD','Log workouts. Stay accountable together.'],
+          ['STREAK','Consecutive weeks. Consistency compounds.'],
         ].map(([t,d])=>`
           <div style="flex:1;padding:14px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
             <div style="font-family:var(--display);font-size:13px;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px">${t}</div>
