@@ -2366,8 +2366,10 @@ const PT_KEY='forge_pt';
 const METRICS_KEY='forge_metrics';
 
 function getSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')}catch(e){return{}}}
-function saveSettings(o){localStorage.setItem(SETTINGS_KEY,JSON.stringify({...getSettings(),...o}))}
-function getStartDate(){return getSettings().startDate||'2026-04-22'}
+function saveSettings(o){localStorage.setItem(SETTINGS_KEY,JSON.stringify({...getSettings(),...o}))
+  try{syncProfileToCloud();}catch(e){}
+}
+function getStartDate(){return getSettings().startDate||todayStr()}
 
 // ============================================================
 // PROFILE ↔ METRICS WEIGHT BRIDGE
@@ -2442,6 +2444,8 @@ function saveLogEntry(date, phaseId, dayIdx, sets, notes, title) {
   s[date].push(entry);
   localStorage.setItem(STORE_KEY, JSON.stringify(s));
   return entry;
+
+  try{syncProfileToCloud();}catch(e){}
 }
 
 // Get the LAST entry for a date (for plan log pre-fill, date changes, etc.)
@@ -2459,23 +2463,15 @@ function getLogEntries(date) {
 }
 
 // Get all entries across all dates, flat, sorted newest first
-function getAllLogs() {
-  const store = loadStore();
-  const entries = [];
-  Object.entries(store).sort((a,b) => b[0].localeCompare(a[0])).forEach(([date, day]) => {
-    const dayEntries = Array.isArray(day) ? day : [day];
-    dayEntries.slice().reverse().forEach(e => entries.push([date, e]));
-  });
-  return entries;
-}
+
 function getSkips(){try{return JSON.parse(localStorage.getItem(SKIPS_KEY)||'{}')}catch(e){return{}}}
 function saveSkipEntry(date,type,phaseId,dayIdx,movedTo){const s=getSkips();s[date]={type,phaseId,dayIdx,movedTo:movedTo||null,savedAt:new Date().toISOString()};localStorage.setItem(SKIPS_KEY,JSON.stringify(s));}
 function getMoves(){try{return JSON.parse(localStorage.getItem(MOVES_KEY)||'{}')}catch(e){return{}}}
 function saveMoveEntry(targetDate,phaseId,dayIdx,originalDate){const m=getMoves();m[targetDate]={phaseId,dayIdx,originalDate,savedAt:new Date().toISOString()};localStorage.setItem(MOVES_KEY,JSON.stringify(m));}
 
-function getCheckins(){try{return JSON.parse(localStorage.getItem(CHECKIN_KEY)||'{}')}catch(e){return{}}}
+
 // getCheckin: see definition below
-function saveCheckin(date,data){const s=getCheckins();s[date]={...data,savedAt:new Date().toISOString()};localStorage.setItem(CHECKIN_KEY,JSON.stringify(s));}
+
 
 function getAllFuel(){try{return JSON.parse(localStorage.getItem(FUEL_KEY)||'{}')}catch(e){return{}}}
 function getFuel(date){return getAllFuel()[date]||{entries:[]}}
@@ -2508,7 +2504,7 @@ function getPhaseDates(pi){const s=getPhaseStart(pi),e=getPhaseEnd(pi);const mon
 function getPhaseForDate(ds){const d=parseDate(ds);for(let i=0;i<PHASES.length;i++){if(d>=getPhaseStart(i)&&d<=getPhaseEnd(i))return i;}return -1}
 function getDayIdxForDate(ds,pi){if(pi<0)return -1;const dow=parseDate(ds).getDay();const m=(getPlanPhases()[pi]||PHASES[pi]||{}).dowMap;return m&&m[dow]!==undefined?m[dow]:-1}
 function getWeekNum(ds){const start=parseDate(getStartDate());const d=parseDate(ds);return Math.max(1,Math.floor((d-start)/(7*86400000))+1)}
-function isMonday(ds){return parseDate(ds).getDay()===1}
+
 function isProgramWeekStart(ds){const sd=getStartDate();const startDow=parseDate(sd).getDay();return ds===sd||parseDate(ds).getDay()===startDow;}
 
 // ============================================================
@@ -2550,25 +2546,8 @@ function findMoveDates(fromDate,phaseId,dayIdx){
  }
  return results;
 }
-function getSessionType(pi,di){
- const day=(getPlanPhases()[pi]||PHASES[0]).schedule[di]||{};const l=day.label.toLowerCase(),t=day.tag;
- if(/lower|leg/i.test(l))return'leg';
- if(/push/i.test(l))return'push';
- if(/pull/i.test(l))return'pull';
- if(/conditioning|hero/i.test(l))return'conditioning';
- if(/recovery|mobility/i.test(t))return'recovery';
- if(/benchmark|test/i.test(t))return'benchmark';
- if(/circuit/i.test(l)||/circuit/i.test(t))return'circuit';
- return'general';
-}
-function getPhaseContext(pi){
- if(hasCustomPlan()&&getActivePlan()&&getActivePlan()[pi]){const p=getActivePlan()[pi];return`You're in ${p.title||'Phase '+(pi+1)}. Stay consistent.`;}
- if(pi===0)return"You're in the first two weeks. The habit isn't formed yet — every skip now teaches your brain that the workout is negotiable. It isn't.";
- if(pi===1)return"You're building the foundation right now. Every session you complete compounds. Every one you don't leaves a crack.";
- if(pi===2)return"This is the Build phase — where the program gets harder and where the physique change starts to show. Missing sessions now costs double.";
- if(pi===3)return"You've built eight weeks of work to get here. Phase 4 is where you cash in. Don't hand it back.";
- return"You're in the final push. July 31 is the deadline you set. Every session between now and then matters.";
-}
+
+
 const MOVE_MSGS={
  leg:"Leg days are the most skipped sessions in any program and the most important for physique change. Your lower body is your largest muscle group — it drives the results you want by July. Moving it works. Just make sure it actually gets done.",
  push:"Chest, shoulders, and triceps. This is the session that changes how you carry yourself. Moving it is fine as long as the sequence doesn't stack two hard sessions back to back.",
@@ -2652,10 +2631,7 @@ function supaFetch(path, opts={}) {
     },
   });
 }
-async function postWorkoutToSquad(payload) {
-  try { const r=await supaFetch('workouts',{method:'POST',prefer:'return=minimal',body:JSON.stringify(payload)});return r.ok; }
-  catch(e){return false;}
-}
+
 let squadFeed=null, squadLoading=false, squadError=false;
 async function loadSquadFeed(){
   squadLoading=true;squadError=false;renderMain();
@@ -2689,6 +2665,164 @@ function getUser(){
   } catch(e) { return null; }
 }
 function saveUser(obj){localStorage.setItem(USER_KEY,JSON.stringify(obj));}
+
+// ============================================================
+// PROFILE IDENTITY & CLOUD SYNC (email-based)
+// ============================================================
+// Identity is derived deterministically from the user's email, so the same
+// email always maps to the same uuid on any device. A full snapshot of all
+// local data is synced to Supabase (user_profiles) keyed by that uuid, so a
+// fresh install can restore everything by re-entering the email.
+
+function emailToUuid(email){
+  // Deterministic UUID v4-shaped string from email (FNV-1a hash → seeded fill)
+  const norm = (email||'').trim().toLowerCase();
+  let h = 0x811c9dc5;
+  for(let i=0;i<norm.length;i++){ h ^= norm.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  // Expand hash into a stable hex stream
+  let seed = h >>> 0;
+  function next(){ seed = Math.imul(seed ^ (seed>>>15), 0x2c1b3c6d); seed = (seed ^ (seed>>>13)) >>> 0; return seed % 16; }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(ch){
+    const r = next(); return (ch==='x'? r : (r&0x3|0x8)).toString(16);
+  });
+}
+
+function buildFullSnapshot(){
+  return {
+    version: 3,
+    exportedAt: new Date().toISOString(),
+    user: getUser(),
+    settings: localStorage.getItem(SETTINGS_KEY),
+    goals: localStorage.getItem(GOALS_KEY),
+    programs: localStorage.getItem(PROGRAMS_KEY),
+    plan: localStorage.getItem(USERPLAN_KEY),
+    logs: localStorage.getItem(STORE_KEY),
+    library: localStorage.getItem(LIBRARY_KEY),
+    checkins: localStorage.getItem(CHECKIN_KEY),
+    fuel: localStorage.getItem(FUEL_KEY),
+    ptTests: localStorage.getItem(PT_KEY),
+    metrics: localStorage.getItem(METRICS_KEY),
+    restDuration: localStorage.getItem('forge_rest_duration'),
+    streakAcked: localStorage.getItem('forge_streak_acked'),
+    foundationHidden: localStorage.getItem('forge_foundation_hidden'),
+    skips: localStorage.getItem('forge_skips'),
+    moves: localStorage.getItem('forge_moves'),
+  };
+}
+
+function applyFullSnapshot(data){
+  if(!data) return false;
+  function put(key,val){ if(val!==undefined && val!==null) localStorage.setItem(key, typeof val==='string'?val:JSON.stringify(val)); }
+  if(data.user) saveUser(typeof data.user==='string'?JSON.parse(data.user):data.user);
+  put(SETTINGS_KEY, data.settings);
+  put(GOALS_KEY, data.goals);
+  put(PROGRAMS_KEY, data.programs);
+  put(USERPLAN_KEY, data.plan);
+  put(STORE_KEY, data.logs);
+  put(LIBRARY_KEY, data.library);
+  put(CHECKIN_KEY, data.checkins);
+  put(FUEL_KEY, data.fuel);
+  put(PT_KEY, data.ptTests);
+  put(METRICS_KEY, data.metrics);
+  put('forge_rest_duration', data.restDuration);
+  put('forge_streak_acked', data.streakAcked);
+  put('forge_foundation_hidden', data.foundationHidden);
+  put('forge_skips', data.skips);
+  put('forge_moves', data.moves);
+  return true;
+}
+
+// Push the full snapshot to Supabase (debounced, non-blocking)
+let _forgeSyncTimer = null;
+function syncProfileToCloud(){
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return;
+  const u = getUser();
+  if(!u || !u.email) return; // only sync when we have an email identity
+  clearTimeout(_forgeSyncTimer);
+  _forgeSyncTimer = setTimeout(function(){
+    const uuid = u.uuid || emailToUuid(u.email);
+    const payload = {
+      uuid: uuid,
+      email: (u.email||'').trim().toLowerCase(),
+      display_name: u.name || null,
+      snapshot: JSON.stringify(buildFullSnapshot()),
+      updated_at: new Date().toISOString(),
+    };
+    // Upsert on uuid (on_conflict=uuid) so each identity keeps one row
+    supaFetch('user_profiles?on_conflict=uuid', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates,return=minimal',
+      body: JSON.stringify(payload),
+    }).catch(function(e){ console.warn('Profile sync failed:', e); });
+  }, 1500);
+}
+
+// Restore everything for an email from Supabase
+async function restoreProfileByEmail(email){
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return {ok:false, reason:'offline'};
+  const uuid = emailToUuid(email);
+  try {
+    const r = await supaFetch('user_profiles?uuid=eq.'+uuid+'&select=snapshot,display_name,email');
+    if(!r.ok) return {ok:false, reason:'fetch_failed'};
+    const rows = await r.json();
+    if(!rows || !rows.length) return {ok:false, reason:'not_found'};
+    const snap = rows[0].snapshot;
+    const data = typeof snap==='string'?JSON.parse(snap):snap;
+    applyFullSnapshot(data);
+    // Ensure the restored user carries the email + uuid identity
+    const u = getUser() || {};
+    saveUser({...u, email:(email||'').trim().toLowerCase(), uuid:uuid, name:u.name||rows[0].display_name||''});
+    return {ok:true};
+  } catch(e){
+    console.warn('Restore failed:', e);
+    return {ok:false, reason:'error'};
+  }
+}
+
+function forgeRestorePrompt(){
+  const existing = document.getElementById('forge-restore-modal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'forge-restore-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)';
+  modal.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px 22px;width:100%;max-width:380px">'
+    + '<div style="font-family:var(--display);font-size:20px;letter-spacing:1px;color:var(--text);margin-bottom:8px">RESTORE PROFILE</div>'
+    + '<div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.5;margin-bottom:18px">Enter the email you set up with. We\'ll pull back your profile, programs, logs, and history.</div>'
+    + '<input id="forge-restore-email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none;margin-bottom:8px">'
+    + '<div id="forge-restore-msg" style="font-family:var(--body);font-size:13px;color:var(--text3);min-height:18px;margin-bottom:14px"></div>'
+    + '<button id="forge-restore-go" onclick="forgeDoRestore()" style="display:block;width:100%;padding:15px;font-family:var(--display);font-size:15px;letter-spacing:2px;background:var(--accent);color:#0B0D0B;border:none;border-radius:10px;cursor:pointer;margin-bottom:8px">RESTORE</button>'
+    + '<button onclick="document.getElementById(\'forge-restore-modal\').remove()" style="display:block;width:100%;padding:12px;font-family:var(--display);font-size:12px;letter-spacing:2px;background:none;color:var(--text3);border:none;cursor:pointer">CANCEL</button>'
+    + '</div>';
+  document.body.appendChild(modal);
+  setTimeout(function(){ const i=document.getElementById('forge-restore-email'); if(i) i.focus(); }, 100);
+}
+
+async function forgeDoRestore(){
+  const input = document.getElementById('forge-restore-email');
+  const msg = document.getElementById('forge-restore-msg');
+  const btn = document.getElementById('forge-restore-go');
+  const email = (input && input.value || '').trim().toLowerCase();
+  if(!email || email.indexOf('@')<0){ if(msg){msg.textContent='Enter a valid email.';msg.style.color='var(--red)';} return; }
+  if(btn){ btn.textContent='RESTORING…'; btn.disabled=true; }
+  if(msg){ msg.textContent='Looking up your profile…'; msg.style.color='var(--text3)'; }
+  const res = await restoreProfileByEmail(email);
+  if(res.ok){
+    if(msg){ msg.textContent='Restored! Reloading…'; msg.style.color='var(--green)'; }
+    setTimeout(function(){ location.reload(); }, 700);
+  } else {
+    if(btn){ btn.textContent='RESTORE'; btn.disabled=false; }
+    if(msg){
+      msg.style.color='var(--red)';
+      msg.textContent = res.reason==='not_found'
+        ? 'No profile found for that email.'
+        : (res.reason==='offline' ? 'Cloud sync is not configured.' : 'Could not restore. Try again.');
+    }
+  }
+}
+window.forgeRestorePrompt = forgeRestorePrompt;
+window.forgeDoRestore = forgeDoRestore;
+
+
 
 
 
@@ -2858,7 +2992,15 @@ function updateProfile(fields) {
 function updateProfileField(fields) {
   // Saves only, NO re-render — use for text/number inputs to preserve focus
   const u = getUser() || {};
-  saveUser({...u, ...fields});
+  const merged = {...u, ...fields};
+  // If email was set/changed, derive a stable uuid from it
+  if(fields.email !== undefined){
+    const em = (fields.email||'').trim().toLowerCase();
+    merged.email = em;
+    if(em && em.indexOf('@')>0) merged.uuid = emailToUuid(em);
+  }
+  saveUser(merged);
+  try{ syncProfileToCloud(); }catch(e){}
 }
 function isPregnancyMode(){const u=getUser();return u&&u.mode==='pregnancy';}
 function getUserEmoji(){return 'FORGE';}
@@ -2866,6 +3008,8 @@ function getUserEmoji(){return 'FORGE';}
 function getUserId(){
   const u=getUser();
   if(u&&u.uuid) return u.uuid;
+  // Prefer a stable email-derived id so the same person keeps one identity
+  if(u&&u.email){ const uuid=emailToUuid(u.email); saveUser({...u,uuid}); return uuid; }
   const uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);});
   saveUser({...(u||{}),uuid});
   return uuid;
@@ -3218,7 +3362,7 @@ function renderForgeRecentActivity(){
 // ============================================================
 // SETUP SCREEN
 // ============================================================
-let setupGender=null,setupPregnancy=false,setupPlanChoice=null,setupName="",setupStep=1;
+let setupGender=null,setupPregnancy=false,setupPlanChoice=null,setupName="",setupEmail="",setupStep=1;
 let setupProfile={age:"",height:"",currentWeight:"",goalWeight:""};
 let setupPrefs={daysPerWeek:4,sessionLength:45,experience:"intermediate",equipment:[]};
 
@@ -3247,8 +3391,16 @@ function renderSetup(){
         oninput="setupName=this.value.trim()" placeholder="First name" maxlength="20" value="${setupName}"
         style="width:100%;background:transparent;border:none;border-bottom:2px solid var(--accent);
         color:var(--text);font-family:var(--display);font-size:36px;letter-spacing:3px;
-        padding:8px 0 12px;outline:none;margin-bottom:48px" autofocus>
-      <button class="action-btn" onclick="if(setupName.trim()){setupStep=2;renderMain();}else{const i=document.getElementById('setup-name');if(i){i.style.borderColor='var(--red)';i.focus();}}" style="max-width:300px">CONTINUE →</button>`);
+        padding:8px 0 12px;outline:none;margin-bottom:28px" autofocus>
+      <div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3);margin-bottom:10px">YOUR EMAIL</div>
+      <input id="setup-email" type="email" enterkeyhint="done" autocomplete="email" inputmode="email"
+        oninput="setupEmail=this.value.trim()" placeholder="you@example.com" value="${setupEmail}"
+        style="width:100%;background:transparent;border:none;border-bottom:2px solid var(--border);
+        color:var(--text);font-family:var(--body);font-size:18px;
+        padding:8px 0 12px;outline:none;margin-bottom:10px">
+      <div style="font-family:var(--body);font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:40px">Used to save your profile so you can restore everything on a new device. No password needed.</div>
+      <button class="action-btn" onclick="if(setupName.trim()){setupStep=2;renderMain();}else{const i=document.getElementById('setup-name');if(i){i.style.borderColor='var(--red)';i.focus();}}" style="max-width:300px">CONTINUE →</button>
+      <button onclick="forgeRestorePrompt()" style="display:block;margin:16px auto 0;background:none;border:none;color:var(--text3);font-family:var(--body);font-size:14px;text-decoration:underline;cursor:pointer">Already have a profile? Restore it</button>`);
   }
 
   // ── STEP 2: GENDER ──
@@ -3357,6 +3509,8 @@ function setupTogglePregnancy(){
 function _finishSetupSaveUser(){
   const userObj = {
     name: setupName.trim(),
+    email: (setupEmail||'').trim().toLowerCase(),
+    uuid: setupEmail ? emailToUuid(setupEmail) : undefined,
     gender: setupGender,
     mode: setupPregnancy ? 'pregnancy' : 'standard',
     daysPerWeek: setupPrefs.daysPerWeek,
@@ -3370,6 +3524,8 @@ function _finishSetupSaveUser(){
     createdAt: new Date().toISOString(),
   };
   saveUser(userObj);
+  // Push initial profile to cloud so it's recoverable
+  syncProfileToCloud();
   // Reset transient setup state
   setupGender=null;setupPregnancy=false;setupName='';setupStep=1;
   setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
@@ -3401,50 +3557,7 @@ function finishSetupSkip(){
   renderNav();renderMain();
 }
 
-function setupComplete(){
-  // Name was captured via setupName; gender via setupGender — both validated in steps
-  if(!setupName.trim()){setupStep=1;renderMain();return;}
-  if(!setupGender){setupStep=2;renderMain();return;}
-  // Plan choice — if none picked, flash the buttons
-  if(!setupPlanChoice){
-    const pb=document.getElementById('setup-plan-later');
-    const nb=document.getElementById('setup-plan-now');
-    if(pb)pb.style.borderColor='var(--red)';
-    if(nb)nb.style.borderColor='var(--red)';
-    return;
-  }
-  // Build the user object — merge name, gender, profile basics, and training prefs
-  const userObj = {
-    name: setupName.trim(),
-    gender: setupGender,
-    mode: setupPregnancy ? 'pregnancy' : 'standard',
-    daysPerWeek: setupPrefs.daysPerWeek,
-    sessionLength: setupPrefs.sessionLength,
-    experience: setupPrefs.experience,
-    age: setupProfile.age || '',
-    height: setupProfile.height || '',
-    currentWeight: setupProfile.currentWeight || '',
-    goalWeight: setupProfile.goalWeight || '',
-    equipment: setupPrefs.equipment || [],
-    createdAt: new Date().toISOString(),
-  };
-  saveUser(userObj);
-  // Reset transient setup state
-  const planChoice = setupPlanChoice;
-  setupGender=null;setupPregnancy=false;setupName='';setupStep=1;
-  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
-  setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};
-  setupPlanChoice=null;
-  // Route based on plan choice
-  if(planChoice==='now'){
-    // Default plan — no goal created, the built-in 14-week plan is the active fallback
-    S.tab='today';
-  } else {
-    // Build my own — land on Today, the empty state prompts goal/program creation
-    S.tab='today';
-  }
-  renderNav();renderMain();
-}
+
 function timeAgo(isoStr){
   const diff=(Date.now()-new Date(isoStr))/1000;
   if(diff<60)return'just now';
@@ -3527,15 +3640,7 @@ function renderSquad(){
   </div>`;
 }
 
-function buildShareText(workoutTitle,phaseName,durationEst,notes){
-  const user=getUser();const emoji=user?getUserEmoji():'FORGE';const name=user?user.name:'Someone';
-  const dur=durationEst?' · ~'+durationEst+' min':'';
-  let text=emoji+' - '+name+' logged '+workoutTitle;
-  if(phaseName)text+='\n'+phaseName+dur;
-  if(notes)text+='\n"'+notes+'"';
-  text+='\n'+APP_URL;
-  return text;
-}
+
 async function buildExSummary(exercises){
   return exercises.map(([name,sets])=>{
     if(!sets||!sets.length) return null;
@@ -3592,145 +3697,83 @@ function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
     .catch(e=>console.warn('Squad sync failed:',e));
 }
 
-function renderGoalStrip() {
-  var goals = getActiveGoals();
-  var user = getUser();
-
-  // Migration: if user has no goals but has an existing plan, create default goal
-  if (!goals.length && (hasCustomPlan() || true)) {
-    var migrated = localStorage.getItem('forge_goal_migrated');
-    if (!migrated) {
-      var hasPlan = hasCustomPlan();
-      // Auto-set targetDate = 14 weeks from program start (98 days)
-      var _baseStart = getStartDate();
-      var _baseEnd = null;
-      if (_baseStart) {
-        var _sd = new Date(_baseStart);
-        _sd.setDate(_sd.getDate() + 98);
-        _baseEnd = _sd.toISOString().split('T')[0];
-      }
-      var defaultGoal = {
-        id: makeGoalId(),
-        label: hasPlan ? (getStoredPlan()?.title || 'Base') : 'Base',
-        targetDate: _baseEnd,
-        discipline: 'weight_training',
-        activity: null,
-        goalType: null,
-        crossTraining: [],
-        planType: hasPlan ? 'app' : 'undecided',
-        planData: hasPlan ? getStoredPlan() : null,
-        status: 'active',
-      };
-      upsertGoal(defaultGoal);
-      localStorage.setItem('forge_goal_migrated', '1');
-      // Fix any existing 'My Training' labels to 'Base'
-      var _goals = getGoals();
-      var _changed = false;
-      _goals.forEach(function(g) {
-        if (g.label === 'My Training') { g.label = 'Base'; _changed = true; }
-      });
-      // Also auto-set targetDate for Base goal if missing
-      _goals.forEach(function(g) {
-        if ((g.label === 'Base' || g.label === 'My Training') && !g.targetDate) {
-          var _sd2 = new Date(getStartDate());
-          _sd2.setDate(_sd2.getDate() + 98);
-          g.targetDate = _sd2.toISOString().split('T')[0];
-          _changed = true;
-        }
-      });
-      if (_changed) saveGoals(_goals);
-      goals = getActiveGoals();
-    }
-  }
-
-  if (!goals.length) {
-    return '<div style="margin:14px 16px 0;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);padding:14px">' +
-      '<div style="font-family:var(--display);font-size:15px;letter-spacing:3px;color:var(--accent);margin-bottom:8px">NO ACTIVE GOALS</div>' +
-      '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:12px">Set a goal to get your training organised.</div>' +
-      '<button onclick="S.showGoalCreator=true;gbReset();renderMain()" class="action-btn amber">+ CREATE GOAL</button></div>';
-  }
-
-  var html = '<div style="margin:14px 16px 0">';
-
-  goals.forEach(function(goal, gi) {
-    var countdown = goalCountdown(goal.targetDate);
-    var isActive = S.activeGoalId === goal.id;
-    var disc = getDisciplineLabel(goal.discipline);
-    var subLabel = goalSubLabel(goal);
-    var hasAppPlan = (goal.planType === 'app' || goal.planType === 'undecided') && getTodayGoalSession(goal) !== null;
-    var isOwn = goal.planType === 'own';
-
-    // Goal card
-    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' +
-      (isActive ? 'var(--accent)' : 'var(--border2)') + ';margin-bottom:8px;overflow:hidden">';
-
-    // Card header
-    html += '<div style="padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px" ' +
-      'data-gid="'+goal.id+'" onclick="toggleGoalCard(this.dataset.gid)">' +
-      '<div style="flex:1;min-width:0">' +
-      '<div style="font-family:var(--display);font-size:20px;letter-spacing:1px;color:' + (isActive?'var(--accent)':'var(--text)') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + goal.label + '</div>' +
-      '<div style="font-family:var(--display);font-size:14px;color:var(--text2);letter-spacing:1px;margin-top:2px">' + subLabel + '</div>' +
-      '</div>' +
-      (countdown ? '<div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:' + (isActive?'var(--accent)':'var(--text2)') + ';flex-shrink:0">' + countdown + '</div>' : '') +
-      '<span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300;flex-shrink:0">' + (isActive?'−':'+') + '</span>' +
-      '</div>';
-
-    // Expanded content
-    if (isActive) {
-      html += '<div style="border-top:1px solid var(--border);padding:10px 14px">';
-
-      if (hasAppPlan) {
-        // Show today's scheduled session from the plan
-        var todayInfo = getTodayGoalSession(goal);
-        if (todayInfo) {
-          html += '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--accent);margin-bottom:8px">TODAY\u2019S SESSION</div>' +
-            '<div style="font-family:var(--display);font-size:20px;letter-spacing:1.5px;color:var(--text);margin-bottom:4px">' + todayInfo.label + '</div>' +
-            '<div style="font-family:var(--display);font-size:14px;color:var(--text2);letter-spacing:1px;margin-bottom:10px">' + todayInfo.tag + (todayInfo.est?' · ~'+todayInfo.est+' MIN':'') + '</div>' +
-            '<button onclick="gotoLog()" class="action-btn">LOG THIS SESSION</button>';
-        } else {
-          html += '<div style="font-family:var(--display);font-size:15px;color:var(--text2);letter-spacing:1px;padding:8px 0">REST DAY — no session scheduled</div>';
-        }
-      } else {
-        // Own plan or undecided — generic log prompt
-        html += '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">LOG TODAY\'S WORKOUT</div>';
-        if (S.genericLog.open && S.genericLog.goalId === goal.id) {
-          html += renderGenericLogger(goal.id);
-        } else {
-          html += '<button data-gid="'+goal.id+'" onclick="openGenericLog(this.dataset.gid)" class="action-btn">+ LOG WORKOUT</button>';
-        }
-      }
-
-      // Goal management options
-      html += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">' +
-        '<button data-gid="'+goal.id+'" onclick="editGoalLabel(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">RENAME</button>'+'<button data-gid="'+goal.id+'" onclick="editGoalDate(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">EDIT DATE</button>'+'<button data-gid="'+goal.id+'" onclick="goalChangeDisc(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">CHANGE DISCIPLINE</button>' +
-        (hasAppPlan ? '<button data-gid="'+goal.id+'" onclick="goalAdaptPlan(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ADAPT PROGRAM</button>' : '') +
-        '<button data-gid="'+goal.id+'" onclick="goalArchiveConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">ARCHIVE</button>'+'<button data-gid="'+goal.id+'" onclick="deleteGoal(this.dataset.gid)" style="background:none;border:1px solid var(--red-border);color:var(--red);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">DELETE</button>' +
-        '<button data-gid="'+goal.id+'" onclick="goalCompleteConfirm(this.dataset.gid)" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">COMPLETE</button>' +
-        '</div>';
-      html += '</div>';
-    }
-    html += '</div>';
-  });
-
-  // Add goal button (if < 3)
-  if (goals.length < 3) {
-    html += '<button onclick="S.showGoalCreator=true;gbReset();renderMain()" ' +
-      'style="width:100%;padding:10px;background:none;border:1px dashed var(--border);color:var(--text3);font-family:var(--display);font-size:15px;letter-spacing:2px;cursor:pointer">+ ADD GOAL</button>';
-  }
-
-  html += '</div>';
-  return html;
-}
 
 function gotoLog(){setTab('log');setTimeout(initLogSwipe,100);}
 function goPlan(){setTab('plan');}
-function openGenericLog(goalId){S.genericLog={open:true,goalId:goalId,activityType:'',duration:'',distance:'',intensity:3,notes:''};renderMain();}
+
 
 
 function toggleGoalCard(id) {
   S.activeGoalId = S.activeGoalId === id ? null : id;
   renderMain();
 }
+
+function openProgramManage(goalId){
+  const isBaseBuiltin = (goalId === '__base__');
+  const goal = isBaseBuiltin ? null : getGoals().find(function(g){return g.id===goalId;});
+  if(!isBaseBuiltin && !goal) return;
+  const prog = goal && goal.programId ? getProgramById(goal.programId) : null;
+  const name = isBaseBuiltin ? 'Base' : (prog && prog.name ? prog.name : (goal.label || 'Program'));
+  const isBase = isBaseBuiltin || (goal && !goal.programId);
+
+  function row(label, color, onclickAttr){
+    return '<button data-act="'+onclickAttr+'" onclick="window._forgeManageAction(this.dataset.act)" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:15px 16px;margin-bottom:8px;cursor:pointer;font-family:var(--display);font-size:14px;letter-spacing:1.5px;color:'+(color||'var(--text)')+'">'+label+'<span style="color:var(--text3)">›</span></button>';
+  }
+
+  // Store the goalId for the action dispatcher
+  window._forgeManageGoalId = goalId;
+
+  var actions = '';
+  if(isBaseBuiltin){
+    // Built-in Base plan — only Hide is meaningful (no goal record to rename/complete)
+    actions += '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.5">Base is the built-in starter program. Hide it if your training is fully custom — you can restore it anytime.</div>';
+    actions += row('HIDE PROGRAM', 'var(--amber)', 'hidebase');
+  } else {
+    actions += row('RENAME', 'var(--text)', 'rename');
+    actions += row('EDIT TARGET DATE', 'var(--text)', 'editdate');
+    if(!isBase){
+      actions += row('CHANGE DISCIPLINE', 'var(--text)', 'discipline');
+      actions += row('ADAPT PROGRAM', 'var(--text)', 'adapt');
+    }
+    actions += row('MARK COMPLETE', 'var(--green)', 'complete');
+    if(isBase){
+      actions += row('HIDE PROGRAM', 'var(--amber)', 'hidebase');
+    } else {
+      actions += row('ARCHIVE', 'var(--amber)', 'archive');
+      actions += row('DELETE', 'var(--red)', 'delete');
+    }
+  }
+
+  const modal = document.createElement('div');
+  modal.id = 'program-manage-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)';
+  modal.onclick = function(e){ if(e.target===modal) modal.remove(); };
+  modal.innerHTML = '<div style="background:var(--card);border:1px solid var(--border);border-radius:22px 22px 0 0;padding:24px 20px 36px;width:100%;max-width:480px">'
+    + '<div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3);margin-bottom:4px">MANAGE</div>'
+    + '<div style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--text);margin-bottom:18px">'+name.toUpperCase()+'</div>'
+    + actions
+    + '<button onclick="document.getElementById(\'program-manage-modal\').remove()" style="display:block;width:100%;padding:14px;font-family:var(--display);font-size:13px;letter-spacing:2px;background:none;color:var(--text3);border:none;cursor:pointer;margin-top:6px">CLOSE</button>'
+    + '</div>';
+  document.body.appendChild(modal);
+}
+
+function _forgeManageAction(act){
+  const goalId = window._forgeManageGoalId;
+  const modal = document.getElementById('program-manage-modal');
+  if(modal) modal.remove();
+  if(!goalId) return;
+  switch(act){
+    case 'rename': editGoalLabel(goalId); break;
+    case 'editdate': editGoalDate(goalId); break;
+    case 'discipline': goalChangeDisc(goalId); break;
+    case 'adapt': goalAdaptPlan(goalId); break;
+    case 'complete': goalCompleteConfirm(goalId); break;
+    case 'archive': goalArchiveConfirm(goalId); break;
+    case 'delete': deleteGoal(goalId); break;
+    case 'hidebase': foundationHideConfirm(); break;
+  }
+}
+window._forgeManageAction = _forgeManageAction;
 
 function editGoalLabel(id) {
   var goal = getGoals().find(function(g){return g.id===id;});
@@ -3754,15 +3797,7 @@ function showConfirm(msg, onYes, yesLabel, yesStyle) {
   S.confirmPending = {msg: msg, onYes: onYes, yesLabel: yesLabel||'YES', yesStyle: yesStyle||'red'};
   renderMain();
 }
-function trapFocus(modalId) {
-  requestAnimationFrame(() => {
-    const modal = document.querySelector('[role="dialog"]');
-    if (modal) {
-      const first = modal.querySelector('button, input, [tabindex]');
-      if (first) first.focus();
-    }
-  });
-}
+
 function confirmYes() {
   if (S.confirmPending && S.confirmPending.onYes) {
     var fn = S.confirmPending.onYes;
@@ -3888,43 +3923,7 @@ function getTodayGoalSession(goal) {
 }
 
 // Generic logger for own-plan users
-function renderGenericLogger(goalId) {
-  var gl = S.genericLog;
-  var actTypes = ['Run','Ride','Row','Swim','Walk / Hike','Lift','WOD','HIIT','Yoga / Mobility','Other'];
-  return '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px">' +
-    '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:10px">ACTIVITY TYPE</div>' +
-    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">' +
-    actTypes.map(function(t) {
-      var on = gl.activityType === t;
-      return '<button data-at="' + t + '" onclick="S.genericLog.activityType=this.dataset.at;renderMain()" ' +
-        'style="padding:7px 11px;font-family:var(--display);font-size:15px;letter-spacing:1px;background:' + (on?'var(--bg4)':'none') + ';border:1px solid ' + (on?'var(--accent-border)':'var(--border)') + ';color:' + (on?'var(--accent)':'var(--text2)') + ';cursor:pointer">' + t + '</button>';
-    }).join('') +
-    '</div>' +
-    '<div style="display:flex;gap:8px;margin-bottom:10px">' +
-    '<div style="flex:1">' +
-    '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">DURATION (MIN)</div>' +
-    '<input type="number" inputmode="decimal" enterkeyhint="done" placeholder="45" value="' + (gl.duration||'') + '" oninput="S.genericLog.duration=this.value" min="1" max="600" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
-    '</div>' +
-    '<div style="flex:1">' +
-    '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:4px">DISTANCE (MI/KM)</div>' +
-    '<input type="number" inputmode="numeric" enterkeyhint="next" placeholder="—" value="' + (gl.distance||'') + '" oninput="S.genericLog.distance=this.value" min="0" step="0.1" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--body);font-size:16px;padding:8px;color-scheme:dark">' +
-    '</div>' +
-    '</div>' +
-    '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:8px">EFFORT (1–5)</div>' +
-    '<div style="display:flex;gap:6px;margin-bottom:12px">' +
-    [1,2,3,4,5].map(function(n) {
-      var on = gl.intensity === n;
-      var labels = ['','Easy','Moderate','Hard','Very Hard','Max'];
-      return '<button data-n="' + n + '" onclick="S.genericLog.intensity=parseInt(this.dataset.n);renderMain()" ' +
-        'style="flex:1;padding:10px 0;font-family:var(--body);font-size:13px;background:' + (on?'var(--accent-bg)':'var(--bg2)') + ';border:1px solid ' + (on?'var(--accent-border)':'var(--border)') + ';color:' + (on?'var(--accent)':'var(--text2)') + ';cursor:pointer">' + n + '</button>';
-    }).join('') +
-    '</div>' +
-    '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:6px">NOTES</div>' +
-    '<textarea oninput="S.genericLog.notes=this.value" placeholder="How did it go?" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-family:var(--body);font-size:14px;padding:8px;resize:none;height:60px;color-scheme:dark">' + (gl.notes||'') + '</textarea>' +
-    '<button data-glid="'+(goalId||'')+'" onclick="saveGenericLog(this.dataset.glid)" class="action-btn amber" style="margin-top:8px">SAVE WORKOUT</button>' +
-    '<button onclick="S.genericLog.open=false;renderMain()" class="action-btn secondary">CANCEL</button>' +
-    '</div>';
-}
+
 
 function saveGenericLog(goalId) {
   var gl = S.genericLog;
@@ -3963,45 +3962,15 @@ function getActivePlanPhases() {
       if (goal.planData && goal.planData.phases) return goal.planData.phases;
     }
   }
-  // Last resort: built-in 14-week plan
+  // Built-in Base plan — but ONLY if it hasn't been hidden.
+  // Squad members who only log custom workouts can hide Base entirely.
+  if (isFoundationHidden() && !hasCustomPlan()) return [];
   return getPlanPhases();
 }
-function getActivePlanStartDate() {
-  if (S.planGoalId) {
-    var goal = getGoals().find(function(g){ return g.id === S.planGoalId; });
-    if (goal && goal.createdAt) {
-      return goal.createdAt.slice(0,10);
-    }
-  }
-  return getStartDate();
-}
-function detectConflicts(sessions) {
-  // Conflict = two sessions that are both high-intensity on same day
-  // e.g. two IRON sessions, or IRON + FUNCTIONAL
-  // Easy Run + Lift = not a conflict
-  var conflicts = [];
-  var hardTags = ['IRON','FUNCTIONAL','HIIT','WOD','BUILD'];
-  var hardSessions = sessions.filter(function(s) {
-    return hardTags.some(function(t) { return (s.session.tag||'').includes(t); });
-  });
-  if (hardSessions.length > 1) {
-    conflicts = hardSessions;
-  }
-  return conflicts;
-}
 
-function renderConflictBanner(conflicts) {
-  if (!conflicts.length) return '';
-  var names = conflicts.map(function(c) { return c.session.label; }).join(' + ');
-  return '<div style="margin:0 16px 8px;background:var(--accent-bg);border:1px solid var(--accent-border);' +
-    'border-left:3px solid var(--accent);padding:10px 12px">' +
-    '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:4px">SCHEDULE CONFLICT</div>' +
-    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">' + names + ' both scheduled today.</div>' +
-    '<div style="display:flex;gap:8px;margin-top:8px">' +
-    '<button onclick="S.conflictOverride=true;renderMain()" style="background:none;border:1px solid var(--green-border);color:var(--green);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">DO BOTH</button>' +
-    '<button onclick="goPlan()" style="background:none;border:1px solid var(--border);color:var(--text3);font-family:var(--display);font-size:14px;letter-spacing:1px;padding:5px 10px;cursor:pointer">MOVE ONE</button>' +
-    '</div></div>';
-}
+
+
+
 // ============================================================
 // GOAL SYSTEM
 // ============================================================
@@ -4031,6 +4000,8 @@ function saveProgramEntry(program) {
   all[program.id] = program;
   savePrograms(all);
   return program;
+
+  try{syncProfileToCloud();}catch(e){}
 }
 
 function deleteProgramEntry(id) {
@@ -4066,6 +4037,8 @@ function getActiveGoals() { return getGoals('active'); }
 function saveGoals(goals) {
   localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
   syncGoalsToSupabase(goals).catch(() => {});
+
+  try{syncProfileToCloud();}catch(e){}
 }
 
 function upsertGoal(goal) {
@@ -4576,7 +4549,7 @@ function buildOfflinePlan(opts) {
 }
 
 // ---- HELPERS ----
-function makePlanId() { return 'p_' + Date.now().toString(36); }
+
 
 function phaseColor(i) {
   return ['var(--green)','var(--accent)','#80961F','#A6CB2A','#A6CB2A'][i % 5];
@@ -4980,14 +4953,37 @@ function getLibrary() {
 }
 function saveToLibrary(workout) {
   const lib = getLibrary();
+  const name = (workout.name || 'Saved Workout').trim();
+  const exercises = workout.exercises || [];
+
+  // Guard: don't save empty workouts
+  if (!exercises.length) return null;
+
+  // Dedup: same name + same exercise list = treat as already saved (update, don't duplicate)
+  const exKey = function(list){ return list.map(function(e){return (e.name||'').toLowerCase();}).sort().join('|'); };
+  const incomingKey = exKey(exercises);
+  const existing = lib.find(function(e){
+    return (e.name||'').trim().toLowerCase() === name.toLowerCase()
+        && exKey(e.exercises||[]) === incomingKey;
+  });
+  if (existing) {
+    // Already in library — refresh its timestamp, move to top, no duplicate
+    existing.savedAt = new Date().toISOString();
+    existing.exercises = exercises;
+    const without = lib.filter(function(e){ return e.id !== existing.id; });
+    without.unshift(existing);
+    localStorage.setItem(LIBRARY_KEY, JSON.stringify(without.slice(0, 50)));
+    return existing.id;
+  }
+
   const entry = {
     id: Date.now().toString(),
-    name: workout.name || 'Saved Workout',
-    exercises: workout.exercises,
+    name: name,
+    exercises: exercises,
     savedAt: new Date().toISOString(),
   };
   lib.unshift(entry);
-  localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib.slice(0, 50))); // max 50
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib.slice(0, 50)));
   syncLibraryToSupabase(entry).catch(() => {});
   return entry.id;
 }
@@ -5027,17 +5023,7 @@ async function syncLibraryToSupabase(entry) {
     }),
   });
 }
-async function loadPlanFromSupabase() {
-  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') return null;
-  try {
-    const uid = getUserId();
-    const res = await supaFetch('user_plans?user_id=eq.' + uid + '&limit=1');
-    if (!res.ok) return null;
-    const rows = await res.json();
-    if (!rows.length) return null;
-    return JSON.parse(rows[0].plan_data);
-  } catch(e) { return null; }
-}
+
 
 // --- Export / Import ---
 function exportAllData() {
@@ -5264,8 +5250,8 @@ const PB_QUESTIONS = [
 ];
 
 
-function pbSetStep(step){PB.step=step;renderMain();}
-function pbSetMode(mode){S.planMode=mode;renderMain();}
+
+
 function pbGoToday(){PB.step='start';S.planMode='myplan';renderMain();setTab('today');}
 function pbGoMyPlan(){PB.step='start';S.planMode='myplan';renderMain();}
 function pbStartQuestions(){PB.step='questions';PB.answers={};renderMain();}
@@ -5346,23 +5332,7 @@ function renderPlanReview(){
     '</div>';
 }
 
-async function buildAIPlan_unused(){
-  PB.loading=true;PB.error=null;PB.generatedPlan=null;renderMain();
-  const a=PB.answers;
-  const prompt='Create a structured training plan. Requirements: Goal: '+a.goal+'. Days/week: '+a.days+'. Duration: '+a.duration+'. Equipment: '+a.equip+'. Level: '+a.level+'. Split: '+a.focus+'. Return ONLY valid JSON: {"title":"Plan name","summary":"One sentence","phases":[{"id":0,"title":"PHASE NAME","short":"SHORT","weeks":"Wks 1-4","durationDays":28,"color":"#80961F","tagline":"Focus","dowMap":{"1":0,"3":1,"5":2},"schedule":[{"day":"MON","label":"Session name","tag":"TYPE","exercises":[{"n":"Exercise","d":"3 x 10 cue","t":"lift","log":true}]}]}]}. Rules: dowMap maps JS day-of-week (0=Sun) to schedule index. t values: warmup|bw|lift|circuit|core|cardio|mob|cool. Add log:true to loggable exercises, ro:true for reps-only. durationDays = weeks*7. Use only '+a.equip+' appropriate exercises. Scale to '+a.level+'.';
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,system:'You are a fitness coach. Output ONLY valid JSON. No markdown, no explanation.',messages:[{role:'user',content:prompt}]})});
-    if(!res.ok) throw new Error('API '+res.status);
-    const data=await res.json();
-    const text=data.content?.find(b=>b.type==='text')?.text||'';
-    const plan=JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'').trim());
-    if(!plan.phases||!Array.isArray(plan.phases)) throw new Error('Invalid structure');
-    plan.phases.forEach((ph,i)=>{ph.id=i;ph.color=ph.color||['#80961F','#80961F','#A6A9A6','#EF4444','#80961F'][i%5];ph.schedule=ph.schedule||[];});
-    PB.generatedPlan=plan;PB.step='review';PB.loading=false;renderMain();
-  }catch(e){
-    PB.loading=false;PB.error='Could not generate. Check connection. ('+e.message+')';PB.step='questions';renderMain();
-  }
-}
+
 
 function saveGeneratedPlan(){
   if(!PB.generatedPlan) return;
@@ -5378,6 +5348,81 @@ function handleImportFile(input){
   const reader=new FileReader();
   reader.onload=e=>{const ok=importData(e.target.result);if(ok){announce('Backup restored');setTimeout(()=>location.reload(),500);}else{showConfirm('Import failed — invalid file.',()=>{},'OK','red');}};
   reader.readAsText(file);
+}
+
+function renderGoalHeaderCard(){
+  const ap = S.planGoalId ? getGoals().find(function(g){return g.id===S.planGoalId;}) : null;
+  const isBase = !ap || !ap.programId;
+
+  // BASE (built-in, no goal) — simple header, no goal relationship
+  if(isBase){
+    if(isFoundationHidden() && !hasCustomPlan()) return '';
+    return '<div style="margin:0 16px 18px;padding:18px;background:linear-gradient(135deg,var(--bg2),var(--card));border:1px solid var(--border);border-radius:16px">'
+      + '<div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">STARTER PROGRAM</div>'
+      + '<div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:8px">BASE</div>'
+      + '<div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.5">A 14-week foundational strength + conditioning block. Set a goal to build a program tailored to a specific target.</div>'
+      + '</div>';
+  }
+
+  const prog = getProgramById(ap.programId);
+  const phases = getActivePlanPhases();
+  const todayPhase = getPhaseForDate(todayStr());
+  const curPhase = todayPhase >= 0 ? todayPhase : 0;
+  const totalPhases = phases.length;
+
+  // Countdown to target date
+  var countdownHtml = '';
+  if(ap.targetDate){
+    const days = Math.ceil((parseDate(ap.targetDate) - parseDate(todayStr())) / 86400000);
+    const td = fmtDate(ap.targetDate);
+    if(days > 0){
+      countdownHtml = '<div style="display:flex;align-items:baseline;gap:6px">'
+        + '<span style="font-family:var(--display);font-size:30px;color:var(--accent)">'+days+'</span>'
+        + '<span style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;color:var(--text3)">DAYS TO TARGET</span>'
+        + '</div>'
+        + '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:2px">'+td.full+'</div>';
+    } else if(days === 0){
+      countdownHtml = '<div style="font-family:var(--display);font-size:20px;color:var(--accent)">TARGET IS TODAY</div>';
+    } else {
+      countdownHtml = '<div style="font-family:var(--display);font-size:16px;color:var(--text3)">Target date passed</div>'
+        + '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:2px">'+td.full+'</div>';
+    }
+  } else {
+    countdownHtml = '<div style="font-family:var(--body);font-size:13px;color:var(--text3)">No target date set</div>';
+  }
+
+  // Discipline tag
+  const discLabel = ap.discipline ? getDisciplineLabel(ap.discipline) : null;
+
+  // Phase progress dots
+  var phaseDots = '';
+  for(var i=0;i<totalPhases;i++){
+    const isCur = i===curPhase;
+    const isPast = i<curPhase;
+    const col = isCur ? 'var(--accent)' : (isPast ? 'var(--text2)' : 'var(--border)');
+    const w = isCur ? '28px' : '16px';
+    phaseDots += '<div style="height:5px;width:'+w+';border-radius:3px;background:'+col+';transition:all .2s"></div>';
+  }
+
+  return '<div style="margin:0 16px 18px;padding:20px;background:linear-gradient(135deg,rgba(193,255,47,.08),var(--card));border:1px solid var(--accent-border);border-radius:16px">'
+    // GOAL label row
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
+    + '<span style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--accent)">GOAL</span>'
+    + (discLabel ? '<span style="font-family:var(--display);font-size:10px;letter-spacing:1px;color:var(--text3);border:1px solid var(--border);border-radius:100px;padding:2px 8px">'+discLabel.toUpperCase()+'</span>' : '')
+    + '</div>'
+    // Goal name
+    + '<div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:14px">'+(ap.label||'My Goal').toUpperCase()+'</div>'
+    // Countdown
+    + '<div style="margin-bottom:16px">'+countdownHtml+'</div>'
+    // Divider
+    + '<div style="height:1px;background:var(--border);margin:14px 0"></div>'
+    // PROGRAM relationship row
+    + '<div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">PROGRAM SERVING THIS GOAL</div>'
+    + '<div style="font-family:var(--display);font-size:16px;letter-spacing:1px;color:var(--text);margin-bottom:10px">'+(prog&&prog.name?prog.name:'Training Program')+'</div>'
+    // Phase progress
+    + '<div style="display:flex;gap:5px;align-items:center;margin-bottom:6px">'+phaseDots+'</div>'
+    + '<div style="font-family:var(--body);font-size:12px;color:var(--text3)">Phase '+(curPhase+1)+' of '+totalPhases+(phases[curPhase]&&phases[curPhase].title?' — '+phases[curPhase].title:'')+'</div>'
+    + '</div>';
 }
 
 function renderPlan(){
@@ -5422,15 +5467,8 @@ function renderPlan(){
     <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
   ${html}
-  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const progId=ap&&ap.programId; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">'+((()=>{ const _ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; const _prog=_ap&&_ap.programId?getProgramById(_ap.programId):null; return _prog&&_prog.name?_prog.name.toUpperCase():(hasCustomPlan()?'MY PROGRAM':'BASE'); })())+'</div>'+(progId?
-    '<div style="display:flex;gap:8px">'+
-    '<button onclick="programArchiveConfirm(\''+progId+'\')" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">ARCHIVE</button>'+
-    '<button onclick="deleteProgram(\''+progId+'\')" style="background:none;border:none;color:var(--red);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">DELETE</button>'+
-    '</div>'
-    :
-    // Foundation — show Hide button
-    (!isFoundationHidden()?'<button onclick="foundationHideConfirm()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer">HIDE</button>':'')
-  )+'</div>'; })()}
+  ${renderGoalHeaderCard()}
+  ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">SCHEDULE</div>'+'<button onclick="openProgramManage(\''+(ap?ap.id:'__base__')+'\')" style="background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:11px;letter-spacing:1.5px;padding:6px 14px;border-radius:100px;cursor:pointer">MANAGE</button>'+'</div>'; })()}
   ${(!hasCustomPlan() && isFoundationHidden()) ? '' : getActivePlanPhases().map((ph,pi)=>{
    const open=S.planOpen[pi];const di=S.planDayIdx[pi]||0;const day=ph.schedule[di];
    const isMoveOpen=S.planMove.open&&S.planMove.phaseIdx===pi&&S.planMove.dayIdx===di;
@@ -5599,10 +5637,19 @@ function customToggleDoneOnly(name){const ex=S.custom.exercises.find(e=>e.name==
 
 function saveCurrentToLibrary(){
   const exs=S.custom.exercises;
-  if(!exs.length) return;
-  const name=S.custom.workoutTitle||('Workout '+new Date().toLocaleDateString());
-  const id=saveToLibrary({name, exercises:exs.map(ex=>({name:ex.name,type:ex.type,repsOnly:ex.repsOnly}))});
-  announce('Saved to library');
+  if(!exs.length){ announce('Add exercises first'); return; }
+  const name=(S.custom.workoutTitle||('Workout '+new Date().toLocaleDateString())).trim();
+
+  // Check if an identical entry already exists (so we can tell the user)
+  const lib=getLibrary();
+  const exKey=function(list){ return list.map(function(e){return (e.name||'').toLowerCase();}).sort().join('|'); };
+  const incomingKey=exKey(exs.map(function(e){return {name:e.name};}));
+  const dupe=lib.find(function(e){
+    return (e.name||'').trim().toLowerCase()===name.toLowerCase() && exKey(e.exercises||[])===incomingKey;
+  });
+
+  saveToLibrary({name, exercises:exs.map(ex=>({name:ex.name,type:ex.type,repsOnly:ex.repsOnly}))});
+  announce(dupe?'Already in library — updated':'Saved to library');
   renderMain();
 }
 function loadFromLibrary(id){
@@ -5996,7 +6043,19 @@ function renderPlanLog(tabBar){
     S.planGoalId = S.logGoalId;
   }
 
-  const ph=getActivePlanPhases()[S.logPhase]||getActivePlanPhases()[0],day=(ph&&ph.schedule||[])[S.logDay]||((ph&&ph.schedule)||[])[0];const existing=getLogEntry(S.logDate);
+  const _phases=getActivePlanPhases();
+  const ph=_phases[S.logPhase]||_phases[0],day=(ph&&ph.schedule||[])[S.logDay]||((ph&&ph.schedule)||[])[0];const existing=getLogEntry(S.logDate);
+
+  // No active program — guide user to CUSTOM logging
+  if(!ph||!day){
+    return tabBar
+      +'<div class="fade-in" style="padding:40px 24px;text-align:center">'
+      +'<div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:10px">NO ACTIVE PROGRAM</div>'
+      +'<div style="font-family:var(--body);font-size:15px;color:var(--text3);line-height:1.6;margin-bottom:24px">You don\'t have a program scheduled. Log a workout your own way, or set one up.</div>'
+      +'<button class="action-btn" style="margin-bottom:10px" onclick="S.logMode=\'custom\';renderMain()">LOG A CUSTOM WORKOUT</button>'
+      +'<button class="action-btn secondary" onclick="setTab(\'plan\')">BROWSE PROGRAMS</button>'
+      +'</div>';
+  }
 
   // Restore planGoalId
   S.planGoalId = _origPlanGoalId;
@@ -6164,7 +6223,6 @@ function renderCustomLog(tabBar){
     ${[0,30,60,90,120,180].map(s=>`<button data-secs="${s}" onclick="saveRestDuration(${s})" style="font-family:var(--display);font-size:11px;letter-spacing:1px;padding:5px 8px;border-radius:8px;border:none;cursor:pointer;background:${(S.restDuration||90)===s?'var(--accent)':'rgba(255,255,255,.06)'};color:${(S.restDuration||90)===s?'#0B0D0B':'var(--text3)'}">${s===0?'OFF':s<60?s+'s':s%60?s+'s':Math.floor(s/60)+'m'}</button>`).join('')}
   </div>
  <button class="save-btn" id="save-btn-custom" onclick="saveCustomWorkout()">SAVE WORKOUT</button>
-  <button class="action-btn secondary" style="margin-top:6px;font-size:10px" onclick="(function(){const exs=S.custom.exercises;if(!exs.length)return;const name=S.custom.workoutTitle||'Custom Workout';saveToLibrary(name,'CUSTOM',exs.map(e=>({n:e.name,d:e.sets.length+' sets',t:e.type})),'custom');announce('Saved to library');})()">+ SAVE TO LIBRARY</button>
   ${squadBtn}${shareBlock}`:''}
   <div style="height:20px"></div>
  </div>`;
@@ -6830,7 +6888,7 @@ function renderToday(){
       <div style="font-family:var(--display);font-size:48px;color:var(--accent);line-height:1;margin-bottom:20px">⊕</div>
       <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO SESSION TODAY.</div>
       <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:280px;margin:0 auto 32px">
-        Set a goal and build your program to get yyour sessions and progress tracking started.
+        Set a goal and build a program to get your sessions and progress tracking started.
       </div>
       <button class="action-btn" onclick="S.showGoalCreator=true;renderMain()">
         CREATE YOUR FIRST GOAL
@@ -6869,7 +6927,7 @@ function renderToday(){
    <div class="forge-hero-label">TODAY</div>
    <div class="forge-hero-title">ANOTHER DAY.<br><span>ANOTHER SESSION.</span></div>
    <div class="forge-hero-copy">Consistency compounds. Keep the group moving.</div>
-   ${pi>=0?`<div style="margin-top:16px;font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)"><span class="phase-dot" style="background:${ph.color}"></span>PHASE ${pi+1} - ${ph.title}${isPregnancyMode()?' <span style="color:var(--accent)">- PREGNANCY SAFE</span>':''}</div>`:''}
+   ${(pi>=0&&ph)?`<div style="margin-top:16px;font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3)"><span class="phase-dot" style="background:${ph.color}"></span>PHASE ${pi+1} - ${ph.title}${isPregnancyMode()?' <span style="color:var(--accent)">- PREGNANCY SAFE</span>':''}</div>`:''}
   </div>
   ${S.showProfile ? `
   <div style="padding:0 0 4px">${renderProfilePanel()}</div>` : ''}
@@ -7355,20 +7413,9 @@ function timerStop() {
   timerUpdateUI();
 }
 
-function timerSkip() {
-  timerInit();
-  S.timer.remaining = 0;
-  timerComplete();
-}
 
-function timerSetRest(secs) {
-  S.restDuration = secs;
-  if (S.timer && S.timer.active && S.timer.mode === 'rest') {
-    S.timer.remaining = secs;
-    S.timer.total = secs;
-  }
-  timerUpdateUI();
-}
+
+
 
 // Surgical DOM update — never calls renderMain
 function timerUpdateUI() {
@@ -8058,7 +8105,6 @@ function migrateLegacyStore() {
     });
     if (changed) localStorage.setItem(STORE_KEY, JSON.stringify(s));
     localStorage.setItem('forge_store_v2_migrated', '1');
-    console.log('Forge: store migration complete');
   } catch(e) { console.warn('Forge: store migration failed', e); }
 }
 
@@ -8098,7 +8144,6 @@ function migrateToModelB() {
     }
 
     localStorage.setItem('forge_model_b_migrated', '1');
-    console.log('Forge: Model B migration complete');
   } catch(e) {
     console.warn('Forge: Model B migration failed', e);
     // Don't set the flag — will retry next load
