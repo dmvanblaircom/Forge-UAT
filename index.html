@@ -7021,6 +7021,37 @@ function renderBriefing(pi,ph){
   </div>`;
 }
 
+function renderAccountSection(){
+  const user = getUser() || {};
+  const hasEmail = !!(user.email && user.email.indexOf('@')>0);
+  const synced = hasEmail;
+
+  var statusLine;
+  if(hasEmail){
+    statusLine = '<div style="display:flex;align-items:center;gap:6px;margin-top:8px">'
+      + '<span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span>'
+      + '<span style="font-family:var(--body);font-size:12px;color:var(--text3)">Profile syncs to the cloud — restorable on any device</span>'
+      + '</div>';
+  } else {
+    statusLine = '<div style="display:flex;align-items:center;gap:6px;margin-top:8px">'
+      + '<span style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block"></span>'
+      + '<span style="font-family:var(--body);font-size:12px;color:var(--amber)">No email set — your data is only on this device</span>'
+      + '</div>';
+  }
+
+  return '<!-- ACCOUNT -->'
+    + '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:12px">ACCOUNT</div>'
+    + '<div style="margin-bottom:14px">'
+    + '<div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">EMAIL</div>'
+    + '<input type="email" inputmode="email" autocomplete="email" value="'+(user.email||'')+'" placeholder="you@example.com" '
+    + 'onblur="updateProfileField({email:this.value});renderMain()" '
+    + 'style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">'
+    + statusLine
+    + '</div>'
+    + '<button onclick="forgeRestorePrompt()" style="width:100%;background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:12px;letter-spacing:2px;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:6px">RESTORE FROM ANOTHER DEVICE</button>'
+    + '<div style="height:1px;background:var(--border);margin:18px 0"></div>';
+}
+
 function renderProfilePanel() {
   const user = getUser();
   const settings = getSettings();
@@ -7103,6 +7134,8 @@ function renderProfilePanel() {
         </div>` })()}
 
         <div style="height:1px;background:var(--border);margin:4px 0 18px"></div>
+
+        ${renderAccountSection()}
 
         <!-- 2. TRAINING PREFERENCES -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">TRAINING</div>
