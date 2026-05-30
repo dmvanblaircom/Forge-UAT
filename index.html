@@ -5467,12 +5467,21 @@ function renderPlan(){
  var html='';
 
   // Multi-goal plan switcher — always resolve planGoalId from first app goal
-  var appGoals = getActiveGoals().filter(function(g){ return g.planType==='app' || g.planType==='undecided'; });
+  var appGoals = getActiveGoals().filter(function(g){
+    // A goal with a real linked program is always a program.
+    if (g.programId) return true;
+    // A goal with NO program is the built-in "Base" goal — only show it if Base isn't hidden.
+    if (isFoundationHidden()) return false;
+    return g.planType==='app' || g.planType==='undecided';
+  });
   // Always ensure planGoalId is set to a valid goal
   if(appGoals.length > 0) {
     if(!S.planGoalId || !appGoals.find(function(g){return g.id===S.planGoalId;})) {
       S.planGoalId = appGoals[0].id;
     }
+  } else {
+    // No selectable programs — clear any stale (e.g. hidden Base) selection
+    S.planGoalId = null;
   }
   // Always show goal pills so user can see and switch programs
   if(appGoals.length > 0) {
@@ -7175,7 +7184,7 @@ function renderProfilePanel() {
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">ABOUT ME</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
           ${row('BIRTHDAY', '<input type="date" value="'+(user.birthday||'')+'" onblur="updateProfileField({birthday:this.value})" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none">'+(user.birthday?'<div style=\'font-family:var(--body);font-size:12px;color:var(--text3);margin-top:4px\'>Age '+ageFromBirthday(user.birthday)+'</div>':''))}
-          ${row('HEIGHT', '<div style="display:flex;gap:8px;align-items:center"><input type="number" inputmode="numeric" value="'+(user.heightFt||'')+'" placeholder="5" onblur="updateProfileField({heightFt:this.value})" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="font-family:var(--display);font-size:12px;color:var(--text3)">ft</span><input type="number" inputmode="numeric" value="'+(user.heightIn||'')+'" placeholder="10" onblur="updateProfileField({heightIn:this.value})" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="font-family:var(--display);font-size:12px;color:var(--text3)">in</span></div>')}
+          ${row('HEIGHT', '<div style="display:flex;gap:6px;align-items:center;min-width:0"><div style="flex:1;min-width:0;position:relative"><input type="number" inputmode="numeric" value="'+(user.heightFt||'')+'" placeholder="5" onblur="updateProfileField({heightFt:this.value})" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 26px 12px 12px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--display);font-size:11px;color:var(--text3);pointer-events:none">ft</span></div><div style="flex:1;min-width:0;position:relative"><input type="number" inputmode="numeric" value="'+(user.heightIn||'')+'" placeholder="10" onblur="updateProfileField({heightIn:this.value})" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 26px 12px 12px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--display);font-size:11px;color:var(--text3);pointer-events:none">in</span></div></div>')}
           ${row('CURRENT WEIGHT', inp('currentWeight', user.currentWeight, 'number', 'lbs'))}
           ${row('GOAL WEIGHT', inp('goalWeight', user.goalWeight, 'number', 'lbs'))}
         </div>
