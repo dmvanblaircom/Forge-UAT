@@ -10,6 +10,7 @@
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>FORGE</title>
 <link rel="manifest" href="./manifest.json">
+  <link rel="preload" as="image" href="./landing.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -2651,6 +2652,18 @@ async function fetchSquadFeed(limit=40) {
 // USER PROFILE
 // ============================================================
 const USER_KEY = 'forge_user';
+function ageFromBirthday(bd){
+  if(!bd) return '';
+  try {
+    const b = new Date(bd);
+    const now = new Date();
+    let age = now.getFullYear() - b.getFullYear();
+    const m = now.getMonth() - b.getMonth();
+    if(m < 0 || (m === 0 && now.getDate() < b.getDate())) age--;
+    return age >= 0 && age < 130 ? age : '';
+  } catch(e){ return ''; }
+}
+
 function getUser(){
   try {
     const u = JSON.parse(localStorage.getItem(USER_KEY)||'null');
@@ -2658,7 +2671,7 @@ function getUser(){
     // Ensure defaults for extended profile fields
     return {
       daysPerWeek: 4, sessionLength: 45, experience: 'intermediate',
-      age: '', height: '', currentWeight: '', goalWeight: '',
+      birthday: '', heightFt: '', heightIn: '', age: '', height: '', currentWeight: '', goalWeight: '',
       equipment: [],
       ...u
     };
@@ -2902,6 +2915,10 @@ function isFoundationHidden() {
 
 function hideFoundation() {
   localStorage.setItem('forge_foundation_hidden', '1');
+}
+function showFoundationFlag() {
+  // Clears the hidden flag without the restore modal (used at setup)
+  localStorage.removeItem('forge_foundation_hidden');
 }
 
 function showFoundation() {
@@ -3363,7 +3380,7 @@ function renderForgeRecentActivity(){
 // SETUP SCREEN
 // ============================================================
 let setupGender=null,setupPregnancy=false,setupPlanChoice=null,setupName="",setupEmail="",setupStep=1;
-let setupProfile={age:"",height:"",currentWeight:"",goalWeight:""};
+let setupProfile={birthday:"",heightFt:"",heightIn:"",currentWeight:"",goalWeight:""};
 let setupPrefs={daysPerWeek:4,sessionLength:45,experience:"intermediate",equipment:[]};
 
 function renderSetup(){
@@ -3439,7 +3456,22 @@ function renderSetup(){
       <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">A bit about you</div>
       <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Optional — powers weight tracking and tailored targets. Skip if you'd rather not.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        ${fld('age','AGE','—')}${fld('height','HEIGHT','ft or cm')}
+        <div style="margin-bottom:16px;grid-column:1/-1">
+          <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">BIRTHDAY</div>
+          <input type="date" value="${setupProfile.birthday||''}" oninput="setupProfile.birthday=this.value"
+            style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+        </div>
+        <div style="margin-bottom:16px;grid-column:1/-1">
+          <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">HEIGHT</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input type="number" inputmode="numeric" value="${setupProfile.heightFt||''}" placeholder="5" oninput="setupProfile.heightFt=this.value.trim()"
+              style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+            <span style="font-family:var(--display);font-size:13px;color:var(--text3)">ft</span>
+            <input type="number" inputmode="numeric" value="${setupProfile.heightIn||''}" placeholder="10" oninput="setupProfile.heightIn=this.value.trim()"
+              style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+            <span style="font-family:var(--display);font-size:13px;color:var(--text3)">in</span>
+          </div>
+        </div>
         ${fld('currentWeight','CURRENT WEIGHT','lbs')}${fld('goalWeight','GOAL WEIGHT','lbs')}
       </div>
       <button class="action-btn" onclick="setupStep=4;renderMain()" style="max-width:300px;margin-top:24px">CONTINUE →</button>
@@ -3516,8 +3548,9 @@ function _finishSetupSaveUser(){
     daysPerWeek: setupPrefs.daysPerWeek,
     sessionLength: setupPrefs.sessionLength,
     experience: setupPrefs.experience,
-    age: setupProfile.age || '',
-    height: setupProfile.height || '',
+    birthday: setupProfile.birthday || '',
+    heightFt: setupProfile.heightFt || '',
+    heightIn: setupProfile.heightIn || '',
     currentWeight: setupProfile.currentWeight || '',
     goalWeight: setupProfile.goalWeight || '',
     equipment: setupPrefs.equipment || [],
@@ -3528,7 +3561,7 @@ function _finishSetupSaveUser(){
   syncProfileToCloud();
   // Reset transient setup state
   setupGender=null;setupPregnancy=false;setupName='';setupStep=1;
-  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
+  setupProfile={birthday:'',heightFt:'',heightIn:'',currentWeight:'',goalWeight:''};
   setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};
   setupPlanChoice=null;
 }
@@ -3536,6 +3569,7 @@ function _finishSetupSaveUser(){
 // Route A: set a goal → opens the goal builder (program-building follows inside it)
 function finishSetupThenGoal(){
   _finishSetupSaveUser();
+  hideFoundation(); // they're building their own goal+program; Base shouldn't linger
   S.tab='today';
   S.showGoalCreator=true;
   gbReset();
@@ -3545,6 +3579,7 @@ function finishSetupThenGoal(){
 // Route B: use the built-in foundation program — no goal, default plan is the fallback
 function finishSetupWithDefault(){
   _finishSetupSaveUser();
+  showFoundationFlag(); // explicitly chose Base — ensure it's visible
   S.planMode='myplan';
   S.tab='today';
   renderNav();renderMain();
@@ -3553,6 +3588,7 @@ function finishSetupWithDefault(){
 // Route C: skip everything — land on Today, empty state prompts later
 function finishSetupSkip(){
   _finishSetupSaveUser();
+  hideFoundation(); // user logs their own way — don't force Base
   S.tab='today';
   renderNav();renderMain();
 }
@@ -5260,7 +5296,7 @@ function pbChangeAnswers(){PB.step='questions';PB.generatedPlan=null;renderMain(
 function pbClickImport(){document.getElementById("import-plan-file").click();}
 function pbResetProfile(){
   setupStep=1;setupName="";setupGender=null;setupPlanChoice=null;setupPregnancy=false;
-  setupProfile={age:'',height:'',currentWeight:'',goalWeight:''};
+  setupProfile={birthday:'',heightFt:'',heightIn:'',currentWeight:'',goalWeight:''};
   setupPrefs={daysPerWeek:4,sessionLength:45,experience:'intermediate'};showConfirm("Reset profile? Your data stays intact.", function(){localStorage.removeItem(USER_KEY);location.reload();}, "RESET", "red")}
 function pbDeletePlan(){showConfirm('Delete your current plan? Logs stay intact.',function(){deletePlan();S.planMode='myplan';renderMain();},'DELETE','red');}
 function pbSetAnswer(k,v){PB.answers[k]=v;renderMain();}
@@ -5467,6 +5503,14 @@ function renderPlan(){
     <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
   ${html}
+  ${(!hasCustomPlan() && isFoundationHidden() && !getActiveGoals().filter(function(g){return g.programId;}).length) ? `
+    <div style="padding:50px 28px 30px;text-align:center">
+      <div style="font-family:var(--display);font-size:40px;color:var(--accent);line-height:1;margin-bottom:18px">⊕</div>
+      <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:10px">NO ACTIVE PROGRAM</div>
+      <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.6;max-width:300px;margin:0 auto 26px">Create a program tied to a goal, or just log your training day-to-day from the Workout tab.</div>
+      <button class="action-btn" style="max-width:300px;margin:0 auto 10px" onclick="S.showGoalCreator=true;gbReset();renderMain()">CREATE A PROGRAM</button>
+      <button class="action-btn secondary" style="max-width:300px;margin:0 auto" onclick="S.logMode='custom';setTab('log')">LOG A CUSTOM WORKOUT</button>
+    </div>` : ''}
   ${renderGoalHeaderCard()}
   ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">SCHEDULE</div>'+'<button onclick="openProgramManage(\''+(ap?ap.id:'__base__')+'\')" style="background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:11px;letter-spacing:1.5px;padding:6px 14px;border-radius:100px;cursor:pointer">MANAGE</button>'+'</div>'; })()}
   ${(!hasCustomPlan() && isFoundationHidden()) ? '' : getActivePlanPhases().map((ph,pi)=>{
@@ -6877,6 +6921,17 @@ function formatDateDisplay(ds){
   const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   return {dow:days[d.getDay()],full:months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()};
 }
+function renderHomeHeader(){
+  return '<div class="forge-topbar">'
+    + '<div style="width:34px;flex-shrink:0"></div>'
+    + '<div class="forge-wordmark" style="font-size:24px;flex:1;text-align:center">FORGE</div>'
+    + '<button onclick="S.showProfile=!S.showProfile;renderMain()" aria-label="Profile and settings" '
+    + 'style="width:34px;height:34px;border-radius:50%;background:'+(S.showProfile?'var(--accent-bg)':'rgba(255,255,255,.06)')+';border:1px solid '+(S.showProfile?'var(--accent-border)':'var(--border)')+';display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:all 0.15s;color:'+(S.showProfile?'var(--accent)':'currentColor')+'">'
+    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    + '</button>'
+    + '</div>';
+}
+
 function renderToday(){
   if(S.showGoalCreator) return '<div class="fade-in">'+renderGoalCreator()+'</div>';
 
@@ -6884,7 +6939,13 @@ function renderToday(){
   const activeGoals = getActiveGoals();
   const planPhases  = getActivePlanPhases();
   if(!activeGoals.length && !planPhases.length){
-    return `<div class="fade-in" style="padding:40px 24px;text-align:center">
+    // Profile panel takes over when open (header button still works here)
+    if(S.showProfile){
+      return `<div class="fade-in"><div class="today-head forge-home">${renderHomeHeader()}</div><div style="padding:0 16px">${renderProfilePanel()}</div></div>`;
+    }
+    return `<div class="fade-in">
+      <div class="today-head forge-home">${renderHomeHeader()}</div>
+      <div style="padding:40px 24px;text-align:center">
       <div style="font-family:var(--display);font-size:48px;color:var(--accent);line-height:1;margin-bottom:20px">⊕</div>
       <div style="font-family:var(--display);font-size:32px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO SESSION TODAY.</div>
       <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:280px;margin:0 auto 32px">
@@ -6896,6 +6957,7 @@ function renderToday(){
       <button class="action-btn secondary" style="margin-top:10px" onclick="setTab('plan')">
         BROWSE PROGRAMS
       </button>
+      </div>
     </div>`;
   }
 
@@ -7112,8 +7174,8 @@ function renderProfilePanel() {
         <!-- 1. ABOUT ME -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">ABOUT ME</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-          ${row('AGE', inp('age', user.age, 'number', '—'))}
-          ${row('HEIGHT', inp('height', user.height, 'text', 'height'))}
+          ${row('BIRTHDAY', '<input type="date" value="'+(user.birthday||'')+'" onblur="updateProfileField({birthday:this.value})" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none">'+(user.birthday?'<div style=\'font-family:var(--body);font-size:12px;color:var(--text3);margin-top:4px\'>Age '+ageFromBirthday(user.birthday)+'</div>':''))}
+          ${row('HEIGHT', '<div style="display:flex;gap:8px;align-items:center"><input type="number" inputmode="numeric" value="'+(user.heightFt||'')+'" placeholder="5" onblur="updateProfileField({heightFt:this.value})" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="font-family:var(--display);font-size:12px;color:var(--text3)">ft</span><input type="number" inputmode="numeric" value="'+(user.heightIn||'')+'" placeholder="10" onblur="updateProfileField({heightIn:this.value})" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="font-family:var(--display);font-size:12px;color:var(--text3)">in</span></div>')}
           ${row('CURRENT WEIGHT', inp('currentWeight', user.currentWeight, 'number', 'lbs'))}
           ${row('GOAL WEIGHT', inp('goalWeight', user.goalWeight, 'number', 'lbs'))}
         </div>
@@ -8033,71 +8095,18 @@ function isIOS() {
 }
 
 function renderLanding() {
-  const ios = isIOS();
-  return `<div id="landing" style="
-    position:fixed;inset:0;z-index:10000;overflow-y:auto;
-    background:var(--bg);
-    display:flex;flex-direction:column;align-items:center;
-    padding:0 24px;text-align:center">
-
-    <!-- Hero -->
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;max-width:360px;padding:60px 0 32px">
-
-      <!-- Brand mark -->
-      <div style="margin-bottom:24px">
-        ${renderForgeMark(80)}
-      </div>
-
-      <!-- Wordmark -->
-      <div style="font-family:var(--display);font-size:56px;letter-spacing:8px;color:var(--text);line-height:1;margin-bottom:6px">FORGE</div>
-      <div style="font-family:var(--display);font-size:13px;letter-spacing:6px;color:var(--accent);margin-bottom:32px">GO ONE MORE.</div>
-
-      <!-- Brand copy -->
-      <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);line-height:1.3;margin-bottom:12px">
-        FORGE DISCIPLINE.<br>SHARPEN EACH OTHER.
-      </div>
-      <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:8px;font-style:italic">
-        As iron sharpens iron, so one person sharpens another.
-      </div>
-      <div style="font-family:var(--display);font-size:11px;letter-spacing:3px;color:var(--accent);margin-bottom:36px">PROVERBS 27:17</div>
-
-      <!-- CTA -->
-      <button onclick="dismissLanding()" class="action-btn" style="margin-top:0;max-width:280px;width:100%">
-        ENTER FORGE →
-      </button>
-
-      ${ios ? `
-      <!-- iOS install instructions -->
-      <div style="margin-top:28px;padding:18px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:320px;width:100%;text-align:left">
-        <div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;text-align:center">ADD TO HOME SCREEN</div>
-        <div style="font-family:var(--body);font-size:13px;color:var(--text2);line-height:1.8">
-          1. Tap <strong style="color:var(--text)">Share</strong> <span style="opacity:.6">(the box with arrow)</span><br>
-          2. Tap <strong style="color:var(--text)">Add to Home Screen</strong><br>
-          3. Open <strong style="color:var(--accent)">FORGE</strong> from your home screen
-        </div>
-      </div>` : `
-      <div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:20px;max-width:280px;line-height:1.6">
-        Add to your home screen for the full app experience and offline access.
-      </div>`}
-
-    </div>
-
-    <!-- Feature strip -->
-    <div style="width:100%;max-width:360px;padding:0 0 48px">
-      <div style="display:flex;gap:8px;justify-content:center">
-        ${[
-          ['GOALS','Set direction. Build a program around it.'],
-          ['SQUAD','Log workouts. Stay accountable together.'],
-          ['STREAK','Consecutive weeks. Consistency compounds.'],
-        ].map(([t,d])=>`
-          <div style="flex:1;padding:14px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:14px">
-            <div style="font-family:var(--display);font-size:13px;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px">${t}</div>
-            <div style="font-family:var(--body);font-size:11px;color:var(--text3);line-height:1.5">${d}</div>
-          </div>`).join('')}
-      </div>
+  const IMG = "./landing.png";
+  return `<div id="landing" style="position:fixed;inset:0;z-index:10000;overflow-y:auto;background:#0B0D0B;display:flex;align-items:center;justify-content:center">
+    <div style="position:relative;width:100%;max-width:520px;margin:auto">
+      <img src="${IMG}" alt="FORGE" onload="this.style.opacity=1" style="display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;pointer-events:none;opacity:0;transition:opacity .25s ease">
+      <!-- Invisible tap target over ENTER FORGE button -->
+      <button onclick="dismissLanding()" aria-label="Enter FORGE"
+        style="position:absolute;top:43.3%;left:28.4%;width:42.8%;height:5.2%;background:transparent;border:none;cursor:pointer;border-radius:40px"></button>
     </div>
   </div>`;
 }
+
+
 
 function dismissLanding() {
   S.landingDismissed = true;
@@ -8202,6 +8211,13 @@ function init(){
   }
 const pi=getPhaseForDate(todayStr());const di=getDayIdxForDate(todayStr(),pi>=0?pi:0);S.logPhase=pi>=0?pi:0;S.logDay=di>=0?di:0;const ex=getLogEntry(todayStr());if(ex){S.logSets=ex.sets;S.logNotes=ex.notes||'';}else initLogSets(S.logPhase,S.logDay);renderNav();renderMain();if(document.getElementById('main')){document.getElementById('main')._swipeAttached=false;document.getElementById('main')._ptrAttached=false;}}
 init();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(err){ console.warn('SW registration failed:', err); });
+  });
+}
 </script>
 </body>
 </html>

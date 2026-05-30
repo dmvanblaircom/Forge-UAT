@@ -1,4 +1,4 @@
-const CACHE = 'forge-v5';
+const CACHE = 'forge-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
+  './landing.png',
 ];
 
 self.addEventListener('install', e => {

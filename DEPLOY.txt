@@ -1,0 +1,35 @@
+FORGE — Deployment Package
+===========================
+
+Drop ALL of these files into the root of your GitHub Pages repo,
+replacing the existing ones.
+
+FILES:
+  index.html            The app
+  landing.png           Landing-page artwork (referenced by index.html)
+  sw.js                 Service worker — cache version forge-v8
+  manifest.json         PWA manifest
+  icon-192.png          App icon (192)
+  icon-512.png          App icon (512, maskable)
+  apple-touch-icon.png  iOS home-screen icon
+
+WHAT CHANGED THIS BUILD:
+- Landing image moved OUT of index.html into landing.png (fixes first-load flicker).
+  index.html dropped from ~795KB to ~417KB.
+- index.html preloads landing.png and fades it in (no flash).
+- Service worker now caches landing.png and is bumped to forge-v8 so
+  installed devices pull the fresh build automatically.
+
+ONE-TIME SUPABASE SQL (run once if not already done):
+
+  create table if not exists user_profiles (
+    uuid text primary key,
+    email text,
+    display_name text,
+    snapshot text,
+    updated_at timestamptz default now()
+  );
+  alter table user_profiles enable row level security;
+  create policy "anon all" on user_profiles for all using (true) with check (true);
+
+  alter table workouts add column if not exists local_date text;
