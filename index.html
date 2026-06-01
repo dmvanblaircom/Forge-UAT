@@ -140,12 +140,15 @@ body{
 
 /* ---- SHARED COMPONENTS ---- */
 .section-label{
-  font-family:var(--display);font-size:16px;letter-spacing:4px;
-  color:var(--text3);
-  margin-bottom:12px;
+  font-family:var(--display);
+  font-size:14px;
+  letter-spacing:3px;
+  color:var(--accent);
+  margin-bottom:16px;
   text-transform:uppercase;
+  opacity:1;
 }
-.section-label::before{content:'▸';color:var(--accent);font-size:9px}
+
 
 .card{
   background:var(--bg2);
@@ -956,11 +959,7 @@ input::placeholder, textarea::placeholder {
 }
 
 /* Section headers throughout app */
-.section-label {
-  font-family: var(--display);
-  font-size: 18px;
-  letter-spacing: 2px;
-}
+
 
 /* Fuel hero stat callout */
 .fuel-big-number {
@@ -1243,10 +1242,6 @@ textarea.notes,
 
 /* SECTION SPACING */
 
-.section-label{
-  margin-bottom:16px;
-}
-
 /* LESS HARSH EDGES */
 
 .day-tab,
@@ -1345,16 +1340,6 @@ textarea.notes,
 }
 
 /* PREMIUM SECTION LABELS */
-
-.section-label{
-  font-size:14px;
-
-  letter-spacing:3px;
-
-  color:var(--accent);
-
-  opacity:.9;
-}
 
 /* BETTER WORKOUT ROWS */
 
@@ -1640,11 +1625,6 @@ body{
   box-shadow:var(--shadow-soft);
 }
 
-.section-label::before{content:''}
-.section-label{
-  color:var(--accent);
-  opacity:1;
-}
 
 .action-btn,
 .save-btn{
@@ -3704,8 +3684,6 @@ function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
 
 
 
-
-
 function openProgramManage(goalId){
   const isBaseBuiltin = (goalId === '__base__');
   const goal = isBaseBuiltin ? null : getGoals().find(function(g){return g.id===goalId;});
@@ -5464,7 +5442,7 @@ function renderPlan(){
  </div>`;
  return `<div class="fade-in" style="padding:18px 0 20px">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px">
-    <div style="font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--text3)">MY PROGRAMS</div>
+    <div class="section-label" style="margin-bottom:0">MY PROGRAMS</div>
     <button onclick="S.showGoalCreator=true;gbReset();renderMain()" style="font-family:var(--display);font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--accent);color:#0B0D0B;border:none;border-radius:100px;cursor:pointer">+ NEW PROGRAM</button>
   </div>
   ${html}
