@@ -5462,6 +5462,7 @@ function renderGoalHeaderCard(){
 }
 
 function renderPlan(){
+ if(S.showGoalCreator) return '<div class="fade-in">'+renderGoalCreator()+'</div>';
  const skips=getSkips();const moves=getMoves();
  const mode=S.planMode||'myplan';
  var html='';
@@ -6732,17 +6733,10 @@ function logGeneratedWorkout(){
 function renderStats(){
  const store=loadStore();
  const totalLogs=Object.values(store).reduce((sum,day)=>sum+(Array.isArray(day)?day.length:1),0);
- // Empty state — no workouts logged yet
- if(totalLogs===0){
-   return `<div class="fade-in" style="padding:60px 24px;text-align:center">
-     <div style="font-family:var(--display);font-size:64px;color:var(--text3);line-height:1;margin-bottom:16px">📊</div>
-     <div style="font-family:var(--display);font-size:28px;letter-spacing:3px;color:var(--text);margin-bottom:10px">NO DATA YET</div>
-     <div style="font-family:var(--body);font-size:15px;color:var(--text2);line-height:1.6;max-width:260px;margin:0 auto 32px">
-       Log your first workout and your stats, history, and progress will appear here.
-     </div>
-     <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
-   </div>`;
- }
+ const noWorkouts = totalLogs===0;
+ // Default to METRICS tab when no workouts yet (so weight logging is reachable),
+ // otherwise default to HISTORY.
+ if(noWorkouts && (S.statsTab==='history' || !S.statsTab)) S.statsTab='metrics';
  const totalSkips=Object.values(getSkips()).filter(s=>s.type==='skipped').length;
  const totalMoves=Object.values(getSkips()).filter(s=>s.type==='moved').length;
  // Compute completion rate
@@ -6750,6 +6744,11 @@ function renderStats(){
  const rate=totalPlanned>0?Math.round(totalLogs/totalPlanned*100):0;
  return`<div class="fade-in" style="padding:18px 16px 30px;overflow-x:hidden;max-width:100%">
   <div class="section-label">STATS</div>
+  ${noWorkouts ? `
+  <div style="padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;text-align:center;margin-bottom:18px">
+    <div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:14px">No workouts logged yet. Your training stats appear here once you start. You can still track body metrics below.</div>
+    <button class="action-btn" style="max-width:280px;margin:0 auto" onclick="setTab('log')">LOG A WORKOUT</button>
+  </div>` : `
   <div class="stat-grid">
    ${(()=>{ const _m=getForgeMetrics(); return _m.hasProgram ?
     '<div class="stat-tile"><div class="stat-label">STREAK</div><div class="stat-value" style="color:var(--accent)">'+_m.streak+'</div><div class="stat-unit">WEEKS</div></div>' :
@@ -6758,7 +6757,7 @@ function renderStats(){
    <div class="stat-tile"><div class="stat-label">COMPLETION RATE</div><div class="stat-value">${rate}</div><div class="stat-unit">PERCENT</div></div>
    <div class="stat-tile"><div class="stat-label">MOVED</div><div class="stat-value" style="color:var(--accent)">${totalMoves}</div><div class="stat-unit">RESCHEDULED</div></div>
    <div class="stat-tile"><div class="stat-label">MISSED</div><div class="stat-value" style="color:var(--red)">${totalSkips}</div><div class="stat-unit">NOT DONE</div></div>
-  </div>
+  </div>`}
   <div class="intel-tabs">
    <button class="intel-tab ${S.statsTab==='history'?'active':''}" onclick="S.statsTab='history';renderMain()">HISTORY</button>
    <button class="intel-tab ${S.statsTab==='pt'?'active':''}" onclick="S.statsTab='pt';renderMain()">PT TEST</button>
@@ -7182,8 +7181,8 @@ function renderProfilePanel() {
 
         <!-- 1. ABOUT ME -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">ABOUT ME</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-          ${row('BIRTHDAY', '<input type="date" value="'+(user.birthday||'')+'" onblur="updateProfileField({birthday:this.value})" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none">'+(user.birthday?'<div style=\'font-family:var(--body);font-size:12px;color:var(--text3);margin-top:4px\'>Age '+ageFromBirthday(user.birthday)+'</div>':''))}
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:14px">
+          ${row('BIRTHDAY', '<input type="date" value="'+(user.birthday||'')+'" onblur="updateProfileField({birthday:this.value})" style="width:100%;box-sizing:border-box;min-width:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;outline:none">'+(user.birthday?'<div style=\'font-family:var(--body);font-size:12px;color:var(--text3);margin-top:4px\'>Age '+ageFromBirthday(user.birthday)+'</div>':''))}
           ${row('HEIGHT', '<div style="display:flex;gap:6px;align-items:center;min-width:0"><div style="flex:1;min-width:0;position:relative"><input type="number" inputmode="numeric" value="'+(user.heightFt||'')+'" placeholder="5" onblur="updateProfileField({heightFt:this.value})" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 26px 12px 12px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--display);font-size:11px;color:var(--text3);pointer-events:none">ft</span></div><div style="flex:1;min-width:0;position:relative"><input type="number" inputmode="numeric" value="'+(user.heightIn||'')+'" placeholder="10" onblur="updateProfileField({heightIn:this.value})" style="width:100%;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 26px 12px 12px;color:var(--text);font-family:var(--body);font-size:15px;outline:none"><span style="position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--display);font-size:11px;color:var(--text3);pointer-events:none">in</span></div></div>')}
           ${row('CURRENT WEIGHT', inp('currentWeight', user.currentWeight, 'number', 'lbs'))}
           ${row('GOAL WEIGHT', inp('goalWeight', user.goalWeight, 'number', 'lbs'))}
