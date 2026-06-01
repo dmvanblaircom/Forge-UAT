@@ -93,7 +93,6 @@
 .hist-sub,
 .fuel-target,
 
-
 /* Force dark color-scheme on all form controls — prevents iOS white bg */
 input,select,textarea{color-scheme:dark}
 
@@ -284,7 +283,6 @@ body{
 
 /* ---- CHECK-IN STRIP ---- */
 /* checkin-strip replaced by forge-checkin-card */
-
 
 .checkin-summary{font-family:var(--body);font-size:13px;color:var(--text2);letter-spacing:1px;text-align:right;line-height:1.6}
 
@@ -651,12 +649,7 @@ textarea.notes::placeholder{color:var(--text3)}
   margin-bottom:18px;
   position:relative;
 }
-.fuel-hero::before{
-  content:'NUTRITION';
-  position:absolute;top:0;left:0;right:0;
-  font-family:var(--display);font-size:13px;letter-spacing:4px;
-  color:var(--accent);opacity:0.4;
-}
+
 .fuel-big-number{
   font-family:var(--display);
   font-size:96px;letter-spacing:4px;line-height:0.9;
@@ -1940,8 +1933,6 @@ body{
 
 .forge-activity-row:last-child{border-bottom:none}
 
-
-
 div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   border-radius:22px !important;
   box-shadow:var(--shadow-soft) !important;
@@ -2008,8 +1999,6 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   .forge-metric{font-size:42px}
   .nav-btn{font-size:10px;letter-spacing:1px}
 }
-
-
 
 /* ============================================================
    CHECK-IN CARD — matches forge-card exactly
@@ -2080,7 +2069,6 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   flex-shrink: 0;
 }
 
-
 .fuel-food-row{
   display:flex;align-items:center;gap:12px;width:100%;
   background:var(--bg2);border:1px solid var(--border);border-radius:10px;
@@ -2108,8 +2096,7 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
       
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="5" y="7" width="3" height="10" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/><rect x="16" y="7" width="3" height="10" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/></svg>WORKOUT</button>
     <button class="nav-btn" id="nav-fuel" onclick="setTab('fuel')" aria-label="Fuel" role="tab" aria-selected="false">
-      
-      
+
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>FUEL</button>
     <button class="nav-btn" id="nav-squad" onclick="setTab('squad')" aria-label="Squad" role="tab" aria-selected="false">
       
@@ -2320,26 +2307,26 @@ const TM={
 // FOOD DATABASE
 // ============================================================
 const FOODS=[
- {n:"Chicken breast",p:"6 oz",g:42},
- {n:"Greek yogurt",p:"1 cup plain",g:20},
- {n:"Whey shake",p:"1 scoop",g:25},
- {n:"3 whole eggs",p:"3 large",g:18},
- {n:"Cottage cheese",p:"1 cup",g:25},
- {n:"Ground beef 80/20",p:"6 oz",g:42},
- {n:"Canned tuna",p:"1 can",g:25},
- {n:"Deli turkey",p:"4 oz",g:24},
- {n:"Salmon",p:"6 oz",g:40},
- {n:"Shrimp",p:"6 oz",g:36},
- {n:"Sirloin steak",p:"6 oz",g:46},
- {n:"Pork tenderloin",p:"6 oz",g:40},
- {n:"Tofu firm",p:"6 oz",g:25},
- {n:"Protein bar",p:"avg bar",g:20},
- {n:"2% milk",p:"1 cup",g:8},
- {n:"String cheese",p:"1 stick",g:7},
- {n:"Almonds",p:"1 oz",g:6},
- {n:"Peanut butter",p:"2 tbsp",g:8},
- {n:"4 egg whites",p:"4 whites",g:14},
- {n:"Beef jerky",p:"1 oz",g:11},
+ {n:"Chicken breast",p:"6 oz",g:42,c:"Meat & Fish"},
+ {n:"Greek yogurt",p:"1 cup plain",g:20,c:"Dairy & Eggs"},
+ {n:"Whey shake",p:"1 scoop",g:25,c:"Supplements & Other"},
+ {n:"3 whole eggs",p:"3 large",g:18,c:"Dairy & Eggs"},
+ {n:"Cottage cheese",p:"1 cup",g:25,c:"Dairy & Eggs"},
+ {n:"Ground beef 80/20",p:"6 oz",g:42,c:"Meat & Fish"},
+ {n:"Canned tuna",p:"1 can",g:25,c:"Meat & Fish"},
+ {n:"Deli turkey",p:"4 oz",g:24,c:"Meat & Fish"},
+ {n:"Salmon",p:"6 oz",g:40,c:"Meat & Fish"},
+ {n:"Shrimp",p:"6 oz",g:36,c:"Meat & Fish"},
+ {n:"Sirloin steak",p:"6 oz",g:46,c:"Meat & Fish"},
+ {n:"Pork tenderloin",p:"6 oz",g:40,c:"Meat & Fish"},
+ {n:"Tofu firm",p:"6 oz",g:25,c:"Supplements & Other"},
+ {n:"Protein bar",p:"avg bar",g:20,c:"Supplements & Other"},
+ {n:"2% milk",p:"1 cup",g:8,c:"Dairy & Eggs"},
+ {n:"String cheese",p:"1 stick",g:7,c:"Dairy & Eggs"},
+ {n:"Almonds",p:"1 oz",g:6,c:"Supplements & Other"},
+ {n:"Peanut butter",p:"2 tbsp",g:8,c:"Supplements & Other"},
+ {n:"4 egg whites",p:"4 whites",g:14,c:"Dairy & Eggs"},
+ {n:"Beef jerky",p:"1 oz",g:11,c:"Meat & Fish"},
 ];
 
 // ============================================================
@@ -2477,9 +2464,7 @@ function saveSkipEntry(date,type,phaseId,dayIdx,movedTo){const s=getSkips();s[da
 function getMoves(){try{return JSON.parse(localStorage.getItem(MOVES_KEY)||'{}')}catch(e){return{}}}
 function saveMoveEntry(targetDate,phaseId,dayIdx,originalDate){const m=getMoves();m[targetDate]={phaseId,dayIdx,originalDate,savedAt:new Date().toISOString()};localStorage.setItem(MOVES_KEY,JSON.stringify(m));}
 
-
 // getCheckin: see definition below
-
 
 function getAllFuel(){try{return JSON.parse(localStorage.getItem(FUEL_KEY)||'{}')}catch(e){return{}}}
 function getFuel(date){return getAllFuel()[date]||{entries:[]}}
@@ -2555,7 +2540,6 @@ function findMoveDates(fromDate,phaseId,dayIdx){
  return results;
 }
 
-
 const MOVE_MSGS={
  leg:"Leg days are the most skipped sessions in any program and the most important for physique change. Your lower body is your largest muscle group — it drives the results you want by July. Moving it works. Just make sure it actually gets done.",
  push:"Chest, shoulders, and triceps. This is the session that changes how you carry yourself. Moving it is fine as long as the sequence doesn't stack two hard sessions back to back.",
@@ -2594,7 +2578,7 @@ let S={
  libOpen:false,
  histOpen:{},showSettings:false,showBriefing:true,
  cantDo:{open:false,selectedMoveDate:null,moveDates:[]},
- fuelCustom:{name:'',grams:''}, fuelSearch:"",
+ fuelCustom:{name:'',grams:''}, fuelSearch:"", fuelBrowseOpen:false, fuelHistOpen:{},
  statsTab:'history',statsDataMsg:'',
  ptDraft:{pushups:'',row2k:'',mile:'',plank:'',notes:''},
  metricDraft:{weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''},
@@ -2603,8 +2587,6 @@ let S={
  planSubTab:'myplan',
 };
 let G={step:'start',location:null,equipment:(getUser()&&getUser().equipment)||[],focus:null,duration:(getUser()&&getUser().sessionLength?parseInt(getUser().sessionLength):null),result:null,error:null,loading:false};
-
-
 
 // ============================================================
 // WORKOUT DURATION ESTIMATES (minutes)
@@ -2617,8 +2599,6 @@ const DAY_DUFUEL = {
  "Upper Push (Ph4+)":60,"Legs (Ph4+)":55,"Run Day":45,"Upper Pull (Ph4+)":55,"End of July Test":75,
 };
 function getDayEst(label){return DAY_DUFUEL[label]||null}
-
-
 
 // ============================================================
 // SUPABASE CONFIG
@@ -2843,9 +2823,6 @@ window.forgeRestorePrompt = forgeRestorePrompt;
 window.forgeDoRestore = forgeDoRestore;
 
 
-
-
-
 // ============================================================
 // PROGRAM STATUS — archive, restore, hide Foundation
 // ============================================================
@@ -2961,15 +2938,6 @@ function showFoundation() {
   document.body.appendChild(modal);
 }
 
-function programArchiveConfirm(programId) {
-  const prog = getProgramById(programId);
-  const name = prog ? prog.name : 'this program';
-  showConfirm(
-    'Archive ' + name + '? It will be hidden but your history is preserved.',
-    function() { archiveProgram(programId); renderMain(); },
-    'ARCHIVE', 'amber'
-  );
-}
 
 function foundationHideConfirm() {
   showConfirm(
@@ -3283,7 +3251,6 @@ function getAllTodaySessions() {
   return results;
 }
 
-
 function renderForgeWorkoutCard(session, logged, todayEntries){
   // Delegates to multi-session version
   return renderTodayWorkoutCards(logged, todayEntries);
@@ -3338,7 +3305,6 @@ function renderTodayWorkoutCards(logged, todayEntries) {
       +'</div></div>';
   }).join('');
 }
-
 
 function getActivityReacts() {
   try { return JSON.parse(localStorage.getItem('forge_activity_reacts') || '{}'); }
@@ -3543,8 +3509,6 @@ function setupTogglePregnancy(){
   renderMain();
 }
 
-
-
 function _finishSetupSaveUser(){
   const userObj = {
     name: setupName.trim(),
@@ -3599,7 +3563,6 @@ function finishSetupSkip(){
   S.tab='today';
   renderNav();renderMain();
 }
-
 
 function timeAgo(isoStr){
   const diff=(Date.now()-new Date(isoStr))/1000;
@@ -3683,7 +3646,6 @@ function renderSquad(){
   </div>`;
 }
 
-
 async function buildExSummary(exercises){
   return exercises.map(([name,sets])=>{
     if(!sets||!sets.length) return null;
@@ -3741,15 +3703,8 @@ function sendToSquad(workoutTitle,phaseName,durationEst,exercises,notes){
 }
 
 
-function gotoLog(){setTab('log');setTimeout(initLogSwipe,100);}
-function goPlan(){setTab('plan');}
 
 
-
-function toggleGoalCard(id) {
-  S.activeGoalId = S.activeGoalId === id ? null : id;
-  renderMain();
-}
 
 function openProgramManage(goalId){
   const isBaseBuiltin = (goalId === '__base__');
@@ -3968,25 +3923,6 @@ function getTodayGoalSession(goal) {
 // Generic logger for own-plan users
 
 
-function saveGenericLog(goalId) {
-  var gl = S.genericLog;
-  if (!gl.activityType && !gl.duration) return;
-  var label = gl.activityType || 'Workout';
-  var summary = (gl.duration ? gl.duration + ' min' : '') + (gl.distance ? ' · ' + gl.distance + ' mi' : '') + (gl.intensity ? ' · RPE ' + gl.intensity : '');
-  // Save as a custom log entry
-  var sets = {};
-  sets[label] = [{reps: gl.duration || '', weight: gl.distance || '', done: true, intensity: gl.intensity}];
-  saveLogEntry(todayStr(), -1, -1, sets, (gl.notes || '') + (summary ? ' [' + summary + ']' : ''), label);
-
-  // Post to squad if configured
-  if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-    var goal = getGoals().find(function(g){return g.id===goalId;});
-    sendToSquad(label, goal ? goal.label : null, parseInt(gl.duration)||null, [[label,[{done:true}]]], gl.notes||'');
-  }
-  S.genericLog.open = false;
-  renderMain();
-}
-
 // ============================================================
 // MULTI-GOAL SESSION RESOLVER
 // ============================================================
@@ -4010,8 +3946,6 @@ function getActivePlanPhases() {
   if (isFoundationHidden() && !hasCustomPlan()) return [];
   return getPlanPhases();
 }
-
-
 
 
 // ============================================================
@@ -4187,7 +4121,6 @@ let GB = {
   error: null,
 };
 
-
 function gbClearDate(){GB.draft.targetDate='';gbNext();}
 function gbPlanOwn(){gbSetPlanType('own');}
 
@@ -4205,7 +4138,6 @@ function gbReuseProgram(programId) {
 function gbPlanApp(){gbSetPlanType('app');}
 function gbPlanUndecided(){gbSetPlanType('undecided');}
 function gbCancel(){gbReset();S.showGoalCreator=false;renderMain();}
-
 
 function gbReset() {
   GB.step = 0;
@@ -4569,7 +4501,6 @@ function goalAdaptPlan(goalId) {
   renderMain();
 }
 
-
 // ============================================================
 // OFFLINE PLAN TEMPLATE ENGINE
 // ============================================================
@@ -4592,7 +4523,6 @@ function buildOfflinePlan(opts) {
 }
 
 // ---- HELPERS ----
-
 
 function phaseColor(i) {
   return ['var(--green)','var(--accent)','#80961F','#A6CB2A','#A6CB2A'][i % 5];
@@ -4957,7 +4887,6 @@ const BACKUP_KEY    = 'forge_backup';
 // --- UUID ---
 // getUserId: see definition above
 
-
 // --- Plan storage ---
 function getStoredPlan() {
   try { return JSON.parse(localStorage.getItem(USERPLAN_KEY) || 'null'); }
@@ -5066,7 +4995,6 @@ async function syncLibraryToSupabase(entry) {
     }),
   });
 }
-
 
 // --- Export / Import ---
 function exportAllData() {
@@ -5264,8 +5192,6 @@ function renderExRow(ex, prefix){
 }
 
 
-
-
 // ============================================================
 // AI PLAN BUILDER
 // ============================================================
@@ -5293,12 +5219,36 @@ const PB_QUESTIONS = [
 ];
 
 
-
-
 function pbGoToday(){PB.step='start';S.planMode='myplan';renderMain();setTab('today');}
 function pbGoMyPlan(){PB.step='start';S.planMode='myplan';renderMain();}
 function pbStartQuestions(){PB.step='questions';PB.answers={};renderMain();}
-function pbRegenerate(){buildAIPlan();}
+function pbRegenerate(){
+  const a=PB.answers||{};
+  // Map the builder's goal answer to discipline + goalType
+  const goalMap={
+    'Build muscle and strength':{discipline:'weight_training',goalType:'strength'},
+    'Lose fat and get lean':{discipline:'weight_training',goalType:'fat_loss'},
+    'Improve fitness and endurance':{discipline:'functional',goalType:'endurance'},
+    'General health and feel better':{discipline:'functional',goalType:'general'}
+  };
+  const g=goalMap[a.goal]||{discipline:'weight_training',goalType:'general'};
+  try {
+    PB.generatedPlan = buildOfflinePlan({
+      discipline:g.discipline,
+      goalType:g.goalType,
+      days:a.days||'4 days',
+      duration:a.duration||'8 weeks',
+      experience:a.level||'Intermediate',
+      equipment:a.equip||'Dumbbells'
+    });
+    PB.step='review';
+    PB.error=null;
+  } catch(e){
+    PB.error='Could not build the program. Please try again.';
+    console.warn('pbRegenerate failed:',e);
+  }
+  renderMain();
+}
 function pbChangeAnswers(){PB.step='questions';PB.generatedPlan=null;renderMain();}
 function pbClickImport(){document.getElementById("import-plan-file").click();}
 function pbResetProfile(){
@@ -5374,8 +5324,6 @@ function renderPlanReview(){
     '<button class="action-btn secondary" onclick="pbChangeAnswers()">CHANGE ANSWERS</button>'+
     '</div>';
 }
-
-
 
 function saveGeneratedPlan(){
   if(!PB.generatedPlan) return;
@@ -6243,7 +6191,6 @@ function renderCustomLog(tabBar){
   const shareBlock=S.squadShareShown?`<div style="margin-top:12px;padding:12px;background:var(--green-bg);border:1px solid var(--green-border)"><div style="font-family:var(--display);font-size:15px;color:var(--green);letter-spacing:2px;margin-bottom:4px">${S.squadShareCopied?'\u2713 COPIED TO CLIPBOARD':'\u26a0 COPY FAILED'}</div><div style="font-family:var(--body);font-size:13px;color:var(--text2)">Paste into your group chat.</div></div>`:'';
   const squadBtn=SUPABASE_URL!=='YOUR_SUPABASE_URL'?`<button class="action-btn amber" onclick="saveAndShareCustomWorkout()" style="margin-top:8px">${getUserEmoji()}\u2705 SAVE + SEND TO SQUAD</button>`:'';
   const resultItems=results.map(name=>`<div data-exname="${name.replace(/"/g,'&quot;')}" onclick="customAddExercise(this.dataset.exname);document.getElementById('custom-search').value=''" style="padding:11px 14px;border-bottom:1px solid var(--border);font-family:var(--display);font-size:18px;letter-spacing:1.5px;color:var(--text2);cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>${name}</span><span style="font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);font-weight:300">+</span></div>`).join('');
-  
 
   return`<div class="fade-in" style="padding:0 16px 30px;overflow-x:hidden;max-width:100%">
   ${tabBar}
@@ -6422,7 +6369,10 @@ function renderFuel(){
       <input type="number" inputmode="numeric" enterkeyhint="done" class="custom-input" placeholder="Log today's calories" value="${calTotal||''}" oninput="setCalorieTotal(todayStr(),this.value)" style="flex:1">
     </div>
   </div>` })()}
-  <div class="fuel-section-label">QUICK ADD</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="fuel-section-label" style="margin:0">QUICK ADD</div>
+    <button onclick="S.fuelBrowseOpen=!S.fuelBrowseOpen;S.fuelSearch='';renderMain()" style="background:none;border:none;color:var(--accent);font-family:var(--display);font-size:12px;letter-spacing:1.5px;cursor:pointer;padding:4px 0">${S.fuelBrowseOpen?'CLOSE LIST':'BROWSE ALL ('+FOODS.length+')'}</button>
+  </div>
   <input type="text" class="custom-input" id="fuel-search" autocomplete="off" enterkeyhint="search" placeholder="Search foods (chicken, eggs, whey…)" value="${S.fuelSearch||''}" oninput="fuelSearchInput(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
   <div id="fuel-search-results">${fuelSearchResults()}</div>
   <div class="fuel-section-label">CUSTOM ENTRY</div>
@@ -6454,20 +6404,44 @@ function renderFuel(){
   <div style="font-family:var(--display);font-size:22px;color:var(--text2);letter-spacing:1px;margin-top:20px;padding:12px;border:1px solid var(--border);border-radius:2px;line-height:1.6">NOTE: Protein values are estimates. ±5–10g variance per meal is normal. The goal is knowing if you hit 160g or 90g, not perfect accuracy.</div>
  </div>`;
 }
+function fuelFoodRow(o){
+  return '<button class="fuel-food-row" onclick="logFoodQuick('+o.i+')">'
+    + '<div style="flex:1;min-width:0;text-align:left"><div style="font-family:var(--body);font-weight:700;font-size:16px;color:var(--text);text-transform:uppercase;letter-spacing:.5px">'+o.f.n+'</div>'
+    + '<div style="font-family:var(--body);font-size:13px;color:var(--text3)">'+o.f.p+'</div></div>'
+    + '<div style="font-family:var(--display);font-size:18px;color:var(--accent);letter-spacing:1px;flex-shrink:0">+'+o.f.g+'G</div>'
+    + '</button>';
+}
 function fuelSearchResults(){
   const q=(S.fuelSearch||'').trim().toLowerCase();
-  const matches = q ? FOODS.map((f,i)=>({f,i})).filter(o=>o.f.n.toLowerCase().includes(q))
-                    : FOODS.map((f,i)=>({f,i})).slice(0,5);
-  if(!matches.length) return '<div style="font-family:var(--body);font-size:14px;color:var(--text3);padding:10px 2px 14px">No match — add it as a custom entry below.</div>';
-  return '<div style="margin-bottom:14px">'+matches.map(function(o){
-    return '<button class="fuel-food-row" onclick="logFoodQuick('+o.i+')">'
-      + '<div style="flex:1;min-width:0;text-align:left"><div style="font-family:var(--body);font-weight:700;font-size:16px;color:var(--text);text-transform:uppercase;letter-spacing:.5px">'+o.f.n+'</div>'
-      + '<div style="font-family:var(--body);font-size:13px;color:var(--text3)">'+o.f.p+'</div></div>'
-      + '<div style="font-family:var(--display);font-size:18px;color:var(--accent);letter-spacing:1px;flex-shrink:0">+'+o.f.g+'G</div>'
-      + '</button>';
-  }).join('')
-  + (!q?'<div style="font-family:var(--body);font-size:13px;color:var(--text3);padding:8px 2px 0">Type to search all '+FOODS.length+' foods.</div>':'')
-  + '</div>';
+  const all=FOODS.map(function(f,i){return {f:f,i:i};});
+
+  // SEARCHING — show matches
+  if(q){
+    const matches=all.filter(function(o){return o.f.n.toLowerCase().includes(q);});
+    if(!matches.length) return '<div style="font-family:var(--body);font-size:14px;color:var(--text3);padding:10px 2px 14px">Not in the quick list — add "<strong style=\'color:var(--text2)\'>'+(S.fuelSearch||'').trim()+'</strong>" as a custom entry below.</div>';
+    return '<div style="margin-bottom:14px">'+matches.map(fuelFoodRow).join('')+'</div>';
+  }
+
+  // BROWSING — show the full list grouped by category
+  if(S.fuelBrowseOpen){
+    const cats=[];
+    all.forEach(function(o){ const cat=o.f.c||'Other'; if(cats.indexOf(cat)<0)cats.push(cat); });
+    var html='<div style="margin-bottom:14px">';
+    cats.forEach(function(cat){
+      html+='<div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin:12px 2px 6px">'+cat.toUpperCase()+'</div>';
+      html+=all.filter(function(o){return (o.f.c||'Other')===cat;}).map(fuelFoodRow).join('');
+    });
+    html+='<div style="font-family:var(--body);font-size:13px;color:var(--text3);padding:12px 2px 0;line-height:1.5">Don\'t see it? Add anything not listed as a custom entry below.</div>';
+    html+='</div>';
+    return html;
+  }
+
+  // DEFAULT — a few favorites + guidance
+  const favs=all.slice(0,5);
+  return '<div style="margin-bottom:14px">'
+    + favs.map(fuelFoodRow).join('')
+    + '<div style="font-family:var(--body);font-size:13px;color:var(--text3);padding:8px 2px 0;line-height:1.5">Search above, tap <span style="color:var(--accent)">BROWSE ALL</span> to see every quick food, or add your own as a custom entry below.</div>'
+    + '</div>';
 }
 function fuelSearchInput(v){
   S.fuelSearch=v;
@@ -6475,7 +6449,7 @@ function fuelSearchInput(v){
   const el=document.getElementById('fuel-search-results');
   if(el) el.innerHTML=fuelSearchResults();
 }
-function logFoodQuick(idx){const f=FOODS[idx];addFuelEntry(todayStr(),`${f.n} (${f.p})`,f.g);S.fuelSearch="";renderMain();}
+function logFoodQuick(idx){const f=FOODS[idx];addFuelEntry(todayStr(),`${f.n} (${f.p})`,f.g);S.fuelSearch="";S.fuelBrowseOpen=false;renderMain();}
 function logFoodCustom(){const n=S.fuelCustom.name.trim();const g=parseInt(S.fuelCustom.grams);if(!n||!g||g<=0)return;addFuelEntry(todayStr(),n,g);S.fuelCustom={name:'',grams:''};renderMain();}
 function removeFoodLog(idx){removeFuelEntry(todayStr(),idx);renderMain();}
 
@@ -6765,7 +6739,7 @@ function renderStats(){
  const noWorkouts = totalLogs===0;
  // Default to METRICS tab when no workouts yet (so weight logging is reachable),
  // otherwise default to HISTORY.
- if(noWorkouts && (S.statsTab==='history' || !S.statsTab)) S.statsTab='metrics';
+ if(noWorkouts && !S.statsTab) S.statsTab='metrics';
  const totalSkips=Object.values(getSkips()).filter(s=>s.type==='skipped').length;
  const totalMoves=Object.values(getSkips()).filter(s=>s.type==='moved').length;
  // Compute completion rate
@@ -6791,15 +6765,91 @@ function renderStats(){
    <button class="intel-tab ${S.statsTab==='history'?'active':''}" onclick="S.statsTab='history';renderMain()">HISTORY</button>
    <button class="intel-tab ${S.statsTab==='pt'?'active':''}" onclick="S.statsTab='pt';renderMain()">PT TEST</button>
    <button class="intel-tab ${S.statsTab==='metrics'?'active':''}" onclick="S.statsTab='metrics';renderMain()">METRICS</button>
+   <button class="intel-tab ${S.statsTab==='fuel'?'active':''}" onclick="S.statsTab='fuel';renderMain()">FUEL</button>
    <button class="intel-tab ${S.statsTab==='goals'?'active':''}" onclick="S.statsTab='goals';renderMain()">GOALS</button>
    <button class="intel-tab ${S.statsTab==='data'?'active':''}" onclick="S.statsTab='data';renderMain()">DATA</button>
   </div>
   ${S.statsTab==='history'?renderHistoryBlock():''}
   ${S.statsTab==='pt'?renderPTBlock():''}
   ${S.statsTab==='metrics'?renderMetricsBlock():''}
+  ${S.statsTab==='fuel'?renderFuelHistory():''}
   ${S.statsTab==='goals'?renderGoalsHistory():''}
   ${S.statsTab==='data'?renderDataBlock():''}
  </div>`;
+}
+
+function toggleFuelDay(date){
+  if(!S.fuelHistOpen) S.fuelHistOpen={};
+  S.fuelHistOpen[date]=!S.fuelHistOpen[date];
+  renderMain();
+}
+function renderFuelHistory(){
+  const all=getFuelRaw();
+  const target=getProteinTarget();
+  // Collect dates that have entries or calories, newest first
+  const dates=Object.keys(all).filter(function(d){
+    const f=all[d]||{}; return (f.entries&&f.entries.length)||f.calories;
+  }).sort(function(a,b){return b.localeCompare(a);});
+
+  if(!dates.length){
+    return '<div style="padding:30px 0;text-align:center;font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text2);line-height:2">NO FUEL LOGGED YET.<br><br>TRACK YOUR PROTEIN.</div>';
+  }
+
+  // 7-day average summary
+  var wTotal=0, wDays=0;
+  for(var i=0;i<7;i++){ const d=addDays(todayStr(),-i); const t=getProteinTotal(d); if(t>0){wTotal+=t;wDays++;} }
+  const wAvg=wDays>0?Math.round(wTotal/wDays):0;
+
+  if(!S.fuelHistOpen) S.fuelHistOpen={};
+
+  var html='<div style="margin-bottom:14px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;display:flex;justify-content:space-between;align-items:baseline">'
+    + '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text3)">7-DAY AVG</div>'
+    + '<div><span style="font-family:var(--display);font-size:28px;color:var(--accent)">'+wAvg+'</span><span style="font-family:var(--display);font-size:14px;color:var(--text3);letter-spacing:1px"> G/DAY</span></div>'
+    + '</div>';
+
+  html+=dates.map(function(date){
+    const f=all[date]||{entries:[]};
+    const entries=f.entries||[];
+    const total=entries.reduce(function(s,e){return s+(e.grams||0);},0);
+    const cals=f.calories||0;
+    const hit=total>=target;
+    const pct=target?Math.min(100,Math.round(total/target*100)):0;
+    const open=!!S.fuelHistOpen[date];
+    const fd=fmtDate(date);
+
+    var row='<button onclick="toggleFuelDay(\'' + date + '\')" style="display:flex;align-items:center;gap:12px;width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:6px;cursor:pointer;text-align:left">'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--text)">'+fd.dow+' '+fd.full+'</div>'
+      + '<div style="height:4px;background:var(--border);border-radius:2px;margin-top:7px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(hit?'var(--green)':'var(--accent)')+'"></div></div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+      + '<div style="font-family:var(--display);font-size:20px;color:'+(hit?'var(--green)':'var(--accent)')+'">'+total+'<span style="font-size:12px;color:var(--text3)">/'+target+'G</span></div>'
+      + (cals?'<div style="font-family:var(--body);font-size:12px;color:var(--text3)">'+cals+' kcal</div>':'')
+      + '</div>'
+      + '<span style="font-size:11px;color:var(--text3);flex-shrink:0;transform:'+(open?'rotate(180deg)':'rotate(0deg)')+';transition:transform .2s">▼</span>'
+      + '</button>';
+
+    if(open){
+      row+='<div style="margin:-2px 0 8px;padding:4px 14px 8px">';
+      if(entries.length){
+        row+=entries.map(function(e){
+          var tStr='';
+          try{ const t=new Date(e.time); const hh=t.getHours(),mm=String(t.getMinutes()).padStart(2,'0'); tStr=(hh>12?hh-12:hh||12)+':'+mm+' '+(hh>=12?'PM':'AM'); }catch(x){}
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">'
+            + '<div style="flex:1;min-width:0"><div style="font-family:var(--body);font-size:14px;color:var(--text)">'+e.food+'</div>'
+            + (tStr?'<div style="font-family:var(--body);font-size:12px;color:var(--text3)">'+tStr+'</div>':'')+'</div>'
+            + '<div style="font-family:var(--display);font-size:15px;color:var(--accent);letter-spacing:1px">'+e.grams+'G</div>'
+            + '</div>';
+        }).join('');
+      } else {
+        row+='<div style="font-family:var(--body);font-size:13px;color:var(--text3);padding:6px 0">Only calories logged this day — no individual foods.</div>';
+      }
+      row+='</div>';
+    }
+    return row;
+  }).join('');
+
+  return '<div>'+html+'</div>';
 }
 
 function renderHistoryBlock(){
@@ -6903,7 +6953,6 @@ function renderMetricsBlock(){
 function saveMetricNow(){const d=S.metricDraft;const data={};if(d.weight)data.weight=d.weight;if(d.bodyFat)data.bodyFat=d.bodyFat;if(d.waist)data.waist=d.waist;if(d.chest)data.chest=d.chest;if(d.arms)data.arms=d.arms;if(d.notes)data.notes=d.notes;if(Object.keys(data).length===0)return;saveMetric(todayStr(),data);S.metricDraft={weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''};renderMain();}
 function delMetric(date){deleteMetric(date);renderMain();}
 
-
 function reactivateGoal(id){var all=getGoals();var g=all.find(function(x){return x.id===id;});if(g){g.status='active';saveGoals(all);renderMain();}}
 function renderGoalsHistory() {
   var allGoals = getGoals();
@@ -6962,8 +7011,6 @@ function renderDataBlock(){
     '</div>'+
     '</div>';
 }
-
-
 
 // ============================================================
 // TODAY TAB
@@ -7084,7 +7131,6 @@ function renderToday(){
     </div>
   </div>
 
-   
    ${renderForgeWorkoutCard(session,logged,todayEntries)}
    ${renderForgeRecentActivity()}
   </div>`;
@@ -7562,9 +7608,6 @@ function timerStop() {
 }
 
 
-
-
-
 // Surgical DOM update — never calls renderMain
 function timerUpdateUI() {
   const el = document.getElementById('forge-timer-bar');
@@ -7660,7 +7703,6 @@ function ackMilestone(n) {
     localStorage.setItem('forge_streak_acked', JSON.stringify(acked));
   }
 }
-
 
 function getNextMilestone(streak) {
   const next = STREAK_MILESTONES.find(m => m > streak);
@@ -8131,7 +8173,6 @@ function selectPlanMoveTarget(ds) {
  renderMain();
 }
 
-
 // ============================================================
 // LANDING PAGE — browser-only, never shown to installed users
 // ============================================================
@@ -8142,10 +8183,6 @@ function isStandalone() {
       || document.referrer.startsWith('android-app://');
 }
 
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent)
-      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
 
 function renderLanding() {
   const IMG = "./landing.png";
@@ -8158,8 +8195,6 @@ function renderLanding() {
     </div>
   </div>`;
 }
-
-
 
 function dismissLanding() {
   S.landingDismissed = true;
@@ -8178,7 +8213,6 @@ function dismissLanding() {
     renderMain();
   }
 }
-
 
 // ============================================================
 // MODEL B MIGRATION — run once on app init
