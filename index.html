@@ -2080,6 +2080,13 @@ div[style*="background:var(--bg2);border:1px solid var(--border)"]{
   flex-shrink: 0;
 }
 
+
+.fuel-food-row{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:6px;cursor:pointer;transition:all .1s;
+}
+.fuel-food-row:active{ background:var(--elevated);border-color:var(--accent-border); }
 </style>
 </head>
 <body>
@@ -2587,7 +2594,7 @@ let S={
  libOpen:false,
  histOpen:{},showSettings:false,showBriefing:true,
  cantDo:{open:false,selectedMoveDate:null,moveDates:[]},
- fuelCustom:{name:'',grams:''},
+ fuelCustom:{name:'',grams:''}, fuelSearch:"",
  statsTab:'history',statsDataMsg:'',
  ptDraft:{pushups:'',row2k:'',mile:'',plank:'',notes:''},
  metricDraft:{weight:'',bodyFat:'',waist:'',chest:'',arms:'',notes:''},
@@ -6416,7 +6423,8 @@ function renderFuel(){
     </div>
   </div>` })()}
   <div class="fuel-section-label">QUICK ADD</div>
-  <div class="food-grid">${FOODS.map((f,i)=>`<button class="food-tile" onclick="logFoodQuick(${i})"><div class="food-name">${f.n}</div><div class="food-portion">${f.p}</div><div class="food-grams">+${f.g}G</div></button>`).join('')}</div>
+  <input type="text" class="custom-input" id="fuel-search" autocomplete="off" enterkeyhint="search" placeholder="Search foods (chicken, eggs, whey…)" value="${S.fuelSearch||''}" oninput="fuelSearchInput(this.value)" style="width:100%;box-sizing:border-box;margin-bottom:8px">
+  <div id="fuel-search-results">${fuelSearchResults()}</div>
   <div class="fuel-section-label">CUSTOM ENTRY</div>
   <div class="custom-input-row">
    <input type="text" class="custom-input" id="fuel-custom-name" enterkeyhint="next" autocomplete="off" placeholder="Food name" value="${S.fuelCustom.name}" oninput="S.fuelCustom.name=this.value">
@@ -6446,7 +6454,28 @@ function renderFuel(){
   <div style="font-family:var(--display);font-size:22px;color:var(--text2);letter-spacing:1px;margin-top:20px;padding:12px;border:1px solid var(--border);border-radius:2px;line-height:1.6">NOTE: Protein values are estimates. ±5–10g variance per meal is normal. The goal is knowing if you hit 160g or 90g, not perfect accuracy.</div>
  </div>`;
 }
-function logFoodQuick(idx){const f=FOODS[idx];addFuelEntry(todayStr(),`${f.n} (${f.p})`,f.g);renderMain();}
+function fuelSearchResults(){
+  const q=(S.fuelSearch||'').trim().toLowerCase();
+  const matches = q ? FOODS.map((f,i)=>({f,i})).filter(o=>o.f.n.toLowerCase().includes(q))
+                    : FOODS.map((f,i)=>({f,i})).slice(0,5);
+  if(!matches.length) return '<div style="font-family:var(--body);font-size:14px;color:var(--text3);padding:10px 2px 14px">No match — add it as a custom entry below.</div>';
+  return '<div style="margin-bottom:14px">'+matches.map(function(o){
+    return '<button class="fuel-food-row" onclick="logFoodQuick('+o.i+')">'
+      + '<div style="flex:1;min-width:0;text-align:left"><div style="font-family:var(--body);font-weight:700;font-size:16px;color:var(--text);text-transform:uppercase;letter-spacing:.5px">'+o.f.n+'</div>'
+      + '<div style="font-family:var(--body);font-size:13px;color:var(--text3)">'+o.f.p+'</div></div>'
+      + '<div style="font-family:var(--display);font-size:18px;color:var(--accent);letter-spacing:1px;flex-shrink:0">+'+o.f.g+'G</div>'
+      + '</button>';
+  }).join('')
+  + (!q?'<div style="font-family:var(--body);font-size:13px;color:var(--text3);padding:8px 2px 0">Type to search all '+FOODS.length+' foods.</div>':'')
+  + '</div>';
+}
+function fuelSearchInput(v){
+  S.fuelSearch=v;
+  // Surgically update only the results list — preserves input focus (no full re-render)
+  const el=document.getElementById('fuel-search-results');
+  if(el) el.innerHTML=fuelSearchResults();
+}
+function logFoodQuick(idx){const f=FOODS[idx];addFuelEntry(todayStr(),`${f.n} (${f.p})`,f.g);S.fuelSearch="";renderMain();}
 function logFoodCustom(){const n=S.fuelCustom.name.trim();const g=parseInt(S.fuelCustom.grams);if(!n||!g||g<=0)return;addFuelEntry(todayStr(),n,g);S.fuelCustom={name:'',grams:''};renderMain();}
 function removeFoodLog(idx){removeFuelEntry(todayStr(),idx);renderMain();}
 
@@ -6897,15 +6926,31 @@ function renderDataBlock(){
   const hasPlan=hasCustomPlan();
   return '<div>'+
     '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--accent);margin-bottom:4px">YOUR DATA</div>'+
-    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:16px">All your data lives on this device. Export a backup anytime — restore it on any device with the same URL.</div>'+
+    '<div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:16px">Your profile and history sync to the cloud under your email, so you can restore everything on a new device by signing in with the same email.</div>'+
     '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px">'+
     '<div style="font-family:var(--display);font-size:13px;letter-spacing:2px;color:var(--text3);margin-bottom:8px">CURRENT STORAGE</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+logsCount+' workout sessions logged</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);margin-bottom:4px">'+libCount+' workouts in library</div>'+
     '<div style="font-family:var(--body);font-size:14px;color:var(--text2);">'+(hasPlan?'Custom program saved':'Using foundation program')+'</div>'+
     '</div>'+
-    '<button class="action-btn" onclick="exportAllData()">EXPORT BACKUP TO PHONE</button>'+
-    '<div style="font-family:var(--body);font-size:13px;color:var(--text3);margin-top:8px;margin-bottom:16px;line-height:1.5">Saves a .json file to your phone. Use it to restore if you clear browser data or switch devices.</div>'+
+    // ── Cloud sync (primary) ──
+    ((user && user.email && user.email.indexOf('@')>0) ?
+      '<div style="display:flex;align-items:center;gap:8px;padding:14px;background:var(--bg2);border:1px solid var(--accent-border);border-radius:var(--radius);margin-bottom:8px">'+
+      '<span style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0"></span>'+
+      '<div style="font-family:var(--body);font-size:14px;color:var(--text);line-height:1.4">Cloud sync on — restoring as <strong>'+user.email+'</strong></div>'+
+      '</div>'
+      :
+      '<div style="padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0"></span><div style="font-family:var(--body);font-size:14px;color:var(--amber)">No email set — cloud sync off</div></div>'+
+      '<div style="font-family:var(--body);font-size:13px;color:var(--text3);line-height:1.5;margin-bottom:10px">Add your email in Profile to back up to the cloud and restore on any device.</div>'+
+      '<button class="action-btn" style="margin:0" onclick="S.showProfile=true;setTab(\'today\')">ADD EMAIL IN PROFILE</button>'+
+      '</div>')+
+    '<button class="action-btn secondary" onclick="forgeRestorePrompt()" style="margin-bottom:24px">RESTORE FROM ANOTHER DEVICE</button>'+
+    // ── Manual file backup (secondary) ──
+    '<div style="height:1px;background:var(--border);margin:4px 0 18px"></div>'+
+    '<div style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">MANUAL BACKUP</div>'+
+    '<div style="font-family:var(--body);font-size:13px;color:var(--text3);line-height:1.5;margin-bottom:12px">Optional. Save a local .json file you control — useful as an extra copy or if you don\'t use email sync.</div>'+
+    '<button class="action-btn secondary" onclick="exportAllData()" style="margin-bottom:8px">EXPORT BACKUP FILE</button>'+
     '<button class="action-btn secondary" onclick="pbClickImport()">IMPORT BACKUP FILE</button>'+
     '<input type="file" id="import-plan-file" accept=".json" style="display:none" onchange="handleImportFile(this)">'+
     '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">'+
