@@ -1,4 +1,4 @@
-const CACHE = 'forge-v14';
+const CACHE = 'forge-v18';
 const ASSETS = [
   './',
   './index.html',
@@ -24,7 +24,14 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const req = e.request;
+  const url = new URL(req.url);
+  // Only handle same-origin GET requests from cache; let API calls (Supabase) and
+  // non-GET requests go straight to the network so live data is never stale.
+  if (req.method !== 'GET' || url.origin !== self.location.origin) {
+    return; // default browser network handling
+  }
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    caches.match(req).then(r => r || fetch(req))
   );
 });
