@@ -3351,7 +3351,7 @@ function renderSetup(){
   const back = (toStep) => `<button onclick="setupStep=${toStep};renderMain()"
       style="background:none;border:none;color:var(--text3);font-family:var(--display);
       font-size:13px;letter-spacing:2px;cursor:pointer;padding:16px 0;margin-top:4px">← BACK</button>`;
-  const wrap = (inner) => `<div class="fade-in" style="min-height:100vh;padding:48px 28px;display:flex;flex-direction:column;justify-content:center">${brand}${dotBar}${inner}</div>`;
+  const wrap = (inner) => `<div class="fade-in" style="min-height:100vh;min-height:100dvh;padding:24px 28px 32px;display:flex;flex-direction:column;justify-content:center">${brand}${dotBar}${inner}</div>`;
 
   // ── STEP 1: NAME ──
   if (setupStep === 1) {
@@ -3369,7 +3369,7 @@ function renderSetup(){
         color:var(--text);font-family:var(--body);font-size:18px;
         padding:8px 0 12px;outline:none;margin-bottom:10px">
       <div style="font-family:var(--body);font-size:12px;color:var(--text3);line-height:1.5;margin-bottom:40px">Used to save your profile so you can restore everything on a new device. No password needed.</div>
-      <button class="action-btn" onclick="if(setupName.trim()){setupStep=2;renderMain();}else{const i=document.getElementById('setup-name');if(i){i.style.borderColor='var(--red)';i.focus();}}" style="max-width:300px">CONTINUE →</button>
+      <button class="action-btn" onclick="if(setupName.trim()){setupStep=2;renderMain();}else{const i=document.getElementById('setup-name');if(i){i.style.borderColor='var(--red)';i.focus();}}" >CONTINUE →</button>
       <button onclick="forgeRestorePrompt()" style="display:block;margin:16px auto 0;background:none;border:none;color:var(--text3);font-family:var(--body);font-size:14px;text-decoration:underline;cursor:pointer">Already have a profile? Restore it</button>`);
   }
 
@@ -3392,7 +3392,7 @@ function renderSetup(){
           border:2px solid ${setupPregnancy?'var(--accent)':'rgba(255,255,255,.1)'};
           color:${setupPregnancy?'var(--accent)':'var(--text2)'}">PREGNANCY SAFE MODE ${setupPregnancy?'✓':''}</button>
       </div>
-      <button class="action-btn" onclick="if(setupGender){setupStep=3;renderMain();}" style="max-width:300px;margin-top:32px">CONTINUE →</button>
+      <button class="action-btn" onclick="if(setupGender){setupStep=3;renderMain();}" style="margin-top:32px">CONTINUE →</button>
       ${back(1)}`);
   }
 
@@ -3403,31 +3403,31 @@ function renderSetup(){
       <input type="${key==='height'?'text':'number'}" inputmode="${key==='height'?'text':'decimal'}" enterkeyhint="next"
         value="${setupProfile[key]||''}" placeholder="${ph}"
         oninput="setupProfile['${key}']=this.value.trim()"
-        style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+        style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;
         color:var(--text);font-family:var(--body);font-size:16px;padding:12px;color-scheme:dark"></div>`;
     return wrap(`
       <div style="font-family:var(--display);font-size:24px;letter-spacing:1px;color:var(--text);margin-bottom:6px">A bit about you</div>
       <div style="font-family:var(--body);font-size:14px;color:var(--text3);margin-bottom:24px">Optional — powers weight tracking and tailored targets. Skip if you'd rather not.</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="margin-bottom:16px;grid-column:1/-1">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
+        <div style="margin-bottom:16px;grid-column:1/-1;min-width:0">
           <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">BIRTHDAY</div>
           <input type="date" value="${setupProfile.birthday||''}" oninput="setupProfile.birthday=this.value"
-            style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+            style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
         </div>
-        <div style="margin-bottom:16px;grid-column:1/-1">
+        <div style="margin-bottom:16px;grid-column:1/-1;min-width:0">
           <div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">HEIGHT</div>
           <div style="display:flex;gap:10px;align-items:center">
             <input type="number" inputmode="numeric" value="${setupProfile.heightFt||''}" placeholder="5" oninput="setupProfile.heightFt=this.value.trim()"
-              style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+              style="flex:1;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
             <span style="font-family:var(--display);font-size:13px;color:var(--text3)">ft</span>
             <input type="number" inputmode="numeric" value="${setupProfile.heightIn||''}" placeholder="10" oninput="setupProfile.heightIn=this.value.trim()"
-              style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
+              style="flex:1;min-width:0;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--body);font-size:16px;outline:none">
             <span style="font-family:var(--display);font-size:13px;color:var(--text3)">in</span>
           </div>
         </div>
         ${fld('currentWeight','CURRENT WEIGHT','lbs')}${fld('goalWeight','GOAL WEIGHT','lbs')}
       </div>
-      <button class="action-btn" onclick="setupStep=4;renderMain()" style="max-width:300px;margin-top:24px">CONTINUE →</button>
+      <button class="action-btn" onclick="setupStep=4;renderMain()" style="margin-top:24px">CONTINUE →</button>
       <button onclick="setupStep=4;renderMain()" style="background:none;border:none;color:var(--text3);font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;padding:14px 0;margin-top:2px">SKIP FOR NOW</button>
       ${back(2)}`);
   }
@@ -3458,7 +3458,7 @@ function renderSetup(){
             background:${(setupPrefs.equipment||[]).includes(v)?'var(--accent-bg)':'rgba(255,255,255,.04)'};
             color:${(setupPrefs.equipment||[]).includes(v)?'var(--accent)':'var(--text3)'}">${l}</button>`).join('')}
       </div>
-      <button class="action-btn" onclick="setupStep=5;renderMain()" style="max-width:300px;margin-top:8px">CONTINUE →</button>
+      <button class="action-btn" onclick="setupStep=5;renderMain()" style="margin-top:8px">CONTINUE →</button>
       ${back(3)}`);
   }
 
@@ -5451,8 +5451,8 @@ function renderPlan(){
       <div style="font-family:var(--display);font-size:40px;color:var(--accent);line-height:1;margin-bottom:18px">⊕</div>
       <div style="font-family:var(--display);font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:10px">NO ACTIVE PROGRAM</div>
       <div style="font-family:var(--body);font-size:14px;color:var(--text3);line-height:1.6;max-width:300px;margin:0 auto 26px">Create a program tied to a goal, or just log your training day-to-day from the Workout tab.</div>
-      <button class="action-btn" style="max-width:300px;margin:0 auto 10px" onclick="S.showGoalCreator=true;gbReset();renderMain()">CREATE A PROGRAM</button>
-      <button class="action-btn secondary" style="max-width:300px;margin:0 auto" onclick="S.logMode='custom';setTab('log')">LOG A CUSTOM WORKOUT</button>
+      <button class="action-btn" style="margin-bottom:10px" onclick="S.showGoalCreator=true;gbReset();renderMain()">CREATE A PROGRAM</button>
+      <button class="action-btn secondary" onclick="S.logMode='custom';setTab('log')">LOG A CUSTOM WORKOUT</button>
     </div>` : ''}
   ${renderGoalHeaderCard()}
   ${(()=>{ const ap=S.planGoalId?getGoals().find(g=>g.id===S.planGoalId):null; if(!hasCustomPlan()&&isFoundationHidden()) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 14px"><div class="section-label">SCHEDULE</div>'+'<button onclick="openProgramManage(\''+(ap?ap.id:'__base__')+'\')" style="background:none;border:1px solid var(--border);color:var(--text2);font-family:var(--display);font-size:11px;letter-spacing:1.5px;padding:6px 14px;border-radius:100px;cursor:pointer">MANAGE</button>'+'</div>'; })()}
@@ -6728,7 +6728,7 @@ function renderStats(){
   ${noWorkouts ? `
   <div style="padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;text-align:center;margin-bottom:18px">
     <div style="font-family:var(--body);font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:14px">No workouts logged yet. Your training stats appear here once you start. You can still track body metrics below.</div>
-    <button class="action-btn" style="max-width:280px;margin:0 auto" onclick="setTab('log')">LOG A WORKOUT</button>
+    <button class="action-btn" onclick="setTab('log')">LOG A WORKOUT</button>
   </div>` : `
   <div class="stat-grid">
    ${(()=>{ const _m=getForgeMetrics(); return _m.hasProgram ?
@@ -7289,7 +7289,7 @@ function renderProfilePanel() {
 
         <!-- 3. NUTRITION GOALS -->
         <div style="font-family:var(--display);font-size:14px;letter-spacing:3px;color:var(--accent);margin-bottom:14px">NUTRITION</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:4px">
           ${row('DAILY PROTEIN (G)',
             `<input type="number" inputmode="decimal" value="${settings.proteinTarget||170}" placeholder="170"
               oninput="saveSettings({proteinTarget:parseInt(this.value)||170})"
