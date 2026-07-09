@@ -2686,6 +2686,7 @@ function buildFullSnapshot(){
     streakAcked: localStorage.getItem('forge_streak_acked'),
     foundationHidden: localStorage.getItem('forge_foundation_hidden'),
     skips: localStorage.getItem('forge_skips'),
+    protocol: localStorage.getItem('forge_protocol'),
     moves: localStorage.getItem('forge_moves'),
   };
 }
@@ -2708,6 +2709,7 @@ function applyFullSnapshot(data){
   put('forge_streak_acked', data.streakAcked);
   put('forge_foundation_hidden', data.foundationHidden);
   put('forge_skips', data.skips);
+  put('forge_protocol', data.protocol);
   put('forge_moves', data.moves);
   return true;
 }
@@ -6315,6 +6317,127 @@ function saveAndShareWorkout(){
 // ============================================================
 // FUEL (NUTRITION)
 // ============================================================
+// ============================================================
+// PROTOCOL — dated cut/prep plans with daily floors + scorecard
+// Opt-in per device (squad members never see it unless activated).
+// ============================================================
+const CUT_PROTOCOL = {
+  id: 'cut16-jul26',
+  name: '16-DAY CUT',
+  start: '2026-07-09',
+  end: '2026-07-24',
+  floors: { protein: 140, calories: 1500, water: 80 },
+  footer: "If you can't eat it, drink it — protein floor is 120g even on the worst day.",
+  days: {
+    '2026-07-09': 'Upper — press, row, pulldown, curls',
+    '2026-07-10': 'Walk 30–45 min',
+    '2026-07-11': 'Lower — squat/leg press, RDL, lunges',
+    '2026-07-12': 'Rest + meal prep',
+    '2026-07-13': 'Full body — deadlift variation, press, row',
+    '2026-07-14': 'Walk',
+    '2026-07-15': '💉 5mg shot — light walk only, 100oz water, eat a full normal day',
+    '2026-07-16': 'Walk only — lowest-appetite day, liquid protein OK',
+    '2026-07-17': 'Upper — drop load 10–20% if energy is low',
+    '2026-07-18': 'Lower — sodium cut begins (no restaurant/processed food)',
+    '2026-07-19': 'Walk + low-sodium meal prep',
+    '2026-07-20': 'Full body',
+    '2026-07-21': 'Walk — starches at dinner only from here',
+    '2026-07-22': 'Light upper pump — high reps, moderate weight',
+    '2026-07-23': "Walk + rest — hydrate normally, don't dehydrate",
+    '2026-07-24': '✅ Morning weigh-in checkpoint',
+  },
+  banners: [
+    { from:'2026-07-16', to:'2026-07-18', label:'NAUSEA PROTOCOL', text:'Smaller frequent meals. Shakes over solids. Reduce weight, not sessions.', color:'var(--amber)' },
+    { from:'2026-07-18', to:'2026-07-24', label:'FLUSH WINDOW', text:'Sodium cut + moderate carb reduction. Starches at dinner only from 7/21.', color:'var(--accent)' },
+  ],
+  shotDow: 3, // Wednesday
+};
+
+function isProtocolActive(){
+  return localStorage.getItem('forge_protocol') === '1';
+}
+function protocolActivate(){ localStorage.setItem('forge_protocol','1'); try{syncProfileToCloud();}catch(e){} }
+function protocolDeactivate(){ localStorage.removeItem('forge_protocol'); try{syncProfileToCloud();}catch(e){} }
+function protocolToggle(){ if(isProtocolActive()) protocolDeactivate(); else protocolActivate(); renderMain(); }
+
+function getProtocolToday(){
+  if(!isProtocolActive()) return null;
+  const t = todayStr();
+  if(t < CUT_PROTOCOL.start || t > CUT_PROTOCOL.end) return null; // dormant outside range
+  const banners = CUT_PROTOCOL.banners.filter(function(b){ return t >= b.from && t <= b.to; });
+  const isShot = parseDate(t).getDay() === CUT_PROTOCOL.shotDow;
+  return {
+    session: CUT_PROTOCOL.days[t] || null,
+    banners: banners,
+    isShotDay: isShot,
+    floors: CUT_PROTOCOL.floors,
+    footer: CUT_PROTOCOL.footer,
+    daysLeft: Math.ceil((parseDate(CUT_PROTOCOL.end) - parseDate(t)) / 86400000),
+  };
+}
+
+// ---- WATER (permanent Fuel feature) ----
+function getWaterTotal(date){ return getFuel(date).water || 0; }
+function addWater(oz){
+  const all = getAllFuel();
+  const d = todayStr();
+  if(!all[d]) all[d] = { entries: [] };
+  all[d].water = Math.max(0, (all[d].water || 0) + oz);
+  localStorage.setItem(FUEL_KEY, JSON.stringify(all));
+  try{syncProfileToCloud();}catch(e){}
+  renderMain();
+}
+
+// ---- SCORECARD ----
+function renderProtocolCard(compact){
+  const p = getProtocolToday();
+  if(!p) return '';
+  const t = todayStr();
+  const protein = getProteinTotal(t);
+  const cals = getCalorieTotal(t);
+  const water = getWaterTotal(t);
+  const evening = new Date().getHours() >= 17;
+
+  function checkRow(label, val, floor, unit){
+    const hit = val >= floor;
+    // calories get the "trending under by dinner" amber treatment
+    const amber = (label==='CALORIES' && !hit && evening);
+    const col = hit ? 'var(--green)' : (amber ? 'var(--amber)' : 'var(--text3)');
+    const icon = hit ? '✓' : (amber ? '!' : '·');
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:'+(compact?'5px 0':'8px 0')+'">'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+col+';color:'+col+';display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">'+icon+'</span>'
+      + '<span style="font-family:var(--display);font-size:'+(compact?'11px':'12px')+';letter-spacing:1.5px;color:var(--text2)">'+label+'</span>'
+      + '</div>'
+      + '<span style="font-family:var(--display);font-size:'+(compact?'13px':'15px')+';color:'+col+'">'+val+'<span style="color:var(--text3);font-size:11px"> / '+floor+unit+'</span></span>'
+      + '</div>';
+  }
+
+  var bannersHtml = '';
+  if(p.isShotDay){
+    bannersHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(166,203,42,.1);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:8px">'
+      + '<span style="font-size:14px">💉</span><span style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;color:var(--accent)">SHOT DAY</span></div>';
+  }
+  p.banners.forEach(function(b){
+    bannersHtml += '<div style="padding:8px 12px;background:var(--bg2);border-left:3px solid '+b.color+';border-radius:8px;margin-bottom:8px">'
+      + '<div style="font-family:var(--display);font-size:11px;letter-spacing:1.5px;color:'+b.color+';margin-bottom:2px">'+b.label+'</div>'
+      + '<div style="font-family:var(--body);font-size:12px;color:var(--text2);line-height:1.4">'+b.text+'</div></div>';
+  });
+
+  return '<div style="margin:0 16px 16px;padding:'+(compact?'14px':'16px')+';background:linear-gradient(135deg,rgba(166,203,42,.06),var(--card));border:1px solid var(--accent-border);border-radius:16px">'
+    + '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:'+(compact?'8px':'10px')+'">'
+    + '<span style="font-family:var(--display);font-size:12px;letter-spacing:2px;color:var(--accent)">'+CUT_PROTOCOL.name+'</span>'
+    + '<span style="font-family:var(--display);font-size:11px;letter-spacing:1px;color:var(--text3)">'+(p.daysLeft>0?p.daysLeft+' DAYS TO CHECKPOINT':'CHECKPOINT TODAY')+'</span>'
+    + '</div>'
+    + bannersHtml
+    + (p.session ? '<div style="font-family:var(--body);font-size:13px;color:var(--text);line-height:1.4;margin-bottom:'+(compact?'6px':'10px')+'"><span style="color:var(--text3)">Today: </span>'+p.session+'</div>' : '')
+    + checkRow('PROTEIN', protein, p.floors.protein, 'G')
+    + checkRow('CALORIES', cals, p.floors.calories, '')
+    + checkRow('WATER', water, p.floors.water, 'OZ')
+    + (compact ? '' : '<div style="font-family:var(--body);font-size:11px;color:var(--text3);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'+p.footer+'</div>')
+    + '</div>';
+}
+
 function renderFuel(){
  const today=getFuel(todayStr());
  const total=getProteinTotal(todayStr());
@@ -6347,6 +6470,16 @@ function renderFuel(){
       <input type="number" inputmode="numeric" enterkeyhint="done" class="custom-input" placeholder="Log today's calories" value="${calTotal||''}" oninput="setCalorieTotal(todayStr(),this.value)" style="flex:1">
     </div>
   </div>` })()}
+  <div class="fuel-section-label">WATER</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px">
+    <div style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:baseline;gap:5px">
+      <span style="font-family:var(--display);font-size:24px;color:${getWaterTotal(todayStr())>=80?'var(--green)':'var(--text)'}">${getWaterTotal(todayStr())}</span>
+      <span style="font-family:var(--display);font-size:12px;letter-spacing:1px;color:var(--text3)">/ 80 OZ</span>
+    </div>
+    <button onclick="addWater(8)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 14px;color:var(--accent);font-family:var(--display);font-size:13px;letter-spacing:1px;cursor:pointer">+8</button>
+    <button onclick="addWater(16)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 12px;color:var(--accent);font-family:var(--display);font-size:13px;letter-spacing:1px;cursor:pointer">+16</button>
+    <button onclick="addWater(-8)" aria-label="Remove 8 oz" style="background:none;border:1px solid var(--border);border-radius:12px;padding:14px 12px;color:var(--text3);font-family:var(--display);font-size:13px;cursor:pointer">−8</button>
+  </div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
     <div class="fuel-section-label" style="margin:0">QUICK ADD</div>
     <button onclick="S.fuelBrowseOpen=!S.fuelBrowseOpen;S.fuelSearch='';renderMain()" style="background:none;border:none;color:var(--accent);font-family:var(--display);font-size:12px;letter-spacing:1.5px;cursor:pointer;padding:4px 0">${S.fuelBrowseOpen?'CLOSE LIST':'BROWSE ALL ('+FOODS.length+')'}</button>
@@ -7071,6 +7204,7 @@ function renderToday(){
   </div>
   ${S.showProfile ? `
   <div style="padding:0 0 4px">${renderProfilePanel()}</div>` : ''}
+  ${renderProtocolCard(false)}
   <div class="forge-grid">
    <div class="forge-card forge-wide">
     <div class="forge-card-inner">
@@ -7178,7 +7312,23 @@ function renderAccountSection(){
       + '</div>';
   }
 
-  return '<!-- ACCOUNT -->'
+  const protoActive = isProtocolActive();
+  const protoSection = '<!-- PROTOCOL -->'
+    + '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:12px">PROTOCOL</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px">'
+    + '<div style="flex:1;min-width:0">'
+    + '<div style="font-family:var(--display);font-size:13px;letter-spacing:1px;color:var(--text)">'+CUT_PROTOCOL.name+'</div>'
+    + '<div style="font-family:var(--body);font-size:12px;color:var(--text3)">Jul 9 – Jul 24 · daily floors + banners on Home and Fuel</div>'
+    + '</div>'
+    + '<button onclick="protocolToggle()" style="flex-shrink:0;padding:10px 16px;border-radius:100px;font-family:var(--display);font-size:11px;letter-spacing:1.5px;cursor:pointer;'
+    + (protoActive
+        ? 'background:var(--accent);color:#0B0D0B;border:none">ACTIVE — TAP TO END'
+        : 'background:none;color:var(--text2);border:1px solid var(--border)">ACTIVATE')
+    + '</button>'
+    + '</div>'
+    + '<div style="height:1px;background:var(--border);margin:18px 0"></div>';
+
+  return protoSection + '<!-- ACCOUNT -->' 
     + '<div style="font-family:var(--display);font-size:14px;letter-spacing:2px;color:var(--text2);margin-bottom:12px">ACCOUNT</div>'
     + '<div style="margin-bottom:14px">'
     + '<div style="font-family:var(--display);font-size:11px;letter-spacing:2px;color:var(--text3);margin-bottom:6px">EMAIL</div>'
